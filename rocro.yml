@@ -3,85 +3,88 @@ inspecode:
   astyle:           ### for C++
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 241
 
   autopep8:         ### for Python
     auto-fix: true
-    thresholds:
-      num-issues: 999
 
   clang-format:     ### for C++
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 262
 
   cpd:              ### for [C++, Python]
     thresholds:
-      num-issues: 999
+      num-issues: 11
 
   cppcheck:         ### for C++
     thresholds:
-      num-issues: 999
+      num-issues: 36
 
   cpplint:          ### for C++
+    options:
+      filter:           # 62609, if no filter options
+      - -whitespace     # 59855
+      - -build          #  1156
+      - -readability    #  1019
+    # - -runtime        #   320
+    # - -legal          #   259
     thresholds:
-      num-issues: 999
+      num-issues: 579
 
   flake8:           ### for Python
     thresholds:
-      num-issues: 999
+      num-issues: 109
 
   grep:             ### for aby-languages
     thresholds:
-      num-issues: 999
+      num-issues: 26
 
-  infer:            ### for C++
-    thresholds:
-      num-issues: 999
+  #### infer ... cannot work for this repository.
+  #infer:            ### for C++
 
   markdownlint:     ### for Markdown
     thresholds:
-      num-issues: 999
+      num-issues: 185
 
   misspell:         ### for any-languages
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 37
 
   prospector:       ### for Python
     thresholds:
-      num-issues: 999
+      num-issues: 2
 
   pycodestyle:      ### for Python
     thresholds:
-      num-issues: 999
+      num-issues: 102
 
   pyflakes:         ### for Python
     thresholds:
-      num-issues: 999
+      num-issues: 8
 
   pylint:           ### for Python
     thresholds:
-      num-issues: 999
+      num-issues: 116
 
-  scan-build:       ### for C++
-    thresholds:
-      num-issues: 999
+  #### scan-build ... cannot work for this repository.
+  #scan-build:       ### for C++
 
   shellcheck:       ### for Shell
     thresholds:
-      num-issues: 999
+      num-issues: 118
 
   uncrustify:       ### for C++
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 262
 
   unused:           ### for [C++, Python, Shell]
     thresholds:
-      num-issues: 999
+      num-issues: 67
 
   yapf:             ### for Python
     auto-fix: true
     thresholds:
-      num-issues: 999
+      num-issues: 6
