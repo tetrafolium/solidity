@@ -25,30 +25,27 @@
 
 #include <string>
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
 // How a function can mutate the EVM state.
 enum class StateMutability { Pure, View, NonPayable, Payable };
 
-inline std::string stateMutabilityToString(StateMutability const& _stateMutability)
-{
-    switch(_stateMutability)
-    {
-    case StateMutability::Pure:
-        return "pure";
-    case StateMutability::View:
-        return "view";
-    case StateMutability::NonPayable:
-        return "nonpayable";
-    case StateMutability::Payable:
-        return "payable";
-    default:
-        solAssert(false, "Unknown state mutability.");
-    }
+inline std::string
+stateMutabilityToString(StateMutability const &_stateMutability) {
+  switch (_stateMutability) {
+  case StateMutability::Pure:
+    return "pure";
+  case StateMutability::View:
+    return "view";
+  case StateMutability::NonPayable:
+    return "nonpayable";
+  case StateMutability::Payable:
+    return "payable";
+  default:
+    solAssert(false, "Unknown state mutability.");
+  }
 }
 
-}
-}
+} // namespace solidity
+} // namespace dev

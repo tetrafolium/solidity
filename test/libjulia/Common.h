@@ -23,33 +23,31 @@
 
 #include <libsolidity/inlineasm/AsmData.h>
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 class Scanner;
 class Error;
 using ErrorList = std::vector<std::shared_ptr<Error const>>;
-namespace assembly
-{
+namespace assembly {
 struct AsmAnalysisInfo;
 }
-}
-namespace julia
-{
-namespace test
-{
+} // namespace solidity
+namespace julia {
+namespace test {
 
-void printErrors(solidity::ErrorList const& _errors, solidity::Scanner const& _scanner);
-std::pair<std::shared_ptr<solidity::assembly::Block>, std::shared_ptr<solidity::assembly::AsmAnalysisInfo>>
-        parse(std::string const& _source, bool _julia = true);
-solidity::assembly::Block disambiguate(std::string const& _source, bool _julia = true);
-std::string format(std::string const& _source, bool _julia = true);
+void printErrors(solidity::ErrorList const &_errors,
+                 solidity::Scanner const &_scanner);
+std::pair<std::shared_ptr<solidity::assembly::Block>,
+          std::shared_ptr<solidity::assembly::AsmAnalysisInfo>>
+parse(std::string const &_source, bool _julia = true);
+solidity::assembly::Block disambiguate(std::string const &_source,
+                                       bool _julia = true);
+std::string format(std::string const &_source, bool _julia = true);
 
-}
-}
-}
+} // namespace test
+} // namespace julia
+} // namespace dev

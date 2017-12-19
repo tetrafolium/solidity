@@ -25,10 +25,8 @@
 
 #include <libsolidity/ast/ASTVisitor.h>
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
 class ErrorReporter;
 
@@ -36,36 +34,32 @@ class ErrorReporter;
  * Parses and analyses the doc strings.
  * Stores the parsing results in the AST annotations and reports errors.
  */
-class DocStringAnalyser: private ASTConstVisitor
-{
+class DocStringAnalyser : private ASTConstVisitor {
 public:
-    DocStringAnalyser(ErrorReporter& _errorReporter): m_errorReporter(_errorReporter) {}
-    bool analyseDocStrings(SourceUnit const& _sourceUnit);
+  DocStringAnalyser(ErrorReporter &_errorReporter)
+      : m_errorReporter(_errorReporter) {}
+  bool analyseDocStrings(SourceUnit const &_sourceUnit);
 
 private:
-    virtual bool visit(ContractDefinition const& _contract) override;
-    virtual bool visit(FunctionDefinition const& _function) override;
-    virtual bool visit(ModifierDefinition const& _modifier) override;
-    virtual bool visit(EventDefinition const& _event) override;
+  virtual bool visit(ContractDefinition const &_contract) override;
+  virtual bool visit(FunctionDefinition const &_function) override;
+  virtual bool visit(ModifierDefinition const &_modifier) override;
+  virtual bool visit(EventDefinition const &_event) override;
 
-    void handleCallable(
-        CallableDeclaration const& _callable,
-        Documented const& _node,
-        DocumentedAnnotation& _annotation
-    );
+  void handleCallable(CallableDeclaration const &_callable,
+                      Documented const &_node,
+                      DocumentedAnnotation &_annotation);
 
-    void parseDocStrings(
-        Documented const& _node,
-        DocumentedAnnotation& _annotation,
-        std::set<std::string> const& _validTags,
-        std::string const& _nodeName
-    );
+  void parseDocStrings(Documented const &_node,
+                       DocumentedAnnotation &_annotation,
+                       std::set<std::string> const &_validTags,
+                       std::string const &_nodeName);
 
-    void appendError(std::string const& _description);
+  void appendError(std::string const &_description);
 
-    bool m_errorOccured = false;
-    ErrorReporter& m_errorReporter;
+  bool m_errorOccured = false;
+  ErrorReporter &m_errorReporter;
 };
 
-}
-}
+} // namespace solidity
+} // namespace dev

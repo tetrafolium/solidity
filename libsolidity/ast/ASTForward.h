@@ -22,16 +22,14 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 // Forward-declare all AST node types
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
 class ASTNode;
 class SourceUnit;
@@ -88,13 +86,12 @@ class Literal;
 
 class VariableScope;
 
-// Used as pointers to AST nodes, to be replaced by more clever pointers, e.g. pointers which do
-// not do reference counting but point to a special memory area that is completely released
-// explicitly.
-template <class T>
-using ASTPointer = std::shared_ptr<T>;
+// Used as pointers to AST nodes, to be replaced by more clever pointers, e.g.
+// pointers which do not do reference counting but point to a special memory
+// area that is completely released explicitly.
+template <class T> using ASTPointer = std::shared_ptr<T>;
 
 using ASTString = std::string;
 
-}
-}
+} // namespace solidity
+} // namespace dev

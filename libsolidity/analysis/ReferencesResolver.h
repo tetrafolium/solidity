@@ -17,82 +17,82 @@
 /**
  * @author Christian <c@ethdev.com>
  * @date 2014
- * Component that resolves type names to types and annotates the AST accordingly.
+ * Component that resolves type names to types and annotates the AST
+ * accordingly.
  */
 
 #pragma once
 
-#include <map>
-#include <list>
 #include <boost/noncopyable.hpp>
-#include <libsolidity/ast/ASTVisitor.h>
 #include <libsolidity/ast/ASTAnnotations.h>
+#include <libsolidity/ast/ASTVisitor.h>
+#include <list>
+#include <map>
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
 class ErrorReporter;
 class NameAndTypeResolver;
 
 /**
- * Resolves references to declarations (of variables and types) and also establishes the link
- * between a return statement and the return parameter list.
+ * Resolves references to declarations (of variables and types) and also
+ * establishes the link between a return statement and the return parameter
+ * list.
  */
-class ReferencesResolver: private ASTConstVisitor
-{
+class ReferencesResolver : private ASTConstVisitor {
 public:
-    ReferencesResolver(
-        ErrorReporter& _errorReporter,
-        NameAndTypeResolver& _resolver,
-        bool _resolveInsideCode = false
-    ):
-        m_errorReporter(_errorReporter),
-        m_resolver(_resolver),
-        m_resolveInsideCode(_resolveInsideCode)
-    {}
+  ReferencesResolver(ErrorReporter &_errorReporter,
+                     NameAndTypeResolver &_resolver,
+                     bool _resolveInsideCode = false)
+      : m_errorReporter(_errorReporter), m_resolver(_resolver),
+        m_resolveInsideCode(_resolveInsideCode) {}
 
-    /// @returns true if no errors during resolving and throws exceptions on fatal errors.
-    bool resolve(ASTNode const& _root);
+  /// @returns true if no errors during resolving and throws exceptions on fatal
+  /// errors.
+  bool resolve(ASTNode const &_root);
 
 private:
-    virtual bool visit(Block const&) override {
-        return m_resolveInsideCode;
-    }
-    virtual bool visit(Identifier const& _identifier) override;
-    virtual bool visit(ElementaryTypeName const& _typeName) override;
-    virtual bool visit(FunctionDefinition const& _functionDefinition) override;
-    virtual void endVisit(FunctionDefinition const& _functionDefinition) override;
-    virtual bool visit(ModifierDefinition const& _modifierDefinition) override;
-    virtual void endVisit(ModifierDefinition const& _modifierDefinition) override;
-    virtual void endVisit(UserDefinedTypeName const& _typeName) override;
-    virtual void endVisit(FunctionTypeName const& _typeName) override;
-    virtual void endVisit(Mapping const& _typeName) override;
-    virtual void endVisit(ArrayTypeName const& _typeName) override;
-    virtual bool visit(InlineAssembly const& _inlineAssembly) override;
-    virtual bool visit(Return const& _return) override;
-    virtual void endVisit(VariableDeclaration const& _variable) override;
+  virtual bool visit(Block const &) override { return m_resolveInsideCode; }
+  virtual bool visit(Identifier const &_identifier) override;
+  virtual bool visit(ElementaryTypeName const &_typeName) override;
+  virtual bool visit(FunctionDefinition const &_functionDefinition) override;
+  virtual void endVisit(FunctionDefinition const &_functionDefinition) override;
+  virtual bool visit(ModifierDefinition const &_modifierDefinition) override;
+  virtual void endVisit(ModifierDefinition const &_modifierDefinition) override;
+  virtual void endVisit(UserDefinedTypeName const &_typeName) override;
+  virtual void endVisit(FunctionTypeName const &_typeName) override;
+  virtual void endVisit(Mapping const &_typeName) override;
+  virtual void endVisit(ArrayTypeName const &_typeName) override;
+  virtual bool visit(InlineAssembly const &_inlineAssembly) override;
+  virtual bool visit(Return const &_return) override;
+  virtual void endVisit(VariableDeclaration const &_variable) override;
 
-    /// Adds a new error to the list of errors.
-    void typeError(SourceLocation const& _location, std::string const& _description);
+  /// Adds a new error to the list of errors.
+  void typeError(SourceLocation const &_location,
+                 std::string const &_description);
 
-    /// Adds a new error to the list of errors and throws to abort reference resolving.
-    void fatalTypeError(SourceLocation const& _location, std::string const& _description);
+  /// Adds a new error to the list of errors and throws to abort reference
+  /// resolving.
+  void fatalTypeError(SourceLocation const &_location,
+                      std::string const &_description);
 
-    /// Adds a new error to the list of errors.
-    void declarationError(SourceLocation const& _location, std::string const& _description);
+  /// Adds a new error to the list of errors.
+  void declarationError(SourceLocation const &_location,
+                        std::string const &_description);
 
-    /// Adds a new error to the list of errors and throws to abort reference resolving.
-    void fatalDeclarationError(SourceLocation const& _location, std::string const& _description);
+  /// Adds a new error to the list of errors and throws to abort reference
+  /// resolving.
+  void fatalDeclarationError(SourceLocation const &_location,
+                             std::string const &_description);
 
-    ErrorReporter& m_errorReporter;
-    NameAndTypeResolver& m_resolver;
-    /// Stack of return parameters.
-    std::vector<ParameterList const*> m_returnParameters;
-    bool const m_resolveInsideCode;
-    bool m_errorOccurred = false;
+  ErrorReporter &m_errorReporter;
+  NameAndTypeResolver &m_resolver;
+  /// Stack of return parameters.
+  std::vector<ParameterList const *> m_returnParameters;
+  bool const m_resolveInsideCode;
+  bool m_errorOccurred = false;
 };
 
-}
-}
+} // namespace solidity
+} // namespace dev

@@ -22,54 +22,60 @@
 
 #pragma once
 
+#include <boost/noncopyable.hpp>
 #include <map>
 #include <set>
-#include <boost/noncopyable.hpp>
 
 #include <libsolidity/ast/ASTForward.h>
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
 /**
- * Container that stores mappings between names and declarations. It also contains a link to the
- * enclosing scope.
+ * Container that stores mappings between names and declarations. It also
+ * contains a link to the enclosing scope.
  */
-class DeclarationContainer
-{
+class DeclarationContainer {
 public:
-    explicit DeclarationContainer(
-        ASTNode const* _enclosingNode = nullptr,
-        DeclarationContainer const* _enclosingContainer = nullptr
-    ):
-        m_enclosingNode(_enclosingNode), m_enclosingContainer(_enclosingContainer) {}
-    /// Registers the declaration in the scope unless its name is already declared or the name is empty.
-    /// @param _name the name to register, if nullptr the intrinsic name of @a _declaration is used.
-    /// @param _invisible if true, registers the declaration, reports name clashes but does not return it in @a resolveName
-    /// @param _update if true, replaces a potential declaration that is already present
-    /// @returns false if the name was already declared.
-    bool registerDeclaration(Declaration const& _declaration, ASTString const* _name = nullptr, bool _invisible = false, bool _update = false);
-    std::vector<Declaration const*> resolveName(ASTString const& _name, bool _recursive = false) const;
-    ASTNode const* enclosingNode() const {
-        return m_enclosingNode;
-    }
-    DeclarationContainer const* enclosingContainer() const {
-        return m_enclosingContainer;
-    }
-    std::map<ASTString, std::vector<Declaration const*>> const& declarations() const {
-        return m_declarations;
-    }
-    /// @returns whether declaration is valid, and if not also returns previous declaration.
-    Declaration const* conflictingDeclaration(Declaration const& _declaration, ASTString const* _name = nullptr) const;
+  explicit DeclarationContainer(
+      ASTNode const *_enclosingNode = nullptr,
+      DeclarationContainer const *_enclosingContainer = nullptr)
+      : m_enclosingNode(_enclosingNode),
+        m_enclosingContainer(_enclosingContainer) {}
+  /// Registers the declaration in the scope unless its name is already declared
+  /// or the name is empty.
+  /// @param _name the name to register, if nullptr the intrinsic name of @a
+  /// _declaration is used.
+  /// @param _invisible if true, registers the declaration, reports name clashes
+  /// but does not return it in @a resolveName
+  /// @param _update if true, replaces a potential declaration that is already
+  /// present
+  /// @returns false if the name was already declared.
+  bool registerDeclaration(Declaration const &_declaration,
+                           ASTString const *_name = nullptr,
+                           bool _invisible = false, bool _update = false);
+  std::vector<Declaration const *> resolveName(ASTString const &_name,
+                                               bool _recursive = false) const;
+  ASTNode const *enclosingNode() const { return m_enclosingNode; }
+  DeclarationContainer const *enclosingContainer() const {
+    return m_enclosingContainer;
+  }
+  std::map<ASTString, std::vector<Declaration const *>> const &
+  declarations() const {
+    return m_declarations;
+  }
+  /// @returns whether declaration is valid, and if not also returns previous
+  /// declaration.
+  Declaration const *
+  conflictingDeclaration(Declaration const &_declaration,
+                         ASTString const *_name = nullptr) const;
 
 private:
-    ASTNode const* m_enclosingNode;
-    DeclarationContainer const* m_enclosingContainer;
-    std::map<ASTString, std::vector<Declaration const*>> m_declarations;
-    std::map<ASTString, std::vector<Declaration const*>> m_invisibleDeclarations;
+  ASTNode const *m_enclosingNode;
+  DeclarationContainer const *m_enclosingContainer;
+  std::map<ASTString, std::vector<Declaration const *>> m_declarations;
+  std::map<ASTString, std::vector<Declaration const *>> m_invisibleDeclarations;
 };
 
-}
-}
+} // namespace solidity
+} // namespace dev

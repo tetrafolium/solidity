@@ -1,18 +1,18 @@
 /*
-	This file is part of solidity.
+        This file is part of solidity.
 
-	solidity is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+        solidity is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
 
-	solidity is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+        solidity is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+        You should have received a copy of the GNU General Public License
+        along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
  * @date 2017
@@ -23,10 +23,8 @@
 
 #include <libsolidity/inlineasm/AsmDataForward.h>
 
-namespace dev
-{
-namespace julia
-{
+namespace dev {
+namespace julia {
 
 using Instruction = solidity::assembly::Instruction;
 using Literal = solidity::assembly::Literal;
@@ -46,7 +44,11 @@ using Block = solidity::assembly::Block;
 
 using TypedName = solidity::assembly::TypedName;
 
-using Statement = boost::variant<Instruction, Literal, Label, StackAssignment, Identifier, Assignment, FunctionCall, FunctionalInstruction, VariableDeclaration, FunctionDefinition, If, Switch, ForLoop, Block>;
+using Statement =
+    boost::variant<Instruction, Literal, Label, StackAssignment, Identifier,
+                   Assignment, FunctionCall, FunctionalInstruction,
+                   VariableDeclaration, FunctionDefinition, If, Switch, ForLoop,
+                   Block>;
 
-}
-}
+} // namespace julia
+} // namespace dev

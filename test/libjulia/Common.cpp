@@ -25,12 +25,12 @@
 
 #include <libsolidity/parsing/Scanner.h>
 
-#include <libsolidity/inlineasm/AsmParser.h>
 #include <libsolidity/inlineasm/AsmAnalysis.h>
+#include <libsolidity/inlineasm/AsmParser.h>
 #include <libsolidity/inlineasm/AsmPrinter.h>
 
-#include <libsolidity/interface/SourceReferenceFormatter.h>
 #include <libsolidity/interface/ErrorReporter.h>
+#include <libsolidity/interface/SourceReferenceFormatter.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -38,49 +38,43 @@ using namespace std;
 using namespace dev::julia;
 using namespace dev::solidity;
 
-void dev::julia::test::printErrors(ErrorList const& _errors, Scanner const& _scanner)
-{
-    for (auto const& error: _errors)
-        SourceReferenceFormatter::printExceptionInformation(
-            cout,
-            *error,
-            (error->type() == Error::Type::Warning) ? "Warning" : "Error",
-        [&](std::string const&) -> Scanner const& { return _scanner; }
-    );
+void dev::julia::test::printErrors(ErrorList const &_errors,
+                                   Scanner const &_scanner) {
+  for (auto const &error : _errors)
+    SourceReferenceFormatter::printExceptionInformation(
+        cout, *error,
+        (error->type() == Error::Type::Warning) ? "Warning" : "Error",
+        [&](std::string const &) -> Scanner const & { return _scanner; });
 }
 
-
-pair<shared_ptr<Block>, shared_ptr<assembly::AsmAnalysisInfo>> dev::julia::test::parse(string const& _source, bool _julia)
-{
-    ErrorList errors;
-    ErrorReporter errorReporter(errors);
-    auto scanner = make_shared<Scanner>(CharStream(_source), "");
-    auto parserResult = assembly::Parser(errorReporter, _julia).parse(scanner);
-    if (parserResult)
-    {
-        BOOST_REQUIRE(errorReporter.errors().empty());
-        auto analysisInfo = make_shared<assembly::AsmAnalysisInfo>();
-        assembly::AsmAnalyzer analyzer(*analysisInfo, errorReporter, _julia);
-        if (analyzer.analyze(*parserResult))
-        {
-            BOOST_REQUIRE(errorReporter.errors().empty());
-            return make_pair(parserResult, analysisInfo);
-        }
+pair<shared_ptr<Block>, shared_ptr<assembly::AsmAnalysisInfo>>
+dev::julia::test::parse(string const &_source, bool _julia) {
+  ErrorList errors;
+  ErrorReporter errorReporter(errors);
+  auto scanner = make_shared<Scanner>(CharStream(_source), "");
+  auto parserResult = assembly::Parser(errorReporter, _julia).parse(scanner);
+  if (parserResult) {
+    BOOST_REQUIRE(errorReporter.errors().empty());
+    auto analysisInfo = make_shared<assembly::AsmAnalysisInfo>();
+    assembly::AsmAnalyzer analyzer(*analysisInfo, errorReporter, _julia);
+    if (analyzer.analyze(*parserResult)) {
+      BOOST_REQUIRE(errorReporter.errors().empty());
+      return make_pair(parserResult, analysisInfo);
     }
-    printErrors(errors, *scanner);
-    BOOST_FAIL("Invalid source.");
+  }
+  printErrors(errors, *scanner);
+  BOOST_FAIL("Invalid source.");
 
-    // Unreachable.
-    return {};
+  // Unreachable.
+  return {};
 }
 
-assembly::Block dev::julia::test::disambiguate(string const& _source, bool _julia)
-{
-    auto result = parse(_source, _julia);
-    return boost::get<Block>(Disambiguator(*result.second)(*result.first));
+assembly::Block dev::julia::test::disambiguate(string const &_source,
+                                               bool _julia) {
+  auto result = parse(_source, _julia);
+  return boost::get<Block>(Disambiguator(*result.second)(*result.first));
 }
 
-string dev::julia::test::format(string const& _source, bool _julia)
-{
-    return assembly::AsmPrinter(_julia)(*parse(_source, _julia).first);
+string dev::julia::test::format(string const &_source, bool _julia) {
+  return assembly::AsmPrinter(_julia)(*parse(_source, _julia).first);
 }

@@ -23,91 +23,88 @@
  * Can generally deal with JSON files
  */
 
-#include <libsolidity/interface/Natspec.h>
 #include <boost/range/irange.hpp>
 #include <libsolidity/ast/AST.h>
+#include <libsolidity/interface/Natspec.h>
 
 using namespace std;
 using namespace dev;
 using namespace dev::solidity;
 
-Json::Value Natspec::userDocumentation(ContractDefinition const& _contractDef)
-{
-    Json::Value doc;
-    Json::Value methods(Json::objectValue);
+Json::Value Natspec::userDocumentation(ContractDefinition const &_contractDef) {
+  Json::Value doc;
+  Json::Value methods(Json::objectValue);
 
-    for (auto const& it: _contractDef.interfaceFunctions())
-        if (it.second->hasDeclaration())
-            if (auto const* f = dynamic_cast<FunctionDefinition const*>(&it.second->declaration()))
-            {
-                string value = extractDoc(f->annotation().docTags, "notice");
-                if (!value.empty())
-                {
-                    Json::Value user;
-                    // since @notice is the only user tag if missing function should not appear
-                    user["notice"] = Json::Value(value);
-                    methods[it.second->externalSignature()] = user;
-                }
-            }
-    doc["methods"] = methods;
-
-    return doc;
-}
-
-Json::Value Natspec::devDocumentation(ContractDefinition const& _contractDef)
-{
-    Json::Value doc;
-    Json::Value methods(Json::objectValue);
-
-    auto author = extractDoc(_contractDef.annotation().docTags, "author");
-    if (!author.empty())
-        doc["author"] = author;
-    auto title = extractDoc(_contractDef.annotation().docTags, "title");
-    if (!title.empty())
-        doc["title"] = title;
-
-    for (auto const& it: _contractDef.interfaceFunctions())
-    {
-        if (!it.second->hasDeclaration())
-            continue;
-        Json::Value method;
-        if (auto fun = dynamic_cast<FunctionDefinition const*>(&it.second->declaration()))
-        {
-            auto dev = extractDoc(fun->annotation().docTags, "dev");
-            if (!dev.empty())
-                method["details"] = Json::Value(dev);
-
-            auto author = extractDoc(fun->annotation().docTags, "author");
-            if (!author.empty())
-                method["author"] = author;
-
-            auto ret = extractDoc(fun->annotation().docTags, "return");
-            if (!ret.empty())
-                method["return"] = ret;
-
-            Json::Value params(Json::objectValue);
-            auto paramRange = fun->annotation().docTags.equal_range("param");
-            for (auto i = paramRange.first; i != paramRange.second; ++i)
-                params[i->second.paramName] = Json::Value(i->second.content);
-
-            if (!params.empty())
-                method["params"] = params;
-
-            if (!method.empty())
-                // add the function, only if we have any documentation to add
-                methods[it.second->externalSignature()] = method;
+  for (auto const &it : _contractDef.interfaceFunctions())
+    if (it.second->hasDeclaration())
+      if (auto const *f = dynamic_cast<FunctionDefinition const *>(
+              &it.second->declaration())) {
+        string value = extractDoc(f->annotation().docTags, "notice");
+        if (!value.empty()) {
+          Json::Value user;
+          // since @notice is the only user tag if missing function should not
+          // appear
+          user["notice"] = Json::Value(value);
+          methods[it.second->externalSignature()] = user;
         }
-    }
-    doc["methods"] = methods;
+      }
+  doc["methods"] = methods;
 
-    return doc;
+  return doc;
 }
 
-string Natspec::extractDoc(multimap<string, DocTag> const& _tags, string const& _name)
-{
-    string value;
-    auto range = _tags.equal_range(_name);
-    for (auto i = range.first; i != range.second; i++)
-        value += i->second.content;
-    return value;
+Json::Value Natspec::devDocumentation(ContractDefinition const &_contractDef) {
+  Json::Value doc;
+  Json::Value methods(Json::objectValue);
+
+  auto author = extractDoc(_contractDef.annotation().docTags, "author");
+  if (!author.empty())
+    doc["author"] = author;
+  auto title = extractDoc(_contractDef.annotation().docTags, "title");
+  if (!title.empty())
+    doc["title"] = title;
+
+  for (auto const &it : _contractDef.interfaceFunctions()) {
+    if (!it.second->hasDeclaration())
+      continue;
+    Json::Value method;
+    if (auto fun = dynamic_cast<FunctionDefinition const *>(
+            &it.second->declaration())) {
+      auto dev = extractDoc(fun->annotation().docTags, "dev");
+      if (!dev.empty())
+        method["details"] = Json::Value(dev);
+
+      auto author = extractDoc(fun->annotation().docTags, "author");
+      if (!author.empty())
+        method["author"] = author;
+
+      auto ret = extractDoc(fun->annotation().docTags, "return");
+      if (!ret.empty())
+        method["return"] = ret;
+
+      Json::Value params(Json::objectValue);
+      auto paramRange = fun->annotation().docTags.equal_range("param");
+      for (auto i = paramRange.first; i != paramRange.second; ++i)
+        params[i->second.paramName] = Json::Value(i->second.content);
+
+      if (!params.empty())
+        method["params"] = params;
+
+      if (!method.empty())
+        // add the function, only if we have any documentation to add
+        methods[it.second->externalSignature()] = method;
+    }
+  }
+  doc["methods"] = methods;
+
+  return doc;
+}
+
+string Natspec::extractDoc(multimap<string, DocTag> const &_tags,
+                           string const &_name) {
+  string value;
+  auto range = _tags.equal_range(_name);
+  for (auto i = range.first; i != range.second; i++)
+    value += i->second.content;
+  return value;
 }

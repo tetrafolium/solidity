@@ -1,18 +1,18 @@
 /*
-	This file is part of solidity.
+        This file is part of solidity.
 
-	solidity is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+        solidity is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
 
-	solidity is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+        solidity is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+        You should have received a copy of the GNU General Public License
+        along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /** @file Whiskers.h
  * @author Chris <chis@ethereum.org>
@@ -25,12 +25,11 @@
 
 #include <libdevcore/Exceptions.h>
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
-namespace dev
-{
+namespace dev {
 
 DEV_SIMPLE_EXCEPTION(WhiskersError);
 
@@ -50,38 +49,35 @@ DEV_SIMPLE_EXCEPTION(WhiskersError);
 ///
 /// results in s == "HEAD\nkey1 -> value1\nkey2 -> value2\n"
 ///
-/// Note that lists cannot themselves contain lists - this would be a future feature.
-class Whiskers
-{
+/// Note that lists cannot themselves contain lists - this would be a future
+/// feature.
+class Whiskers {
 public:
-    using StringMap = std::map<std::string, std::string>;
-    using StringListMap = std::map<std::string, std::vector<StringMap>>;
+  using StringMap = std::map<std::string, std::string>;
+  using StringListMap = std::map<std::string, std::vector<StringMap>>;
 
-    explicit Whiskers(std::string const& _template);
+  explicit Whiskers(std::string const &_template);
 
-    /// Sets a single parameter, <paramName>.
-    Whiskers& operator()(std::string const& _parameter, std::string const& _value);
-    /// Sets a list parameter, <#listName> </listName>.
-    Whiskers& operator()(
-        std::string const& _listParameter,
-        std::vector<StringMap> const& _values
-    );
+  /// Sets a single parameter, <paramName>.
+  Whiskers &operator()(std::string const &_parameter,
+                       std::string const &_value);
+  /// Sets a list parameter, <#listName> </listName>.
+  Whiskers &operator()(std::string const &_listParameter,
+                       std::vector<StringMap> const &_values);
 
-    std::string render() const;
+  std::string render() const;
 
 private:
-    static std::string replace(
-        std::string const& _template,
-        StringMap const& _parameters,
-        StringListMap const& _listParameters = StringListMap()
-    );
+  static std::string
+  replace(std::string const &_template, StringMap const &_parameters,
+          StringListMap const &_listParameters = StringListMap());
 
-    /// Joins the two maps throwing an exception if two keys are equal.
-    static StringMap joinMaps(StringMap const& _a, StringMap const& _b);
+  /// Joins the two maps throwing an exception if two keys are equal.
+  static StringMap joinMaps(StringMap const &_a, StringMap const &_b);
 
-    std::string m_template;
-    StringMap m_parameters;
-    StringListMap m_listParameters;
+  std::string m_template;
+  StringMap m_parameters;
+  StringListMap m_listParameters;
 };
 
-}
+} // namespace dev

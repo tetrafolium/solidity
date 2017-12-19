@@ -1,18 +1,18 @@
 /*
-	This file is part of solidity.
+        This file is part of solidity.
 
-	solidity is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+        solidity is free software: you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version.
 
-	solidity is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+        solidity is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+        You should have received a copy of the GNU General Public License
+        along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
  * @author Ben Edgington <ben@benjaminion.xyz>
@@ -20,27 +20,23 @@
  * Tests for the deployed ENS Registry implementation written in LLL
  */
 
-#include <string>
 #include <boost/test/unit_test.hpp>
-#include <test/liblll/ExecutionFramework.h>
 #include <liblll/Compiler.h>
+#include <string>
+#include <test/liblll/ExecutionFramework.h>
 
-#define ACCOUNT(n)    h256(account(n), h256::AlignRight)
+#define ACCOUNT(n) h256(account(n), h256::AlignRight)
 
 using namespace std;
 using namespace dev::eth;
 
-namespace dev
-{
-namespace lll
-{
-namespace test
-{
+namespace dev {
+namespace lll {
+namespace test {
 
-namespace
-{
+namespace {
 
-static char const* ensCode = R"DELIMITER(
+static char const *ensCode = R"DELIMITER(
 ;;; ---------------------------------------------------------------------------
 ;;; @title The Ethereum Name Service registry.
 ;;; @author Daniel Ellison <daniel@syrinx.net>
@@ -337,170 +333,177 @@ static char const* ensCode = R"DELIMITER(
 
 static unique_ptr<bytes> s_compiledEns;
 
-class LLLENSTestFramework: public LLLExecutionFramework
-{
+class LLLENSTestFramework : public LLLExecutionFramework {
 protected:
-	void deployEns()
-	{
-		if (!s_compiledEns)
-		{
-			vector<string> errors;
-			s_compiledEns.reset(new bytes(compileLLL(ensCode, dev::test::Options::get().optimize, &errors)));
-			BOOST_REQUIRE(errors.empty());
-		}
-		sendMessage(*s_compiledEns, true);
-		BOOST_REQUIRE(!m_output.empty());
-	}
-
+  void deployEns() {
+    if (!s_compiledEns) {
+      vector<string> errors;
+      s_compiledEns.reset(new bytes(
+          compileLLL(ensCode, dev::test::Options::get().optimize, &errors)));
+      BOOST_REQUIRE(errors.empty());
+    }
+    sendMessage(*s_compiledEns, true);
+    BOOST_REQUIRE(!m_output.empty());
+  }
 };
 
-}
+} // namespace
 
 // Test suite for the deployed ENS Registry implementation written in LLL
 BOOST_FIXTURE_TEST_SUITE(LLLENS, LLLENSTestFramework)
 
-BOOST_AUTO_TEST_CASE(creation)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(creation) {
+  deployEns();
 
-	// Root node 0x00 should initially be owned by the deploying account, account(0).
-	BOOST_CHECK(callContractFunction("owner(bytes32)", 0x00) == encodeArgs(ACCOUNT(0)));
+  // Root node 0x00 should initially be owned by the deploying account,
+  // account(0).
+  BOOST_CHECK(callContractFunction("owner(bytes32)", 0x00) ==
+              encodeArgs(ACCOUNT(0)));
 }
 
-BOOST_AUTO_TEST_CASE(transfer_ownership)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(transfer_ownership) {
+  deployEns();
 
-	// Transfer ownership of root node from account(0) to account(1).
-	BOOST_REQUIRE(callContractFunction("setOwner(bytes32,address)", 0x00, ACCOUNT(1)) == encodeArgs());
+  // Transfer ownership of root node from account(0) to account(1).
+  BOOST_REQUIRE(callContractFunction("setOwner(bytes32,address)", 0x00,
+                                     ACCOUNT(1)) == encodeArgs());
 
-	// Check that an event was raised and contents are correct.
-	BOOST_REQUIRE(m_logs.size() == 1);
-	BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
-	BOOST_REQUIRE(m_logs[0].topics.size() == 2);
-	BOOST_CHECK(m_logs[0].topics[0] == keccak256(string("Transfer(bytes32,address)")));
-	BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
+  // Check that an event was raised and contents are correct.
+  BOOST_REQUIRE(m_logs.size() == 1);
+  BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
+  BOOST_REQUIRE(m_logs[0].topics.size() == 2);
+  BOOST_CHECK(m_logs[0].topics[0] ==
+              keccak256(string("Transfer(bytes32,address)")));
+  BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
 
-	// Verify that owner of 0x00 is now account(1).
-	BOOST_CHECK(callContractFunction("owner(bytes32)", 0x00) == encodeArgs(ACCOUNT(1)));
+  // Verify that owner of 0x00 is now account(1).
+  BOOST_CHECK(callContractFunction("owner(bytes32)", 0x00) ==
+              encodeArgs(ACCOUNT(1)));
 }
 
-BOOST_AUTO_TEST_CASE(transfer_ownership_fail)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(transfer_ownership_fail) {
+  deployEns();
 
-	// Try to steal ownership of node 0x01
-	BOOST_REQUIRE(callContractFunction("setOwner(bytes32,address)", 0x01, ACCOUNT(0)) == encodeArgs());
+  // Try to steal ownership of node 0x01
+  BOOST_REQUIRE(callContractFunction("setOwner(bytes32,address)", 0x01,
+                                     ACCOUNT(0)) == encodeArgs());
 
-	// Verify that owner of 0x01 remains the default zero address
-	BOOST_CHECK(callContractFunction("owner(bytes32)", 0x01) == encodeArgs(0));
+  // Verify that owner of 0x01 remains the default zero address
+  BOOST_CHECK(callContractFunction("owner(bytes32)", 0x01) == encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(set_resolver)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(set_resolver) {
+  deployEns();
 
-	// Set resolver of root node to account(1).
-	BOOST_REQUIRE(callContractFunction("setResolver(bytes32,address)", 0x00, ACCOUNT(1)) == encodeArgs());
+  // Set resolver of root node to account(1).
+  BOOST_REQUIRE(callContractFunction("setResolver(bytes32,address)", 0x00,
+                                     ACCOUNT(1)) == encodeArgs());
 
-	// Check that an event was raised and contents are correct.
-	BOOST_REQUIRE(m_logs.size() == 1);
-	BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
-	BOOST_REQUIRE(m_logs[0].topics.size() == 2);
-	BOOST_CHECK(m_logs[0].topics[0] == keccak256(string("NewResolver(bytes32,address)")));
-	BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
+  // Check that an event was raised and contents are correct.
+  BOOST_REQUIRE(m_logs.size() == 1);
+  BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
+  BOOST_REQUIRE(m_logs[0].topics.size() == 2);
+  BOOST_CHECK(m_logs[0].topics[0] ==
+              keccak256(string("NewResolver(bytes32,address)")));
+  BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
 
-	// Verify that the resolver is changed to account(1).
-	BOOST_CHECK(callContractFunction("resolver(bytes32)", 0x00) == encodeArgs(ACCOUNT(1)));
+  // Verify that the resolver is changed to account(1).
+  BOOST_CHECK(callContractFunction("resolver(bytes32)", 0x00) ==
+              encodeArgs(ACCOUNT(1)));
 }
 
-BOOST_AUTO_TEST_CASE(set_resolver_fail)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(set_resolver_fail) {
+  deployEns();
 
-	// Try to set resolver of node 0x01, which is not owned by account(0).
-	BOOST_REQUIRE(callContractFunction("setResolver(bytes32,address)", 0x01, ACCOUNT(0)) == encodeArgs());
+  // Try to set resolver of node 0x01, which is not owned by account(0).
+  BOOST_REQUIRE(callContractFunction("setResolver(bytes32,address)", 0x01,
+                                     ACCOUNT(0)) == encodeArgs());
 
-	// Verify that the resolver of 0x01 remains default zero address.
-	BOOST_CHECK(callContractFunction("resolver(bytes32)", 0x01) == encodeArgs(0));
+  // Verify that the resolver of 0x01 remains default zero address.
+  BOOST_CHECK(callContractFunction("resolver(bytes32)", 0x01) == encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(set_ttl)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(set_ttl) {
+  deployEns();
 
-	// Set ttl of root node to 3600.
-	BOOST_REQUIRE(callContractFunction("setTTL(bytes32,uint64)", 0x00, 3600) == encodeArgs());
+  // Set ttl of root node to 3600.
+  BOOST_REQUIRE(callContractFunction("setTTL(bytes32,uint64)", 0x00, 3600) ==
+                encodeArgs());
 
-	// Check that an event was raised and contents are correct.
-	BOOST_REQUIRE(m_logs.size() == 1);
-	BOOST_CHECK(m_logs[0].data == encodeArgs(3600));
-	BOOST_REQUIRE(m_logs[0].topics.size() == 2);
-	BOOST_CHECK(m_logs[0].topics[0] == keccak256(string("NewTTL(bytes32,uint64)")));
-	BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
+  // Check that an event was raised and contents are correct.
+  BOOST_REQUIRE(m_logs.size() == 1);
+  BOOST_CHECK(m_logs[0].data == encodeArgs(3600));
+  BOOST_REQUIRE(m_logs[0].topics.size() == 2);
+  BOOST_CHECK(m_logs[0].topics[0] ==
+              keccak256(string("NewTTL(bytes32,uint64)")));
+  BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
 
-	// Verify that the TTL has been set.
-	BOOST_CHECK(callContractFunction("ttl(bytes32)", 0x00) == encodeArgs(3600));
+  // Verify that the TTL has been set.
+  BOOST_CHECK(callContractFunction("ttl(bytes32)", 0x00) == encodeArgs(3600));
 }
 
-BOOST_AUTO_TEST_CASE(set_ttl_fail)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(set_ttl_fail) {
+  deployEns();
 
-	// Try to set TTL of node 0x01, which is not owned by account(0).
-	BOOST_REQUIRE(callContractFunction("setTTL(bytes32,uint64)", 0x01, 3600) == encodeArgs());
+  // Try to set TTL of node 0x01, which is not owned by account(0).
+  BOOST_REQUIRE(callContractFunction("setTTL(bytes32,uint64)", 0x01, 3600) ==
+                encodeArgs());
 
-	// Verify that the TTL of node 0x01 has not changed from the default.
-	BOOST_CHECK(callContractFunction("ttl(bytes32)", 0x01) == encodeArgs(0));
+  // Verify that the TTL of node 0x01 has not changed from the default.
+  BOOST_CHECK(callContractFunction("ttl(bytes32)", 0x01) == encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(create_subnode)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(create_subnode) {
+  deployEns();
 
-	// Set ownership of "eth" sub-node to account(1)
-	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("eth")), ACCOUNT(1)) == encodeArgs());
+  // Set ownership of "eth" sub-node to account(1)
+  BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)",
+                                     0x00, keccak256(string("eth")),
+                                     ACCOUNT(1)) == encodeArgs());
 
-	// Check that an event was raised and contents are correct.
-	BOOST_REQUIRE(m_logs.size() == 1);
-	BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
-	BOOST_REQUIRE(m_logs[0].topics.size() == 3);
-	BOOST_CHECK(m_logs[0].topics[0] == keccak256(string("NewOwner(bytes32,bytes32,address)")));
-	BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
-	BOOST_CHECK(m_logs[0].topics[2] == keccak256(string("eth")));
+  // Check that an event was raised and contents are correct.
+  BOOST_REQUIRE(m_logs.size() == 1);
+  BOOST_CHECK(m_logs[0].data == encodeArgs(ACCOUNT(1)));
+  BOOST_REQUIRE(m_logs[0].topics.size() == 3);
+  BOOST_CHECK(m_logs[0].topics[0] ==
+              keccak256(string("NewOwner(bytes32,bytes32,address)")));
+  BOOST_CHECK(m_logs[0].topics[1] == u256(0x00));
+  BOOST_CHECK(m_logs[0].topics[2] == keccak256(string("eth")));
 
-	// Verify that the sub-node owner is now account(1).
-	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
-	BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) == encodeArgs(ACCOUNT(1)));
+  // Verify that the sub-node owner is now account(1).
+  u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
+  BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) ==
+              encodeArgs(ACCOUNT(1)));
 }
 
-BOOST_AUTO_TEST_CASE(create_subnode_fail)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(create_subnode_fail) {
+  deployEns();
 
-	// Send account(1) some ether for gas.
-	sendEther(account(1), 1000 * ether);
-	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
+  // Send account(1) some ether for gas.
+  sendEther(account(1), 1000 * ether);
+  BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
 
-	// account(1) tries to set ownership of the "eth" sub-node.
-	m_sender = account(1);
-	BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)", 0x00, keccak256(string("eth")), ACCOUNT(1)) == encodeArgs());
+  // account(1) tries to set ownership of the "eth" sub-node.
+  m_sender = account(1);
+  BOOST_REQUIRE(callContractFunction("setSubnodeOwner(bytes32,bytes32,address)",
+                                     0x00, keccak256(string("eth")),
+                                     ACCOUNT(1)) == encodeArgs());
 
-	// Verify that the sub-node owner remains at default zero address.
-	u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
-	BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) == encodeArgs(0));
+  // Verify that the sub-node owner remains at default zero address.
+  u256 namehash = keccak256(h256(0x00).asBytes() + keccak256("eth").asBytes());
+  BOOST_CHECK(callContractFunction("owner(bytes32)", namehash) ==
+              encodeArgs(0));
 }
 
-BOOST_AUTO_TEST_CASE(fallback)
-{
-	deployEns();
+BOOST_AUTO_TEST_CASE(fallback) {
+  deployEns();
 
-	// Call fallback - should just abort via jump to invalid location.
-	BOOST_CHECK(callFallback() == encodeArgs());
+  // Call fallback - should just abort via jump to invalid location.
+  BOOST_CHECK(callFallback() == encodeArgs());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
-}
-}
-} // end namespaces
+} // namespace test
+} // namespace lll
+} // namespace dev

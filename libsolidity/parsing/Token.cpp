@@ -40,152 +40,117 @@
 // You should have received a copy of the GNU General Public License
 // along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <map>
-#include <libsolidity/parsing/Token.h>
 #include <boost/range/iterator_range.hpp>
+#include <libsolidity/parsing/Token.h>
+#include <map>
 
 using namespace std;
 
-namespace dev
-{
-namespace solidity
-{
+namespace dev {
+namespace solidity {
 
-void ElementaryTypeNameToken::assertDetails(Token::Value _baseType, unsigned const& _first, unsigned const& _second)
-{
-    solAssert(Token::isElementaryTypeName(_baseType), "");
-    if (_baseType == Token::BytesM)
-    {
-        solAssert(_second == 0, "There should not be a second size argument to type bytesM.");
-        solAssert(_first <= 32, "No elementary type bytes" + to_string(_first) + ".");
-    }
-    else if (_baseType == Token::UIntM || _baseType == Token::IntM)
-    {
-        solAssert(_second == 0, "There should not be a second size argument to type " + string(Token::toString(_baseType)) + ".");
-        solAssert(
-            _first <= 256 && _first % 8 == 0,
-            "No elementary type " + string(Token::toString(_baseType)) + to_string(_first) + "."
-        );
-    }
-    else if (_baseType == Token::UFixedMxN || _baseType == Token::FixedMxN)
-    {
-        solAssert(
-            _first >= 8 && _first <= 256 && _first % 8 == 0 && _second <= 80,
-            "No elementary type " + string(Token::toString(_baseType)) + to_string(_first) + "x" + to_string(_second) + "."
-        );
-    }
-    m_token = _baseType;
-    m_firstNumber = _first;
-    m_secondNumber = _second;
+void ElementaryTypeNameToken::assertDetails(Token::Value _baseType,
+                                            unsigned const &_first,
+                                            unsigned const &_second) {
+  solAssert(Token::isElementaryTypeName(_baseType), "");
+  if (_baseType == Token::BytesM) {
+    solAssert(_second == 0,
+              "There should not be a second size argument to type bytesM.");
+    solAssert(_first <= 32,
+              "No elementary type bytes" + to_string(_first) + ".");
+  } else if (_baseType == Token::UIntM || _baseType == Token::IntM) {
+    solAssert(_second == 0,
+              "There should not be a second size argument to type " +
+                  string(Token::toString(_baseType)) + ".");
+    solAssert(_first <= 256 && _first % 8 == 0,
+              "No elementary type " + string(Token::toString(_baseType)) +
+                  to_string(_first) + ".");
+  } else if (_baseType == Token::UFixedMxN || _baseType == Token::FixedMxN) {
+    solAssert(_first >= 8 && _first <= 256 && _first % 8 == 0 && _second <= 80,
+              "No elementary type " + string(Token::toString(_baseType)) +
+                  to_string(_first) + "x" + to_string(_second) + ".");
+  }
+  m_token = _baseType;
+  m_firstNumber = _first;
+  m_secondNumber = _second;
 }
 
 #define T(name, string, precedence) #name,
-char const* const Token::m_name[NUM_TOKENS] =
-{
-    TOKEN_LIST(T, T)
-};
+char const *const Token::m_name[NUM_TOKENS] = {TOKEN_LIST(T, T)};
 #undef T
-
 
 #define T(name, string, precedence) string,
-char const* const Token::m_string[NUM_TOKENS] =
-{
-    TOKEN_LIST(T, T)
-};
+char const *const Token::m_string[NUM_TOKENS] = {TOKEN_LIST(T, T)};
 #undef T
-
 
 #define T(name, string, precedence) precedence,
-int8_t const Token::m_precedence[NUM_TOKENS] =
-{
-    TOKEN_LIST(T, T)
-};
+int8_t const Token::m_precedence[NUM_TOKENS] = {TOKEN_LIST(T, T)};
 #undef T
-
 
 #define KT(a, b, c) 'T',
 #define KK(a, b, c) 'K',
-char const Token::m_tokenType[] =
-{
-    TOKEN_LIST(KT, KK)
-};
+char const Token::m_tokenType[] = {TOKEN_LIST(KT, KK)};
 
-int Token::parseSize(string::const_iterator _begin, string::const_iterator _end)
-{
-    try
-    {
-        unsigned int m = boost::lexical_cast<int>(boost::make_iterator_range(_begin, _end));
-        return m;
-    }
-    catch(boost::bad_lexical_cast const&)
-    {
-        return -1;
-    }
+int Token::parseSize(string::const_iterator _begin,
+                     string::const_iterator _end) {
+  try {
+    unsigned int m =
+        boost::lexical_cast<int>(boost::make_iterator_range(_begin, _end));
+    return m;
+  } catch (boost::bad_lexical_cast const &) {
+    return -1;
+  }
 }
 
-tuple<Token::Value, unsigned int, unsigned int> Token::fromIdentifierOrKeyword(string const& _literal)
-{
-    auto positionM = find_if(_literal.begin(), _literal.end(), ::isdigit);
-    if (positionM != _literal.end())
-    {
-        string baseType(_literal.begin(), positionM);
-        auto positionX = find_if_not(positionM, _literal.end(), ::isdigit);
-        int m = parseSize(positionM, positionX);
-        Token::Value keyword = keywordByName(baseType);
-        if (keyword == Token::Bytes)
-        {
-            if (0 < m && m <= 32 && positionX == _literal.end())
-                return make_tuple(Token::BytesM, m, 0);
+tuple<Token::Value, unsigned int, unsigned int>
+Token::fromIdentifierOrKeyword(string const &_literal) {
+  auto positionM = find_if(_literal.begin(), _literal.end(), ::isdigit);
+  if (positionM != _literal.end()) {
+    string baseType(_literal.begin(), positionM);
+    auto positionX = find_if_not(positionM, _literal.end(), ::isdigit);
+    int m = parseSize(positionM, positionX);
+    Token::Value keyword = keywordByName(baseType);
+    if (keyword == Token::Bytes) {
+      if (0 < m && m <= 32 && positionX == _literal.end())
+        return make_tuple(Token::BytesM, m, 0);
+    } else if (keyword == Token::UInt || keyword == Token::Int) {
+      if (0 < m && m <= 256 && m % 8 == 0 && positionX == _literal.end()) {
+        if (keyword == Token::UInt)
+          return make_tuple(Token::UIntM, m, 0);
+        else
+          return make_tuple(Token::IntM, m, 0);
+      }
+    } else if (keyword == Token::UFixed || keyword == Token::Fixed) {
+      if (positionM < positionX && positionX < _literal.end() &&
+          *positionX == 'x' &&
+          all_of(positionX + 1, _literal.end(), ::isdigit)) {
+        int n = parseSize(positionX + 1, _literal.end());
+        if (8 <= m && m <= 256 && m % 8 == 0 && 0 <= n && n <= 80) {
+          if (keyword == Token::UFixed)
+            return make_tuple(Token::UFixedMxN, m, n);
+          else
+            return make_tuple(Token::FixedMxN, m, n);
         }
-        else if (keyword == Token::UInt || keyword == Token::Int)
-        {
-            if (0 < m && m <= 256 && m % 8 == 0 && positionX == _literal.end())
-            {
-                if (keyword == Token::UInt)
-                    return make_tuple(Token::UIntM, m, 0);
-                else
-                    return make_tuple(Token::IntM, m, 0);
-            }
-        }
-        else if (keyword == Token::UFixed || keyword == Token::Fixed)
-        {
-            if (
-                positionM < positionX &&
-                positionX < _literal.end() &&
-                *positionX == 'x' &&
-                all_of(positionX + 1, _literal.end(), ::isdigit)
-            ) {
-                int n = parseSize(positionX + 1, _literal.end());
-                if (
-                    8 <= m && m <= 256 && m % 8 == 0 &&
-                    0 <= n && n <= 80
-                ) {
-                    if (keyword == Token::UFixed)
-                        return make_tuple(Token::UFixedMxN, m, n);
-                    else
-                        return make_tuple(Token::FixedMxN, m, n);
-                }
-            }
-        }
-        return make_tuple(Token::Identifier, 0, 0);
+      }
     }
+    return make_tuple(Token::Identifier, 0, 0);
+  }
 
-    return make_tuple(keywordByName(_literal), 0, 0);
+  return make_tuple(keywordByName(_literal), 0, 0);
 }
-Token::Value Token::keywordByName(string const& _name)
-{
-    // The following macros are used inside TOKEN_LIST and cause non-keyword tokens to be ignored
-    // and keywords to be put inside the keywords variable.
+Token::Value Token::keywordByName(string const &_name) {
+// The following macros are used inside TOKEN_LIST and cause non-keyword tokens
+// to be ignored and keywords to be put inside the keywords variable.
 #define KEYWORD(name, string, precedence) {string, Token::name},
 #define TOKEN(name, string, precedence)
-    static const map<string, Token::Value> keywords({TOKEN_LIST(TOKEN, KEYWORD)});
+  static const map<string, Token::Value> keywords({TOKEN_LIST(TOKEN, KEYWORD)});
 #undef KEYWORD
 #undef TOKEN
-    auto it = keywords.find(_name);
-    return it == keywords.end() ? Token::Identifier : it->second;
+  auto it = keywords.find(_name);
+  return it == keywords.end() ? Token::Identifier : it->second;
 }
 
 #undef KT
 #undef KK
-}
-}
+} // namespace solidity
+} // namespace dev
