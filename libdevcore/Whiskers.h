@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file Whiskers.h
  * @author Chris <chis@ethereum.org>
  * @date 2017
@@ -53,31 +53,31 @@ DEV_SIMPLE_EXCEPTION(WhiskersError);
 /// feature.
 class Whiskers {
 public:
-  using StringMap = std::map<std::string, std::string>;
-  using StringListMap = std::map<std::string, std::vector<StringMap>>;
+using StringMap = std::map<std::string, std::string>;
+using StringListMap = std::map<std::string, std::vector<StringMap> >;
 
-  explicit Whiskers(std::string const &_template);
+explicit Whiskers(std::string const &_template);
 
-  /// Sets a single parameter, <paramName>.
-  Whiskers &operator()(std::string const &_parameter,
-                       std::string const &_value);
-  /// Sets a list parameter, <#listName> </listName>.
-  Whiskers &operator()(std::string const &_listParameter,
-                       std::vector<StringMap> const &_values);
+/// Sets a single parameter, <paramName>.
+Whiskers &operator()(std::string const &_parameter,
+                     std::string const &_value);
+/// Sets a list parameter, <#listName> </listName>.
+Whiskers &operator()(std::string const &_listParameter,
+                     std::vector<StringMap> const &_values);
 
-  std::string render() const;
+std::string render() const;
 
 private:
-  static std::string
-  replace(std::string const &_template, StringMap const &_parameters,
-          StringListMap const &_listParameters = StringListMap());
+static std::string
+replace(std::string const &_template, StringMap const &_parameters,
+        StringListMap const &_listParameters = StringListMap());
 
-  /// Joins the two maps throwing an exception if two keys are equal.
-  static StringMap joinMaps(StringMap const &_a, StringMap const &_b);
+/// Joins the two maps throwing an exception if two keys are equal.
+static StringMap joinMaps(StringMap const &_a, StringMap const &_b);
 
-  std::string m_template;
-  StringMap m_parameters;
-  StringListMap m_listParameters;
+std::string m_template;
+StringMap m_parameters;
+StringListMap m_listParameters;
 };
 
 } // namespace dev

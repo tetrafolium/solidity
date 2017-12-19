@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file UTF8.h
  * @author Alex Beregszaszi
  * @date 2016
@@ -33,8 +33,8 @@ namespace dev {
 bool validateUTF8(std::string const &_input, size_t &_invalidPosition);
 
 inline bool validateUTF8(std::string const &_input) {
-  size_t invalidPos;
-  return validateUTF8(_input, invalidPos);
+	size_t invalidPos;
+	return validateUTF8(_input, invalidPos);
 }
 
 } // namespace dev

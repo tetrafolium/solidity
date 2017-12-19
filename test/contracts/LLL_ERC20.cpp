@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Ben Edgington <ben@benjaminion.xyz>
  * @date 2017
@@ -386,16 +386,16 @@ static unique_ptr<bytes> s_compiledErc20;
 
 class LLLERC20TestFramework : public LLLExecutionFramework {
 protected:
-  void deployErc20() {
-    if (!s_compiledErc20) {
-      vector<string> errors;
-      s_compiledErc20.reset(new bytes(
-          compileLLL(erc20Code, dev::test::Options::get().optimize, &errors)));
-      BOOST_REQUIRE(errors.empty());
-    }
-    sendMessage(*s_compiledErc20, true);
-    BOOST_REQUIRE(!m_output.empty());
-  }
+void deployErc20() {
+	if (!s_compiledErc20) {
+		vector<string> errors;
+		s_compiledErc20.reset(new bytes(
+					      compileLLL(erc20Code, dev::test::Options::get().optimize, &errors)));
+		BOOST_REQUIRE(errors.empty());
+	}
+	sendMessage(*s_compiledErc20, true);
+	BOOST_REQUIRE(!m_output.empty());
+}
 };
 
 } // namespace
@@ -404,285 +404,285 @@ protected:
 BOOST_FIXTURE_TEST_SUITE(LLLERC20, LLLERC20TestFramework)
 
 BOOST_AUTO_TEST_CASE(creation) {
-  deployErc20();
+	deployErc20();
 
-  // All tokens are initially assigned to the contract creator.
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY));
+	// All tokens are initially assigned to the contract creator.
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY));
 }
 
 BOOST_AUTO_TEST_CASE(constants) {
-  deployErc20();
+	deployErc20();
 
-  BOOST_CHECK(callContractFunction("totalSupply()") == encodeArgs(TOKENSUPPLY));
-  BOOST_CHECK(callContractFunction("decimals()") == encodeArgs(TOKENDECIMALS));
-  BOOST_CHECK(callContractFunction("symbol()") ==
-              encodeDyn(string(TOKENSYMBOL)));
-  BOOST_CHECK(callContractFunction("name()") == encodeDyn(string(TOKENNAME)));
+	BOOST_CHECK(callContractFunction("totalSupply()") == encodeArgs(TOKENSUPPLY));
+	BOOST_CHECK(callContractFunction("decimals()") == encodeArgs(TOKENDECIMALS));
+	BOOST_CHECK(callContractFunction("symbol()") ==
+	            encodeDyn(string(TOKENSYMBOL)));
+	BOOST_CHECK(callContractFunction("name()") == encodeDyn(string(TOKENNAME)));
 }
 
 BOOST_AUTO_TEST_CASE(send_value) {
-  deployErc20();
+	deployErc20();
 
-  // Send value to the contract. Should always fail.
-  m_sender = account(0);
-  auto contractBalance = balanceAt(m_contractAddress);
+	// Send value to the contract. Should always fail.
+	m_sender = account(0);
+	auto contractBalance = balanceAt(m_contractAddress);
 
-  // Fallback: check value is not transferred.
-  BOOST_CHECK(callFallbackWithValue(42) != SUCCESS);
-  BOOST_CHECK(balanceAt(m_contractAddress) == contractBalance);
+	// Fallback: check value is not transferred.
+	BOOST_CHECK(callFallbackWithValue(42) != SUCCESS);
+	BOOST_CHECK(balanceAt(m_contractAddress) == contractBalance);
 
-  // Transfer: check nothing happened.
-  BOOST_CHECK(callContractFunctionWithValue("transfer(address,uint256)",
-                                            ACCOUNT(1), 100, 42) != SUCCESS);
-  BOOST_CHECK(balanceAt(m_contractAddress) == contractBalance);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-              encodeArgs(0));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY));
+	// Transfer: check nothing happened.
+	BOOST_CHECK(callContractFunctionWithValue("transfer(address,uint256)",
+	                                          ACCOUNT(1), 100, 42) != SUCCESS);
+	BOOST_CHECK(balanceAt(m_contractAddress) == contractBalance);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	            encodeArgs(0));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY));
 }
 
 BOOST_AUTO_TEST_CASE(transfer) {
-  deployErc20();
+	deployErc20();
 
-  // Transfer 100 tokens from account(0) to account(1).
-  int transfer = 100;
-  m_sender = account(0);
-  BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                   u256(transfer)) == SUCCESS);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY - transfer));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-              encodeArgs(transfer));
+	// Transfer 100 tokens from account(0) to account(1).
+	int transfer = 100;
+	m_sender = account(0);
+	BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                 u256(transfer)) == SUCCESS);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY - transfer));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	            encodeArgs(transfer));
 }
 
 BOOST_AUTO_TEST_CASE(transfer_from) {
-  deployErc20();
+	deployErc20();
 
-  // Approve account(1) to transfer up to 1000 tokens from account(0).
-  int allow = 1000;
-  m_sender = account(0);
-  BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
-                                     u256(allow)) == SUCCESS);
-  BOOST_REQUIRE(callContractFunction("allowance(address,address)", ACCOUNT(0),
-                                     ACCOUNT(1)) == encodeArgs(allow));
+	// Approve account(1) to transfer up to 1000 tokens from account(0).
+	int allow = 1000;
+	m_sender = account(0);
+	BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
+	                                   u256(allow)) == SUCCESS);
+	BOOST_REQUIRE(callContractFunction("allowance(address,address)", ACCOUNT(0),
+	                                   ACCOUNT(1)) == encodeArgs(allow));
 
-  // Send account(1) some ether for gas.
-  sendEther(account(1), 1000 * ether);
-  BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
+	// Send account(1) some ether for gas.
+	sendEther(account(1), 1000 * ether);
+	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
 
-  // Transfer 300 tokens from account(0) to account(2); check that the allowance
-  // decreases.
-  int transfer = 300;
-  m_sender = account(1);
-  BOOST_REQUIRE(callContractFunction("transferFrom(address,address,uint256)",
-                                     ACCOUNT(0), ACCOUNT(2),
-                                     u256(transfer)) == SUCCESS);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(2)) ==
-              encodeArgs(transfer));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY - transfer));
-  BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
-                                   ACCOUNT(1)) == encodeArgs(allow - transfer));
+	// Transfer 300 tokens from account(0) to account(2); check that the allowance
+	// decreases.
+	int transfer = 300;
+	m_sender = account(1);
+	BOOST_REQUIRE(callContractFunction("transferFrom(address,address,uint256)",
+	                                   ACCOUNT(0), ACCOUNT(2),
+	                                   u256(transfer)) == SUCCESS);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(2)) ==
+	            encodeArgs(transfer));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY - transfer));
+	BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
+	                                 ACCOUNT(1)) == encodeArgs(allow - transfer));
 }
 
 BOOST_AUTO_TEST_CASE(transfer_event) {
-  deployErc20();
+	deployErc20();
 
-  // Transfer 1000 tokens from account(0) to account(1).
-  int transfer = 1000;
-  m_sender = account(0);
-  BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                     u256(transfer)) == SUCCESS);
+	// Transfer 1000 tokens from account(0) to account(1).
+	int transfer = 1000;
+	m_sender = account(0);
+	BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                   u256(transfer)) == SUCCESS);
 
-  // Check that a Transfer event was recorded and contents are correct.
-  BOOST_REQUIRE(m_logs.size() == 1);
-  BOOST_CHECK(m_logs[0].data == encodeArgs(transfer));
-  BOOST_REQUIRE(m_logs[0].topics.size() == 3);
-  BOOST_CHECK(m_logs[0].topics[0] ==
-              keccak256(string("Transfer(address,address,uint256)")));
-  BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
-  BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(1));
+	// Check that a Transfer event was recorded and contents are correct.
+	BOOST_REQUIRE(m_logs.size() == 1);
+	BOOST_CHECK(m_logs[0].data == encodeArgs(transfer));
+	BOOST_REQUIRE(m_logs[0].topics.size() == 3);
+	BOOST_CHECK(m_logs[0].topics[0] ==
+	            keccak256(string("Transfer(address,address,uint256)")));
+	BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
+	BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(1));
 }
 
 BOOST_AUTO_TEST_CASE(transfer_zero_no_event) {
-  deployErc20();
+	deployErc20();
 
-  // Transfer 0 tokens from account(0) to account(1). This is a no-op.
-  int transfer = 0;
-  m_sender = account(0);
-  BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                     u256(transfer)) == SUCCESS);
+	// Transfer 0 tokens from account(0) to account(1). This is a no-op.
+	int transfer = 0;
+	m_sender = account(0);
+	BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                   u256(transfer)) == SUCCESS);
 
-  // Check that no Event was recorded.
-  BOOST_CHECK(m_logs.size() == 0);
+	// Check that no Event was recorded.
+	BOOST_CHECK(m_logs.size() == 0);
 
-  // Check that balances have not changed.
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY - transfer));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-              encodeArgs(transfer));
+	// Check that balances have not changed.
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY - transfer));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	            encodeArgs(transfer));
 }
 
 BOOST_AUTO_TEST_CASE(approval_and_transfer_events) {
-  deployErc20();
+	deployErc20();
 
-  // Approve account(1) to transfer up to 10000 tokens from account(0).
-  int allow = 10000;
-  m_sender = account(0);
-  BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
-                                     u256(allow)) == SUCCESS);
+	// Approve account(1) to transfer up to 10000 tokens from account(0).
+	int allow = 10000;
+	m_sender = account(0);
+	BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
+	                                   u256(allow)) == SUCCESS);
 
-  // Check that an Approval event was recorded and contents are correct.
-  BOOST_REQUIRE(m_logs.size() == 1);
-  BOOST_CHECK(m_logs[0].data == encodeArgs(allow));
-  BOOST_REQUIRE(m_logs[0].topics.size() == 3);
-  BOOST_CHECK(m_logs[0].topics[0] ==
-              keccak256(string("Approval(address,address,uint256)")));
-  BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
-  BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(1));
+	// Check that an Approval event was recorded and contents are correct.
+	BOOST_REQUIRE(m_logs.size() == 1);
+	BOOST_CHECK(m_logs[0].data == encodeArgs(allow));
+	BOOST_REQUIRE(m_logs[0].topics.size() == 3);
+	BOOST_CHECK(m_logs[0].topics[0] ==
+	            keccak256(string("Approval(address,address,uint256)")));
+	BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
+	BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(1));
 
-  // Send account(1) some ether for gas.
-  sendEther(account(1), 1000 * ether);
-  BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
+	// Send account(1) some ether for gas.
+	sendEther(account(1), 1000 * ether);
+	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
 
-  // Transfer 3000 tokens from account(0) to account(2); check that the
-  // allowance decreases.
-  int transfer = 3000;
-  m_sender = account(1);
-  BOOST_REQUIRE(callContractFunction("transferFrom(address,address,uint256)",
-                                     ACCOUNT(0), ACCOUNT(2),
-                                     u256(transfer)) == SUCCESS);
+	// Transfer 3000 tokens from account(0) to account(2); check that the
+	// allowance decreases.
+	int transfer = 3000;
+	m_sender = account(1);
+	BOOST_REQUIRE(callContractFunction("transferFrom(address,address,uint256)",
+	                                   ACCOUNT(0), ACCOUNT(2),
+	                                   u256(transfer)) == SUCCESS);
 
-  // Check that a Transfer event was recorded and contents are correct.
-  BOOST_REQUIRE(m_logs.size() == 1);
-  BOOST_CHECK(m_logs[0].data == encodeArgs(transfer));
-  BOOST_REQUIRE(m_logs[0].topics.size() == 3);
-  BOOST_CHECK(m_logs[0].topics[0] ==
-              keccak256(string("Transfer(address,address,uint256)")));
-  BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
-  BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(2));
+	// Check that a Transfer event was recorded and contents are correct.
+	BOOST_REQUIRE(m_logs.size() == 1);
+	BOOST_CHECK(m_logs[0].data == encodeArgs(transfer));
+	BOOST_REQUIRE(m_logs[0].topics.size() == 3);
+	BOOST_CHECK(m_logs[0].topics[0] ==
+	            keccak256(string("Transfer(address,address,uint256)")));
+	BOOST_CHECK(m_logs[0].topics[1] == ACCOUNT(0));
+	BOOST_CHECK(m_logs[0].topics[2] == ACCOUNT(2));
 }
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_1) {
-  deployErc20();
+	deployErc20();
 
-  // Transfer more than the total supply; ensure nothing changes.
-  int transfer = TOKENSUPPLY + 1;
-  m_sender = account(0);
-  BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                   u256(transfer)) != SUCCESS);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-              encodeArgs(0));
+	// Transfer more than the total supply; ensure nothing changes.
+	int transfer = TOKENSUPPLY + 1;
+	m_sender = account(0);
+	BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                 u256(transfer)) != SUCCESS);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	            encodeArgs(0));
 }
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_2) {
-  deployErc20();
+	deployErc20();
 
-  // Separate transfers that together exceed initial balance.
-  int transfer = 1 + TOKENSUPPLY / 2;
-  m_sender = account(0);
+	// Separate transfers that together exceed initial balance.
+	int transfer = 1 + TOKENSUPPLY / 2;
+	m_sender = account(0);
 
-  // First transfer should succeed.
-  BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                     u256(transfer)) == SUCCESS);
-  BOOST_REQUIRE(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-                encodeArgs(TOKENSUPPLY - transfer));
-  BOOST_REQUIRE(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-                encodeArgs(transfer));
+	// First transfer should succeed.
+	BOOST_REQUIRE(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                   u256(transfer)) == SUCCESS);
+	BOOST_REQUIRE(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	              encodeArgs(TOKENSUPPLY - transfer));
+	BOOST_REQUIRE(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	              encodeArgs(transfer));
 
-  // Second transfer should fail.
-  BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
-                                   u256(transfer)) != SUCCESS);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY - transfer));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
-              encodeArgs(transfer));
+	// Second transfer should fail.
+	BOOST_CHECK(callContractFunction("transfer(address,uint256)", ACCOUNT(1),
+	                                 u256(transfer)) != SUCCESS);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY - transfer));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(1)) ==
+	            encodeArgs(transfer));
 }
 
 BOOST_AUTO_TEST_CASE(invalid_transfer_from) {
-  deployErc20();
+	deployErc20();
 
-  // TransferFrom without approval.
-  int transfer = 300;
+	// TransferFrom without approval.
+	int transfer = 300;
 
-  // Send account(1) some ether for gas.
-  m_sender = account(0);
-  sendEther(account(1), 1000 * ether);
-  BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
+	// Send account(1) some ether for gas.
+	m_sender = account(0);
+	sendEther(account(1), 1000 * ether);
+	BOOST_REQUIRE(balanceAt(account(1)) >= 1000 * ether);
 
-  // Try the transfer; ensure nothing changes.
-  m_sender = account(1);
-  BOOST_CHECK(callContractFunction("transferFrom(address,address,uint256)",
-                                   ACCOUNT(0), ACCOUNT(2),
-                                   u256(transfer)) != SUCCESS);
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(2)) ==
-              encodeArgs(0));
-  BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
-              encodeArgs(TOKENSUPPLY));
-  BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
-                                   ACCOUNT(1)) == encodeArgs(0));
+	// Try the transfer; ensure nothing changes.
+	m_sender = account(1);
+	BOOST_CHECK(callContractFunction("transferFrom(address,address,uint256)",
+	                                 ACCOUNT(0), ACCOUNT(2),
+	                                 u256(transfer)) != SUCCESS);
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(2)) ==
+	            encodeArgs(0));
+	BOOST_CHECK(callContractFunction("balanceOf(address)", ACCOUNT(0)) ==
+	            encodeArgs(TOKENSUPPLY));
+	BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
+	                                 ACCOUNT(1)) == encodeArgs(0));
 }
 
 BOOST_AUTO_TEST_CASE(invalid_reapprove) {
-  deployErc20();
+	deployErc20();
 
-  m_sender = account(0);
+	m_sender = account(0);
 
-  // Approve account(1) to transfer up to 1000 tokens from account(0).
-  int allow1 = 1000;
-  BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
-                                     u256(allow1)) == SUCCESS);
-  BOOST_REQUIRE(callContractFunction("allowance(address,address)", ACCOUNT(0),
-                                     ACCOUNT(1)) == encodeArgs(allow1));
+	// Approve account(1) to transfer up to 1000 tokens from account(0).
+	int allow1 = 1000;
+	BOOST_REQUIRE(callContractFunction("approve(address,uint256)", ACCOUNT(1),
+	                                   u256(allow1)) == SUCCESS);
+	BOOST_REQUIRE(callContractFunction("allowance(address,address)", ACCOUNT(0),
+	                                   ACCOUNT(1)) == encodeArgs(allow1));
 
-  // Now approve account(1) to transfer up to 500 tokens from account(0).
-  // Should fail (we need to reset allowance to 0 first).
-  int allow2 = 500;
-  BOOST_CHECK(callContractFunction("approve(address,uint256)", ACCOUNT(1),
-                                   u256(allow2)) != SUCCESS);
-  BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
-                                   ACCOUNT(1)) == encodeArgs(allow1));
+	// Now approve account(1) to transfer up to 500 tokens from account(0).
+	// Should fail (we need to reset allowance to 0 first).
+	int allow2 = 500;
+	BOOST_CHECK(callContractFunction("approve(address,uint256)", ACCOUNT(1),
+	                                 u256(allow2)) != SUCCESS);
+	BOOST_CHECK(callContractFunction("allowance(address,address)", ACCOUNT(0),
+	                                 ACCOUNT(1)) == encodeArgs(allow1));
 }
 
 BOOST_AUTO_TEST_CASE(bad_data) {
-  deployErc20();
+	deployErc20();
 
-  m_sender = account(0);
+	m_sender = account(0);
 
-  // Correct data: transfer(address _to, 1).
-  sendMessage((bytes)fromHex("a9059cbb") +
-                  (bytes)fromHex("000000000000000000000000123456789a123456789a1"
-                                 "23456789a123456789a") +
-                  encodeArgs(1),
-              false, 0);
-  BOOST_CHECK(m_output == SUCCESS);
+	// Correct data: transfer(address _to, 1).
+	sendMessage((bytes)fromHex("a9059cbb") +
+	            (bytes)fromHex("000000000000000000000000123456789a123456789a1"
+	                           "23456789a123456789a") +
+	            encodeArgs(1),
+	            false, 0);
+	BOOST_CHECK(m_output == SUCCESS);
 
-  // Too little data (address is truncated by one byte).
-  sendMessage((bytes)fromHex("a9059cbb") +
-                  (bytes)fromHex("000000000000000000000000123456789a123456789a1"
-                                 "23456789a12345678") +
-                  encodeArgs(1),
-              false, 0);
-  BOOST_CHECK(m_output != SUCCESS);
+	// Too little data (address is truncated by one byte).
+	sendMessage((bytes)fromHex("a9059cbb") +
+	            (bytes)fromHex("000000000000000000000000123456789a123456789a1"
+	                           "23456789a12345678") +
+	            encodeArgs(1),
+	            false, 0);
+	BOOST_CHECK(m_output != SUCCESS);
 
-  // Too much data (address is extended with a zero byte).
-  sendMessage((bytes)fromHex("a9059cbb") +
-                  (bytes)fromHex("000000000000000000000000123456789a123456789a1"
-                                 "23456789a123456789a00") +
-                  encodeArgs(1),
-              false, 0);
-  BOOST_CHECK(m_output != SUCCESS);
+	// Too much data (address is extended with a zero byte).
+	sendMessage((bytes)fromHex("a9059cbb") +
+	            (bytes)fromHex("000000000000000000000000123456789a123456789a1"
+	                           "23456789a123456789a00") +
+	            encodeArgs(1),
+	            false, 0);
+	BOOST_CHECK(m_output != SUCCESS);
 
-  // Invalid address (a bit above the 160th is set).
-  sendMessage((bytes)fromHex("a9059cbb") +
-                  (bytes)fromHex("000000000000000000000100123456789a123456789a1"
-                                 "23456789a123456789a") +
-                  encodeArgs(1),
-              false, 0);
-  BOOST_CHECK(m_output != SUCCESS);
+	// Invalid address (a bit above the 160th is set).
+	sendMessage((bytes)fromHex("a9059cbb") +
+	            (bytes)fromHex("000000000000000000000100123456789a123456789a1"
+	                           "23456789a123456789a") +
+	            encodeArgs(1),
+	            false, 0);
+	BOOST_CHECK(m_output != SUCCESS);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

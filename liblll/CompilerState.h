@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file CompilerState.h
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
@@ -28,26 +28,26 @@ namespace dev {
 namespace eth {
 
 struct Macro {
-  std::vector<std::string> args;
-  boost::spirit::utree code;
-  std::map<std::string, CodeFragment> env;
+	std::vector<std::string> args;
+	boost::spirit::utree code;
+	std::map<std::string, CodeFragment> env;
 };
 
 struct CompilerState {
-  CompilerState();
+	CompilerState();
 
-  CodeFragment const &getDef(std::string const &_s) const;
-  void populateStandard();
+	CodeFragment const &getDef(std::string const &_s) const;
+	void populateStandard();
 
-  unsigned stackSize = 128;
-  std::map<std::string, std::pair<unsigned, unsigned>>
-      vars; ///< maps name to stack offset & size.
-  std::map<std::string, CodeFragment> defs;
-  std::map<std::string, CodeFragment> args;
-  std::map<std::string, CodeFragment> outers;
-  std::map<std::pair<std::string, unsigned>, Macro> macros;
-  std::vector<boost::spirit::utree> treesToKill;
-  bool usedAlloc = false;
+	unsigned stackSize = 128;
+	std::map<std::string, std::pair<unsigned, unsigned> >
+	vars; ///< maps name to stack offset & size.
+	std::map<std::string, CodeFragment> defs;
+	std::map<std::string, CodeFragment> args;
+	std::map<std::string, CodeFragment> outers;
+	std::map<std::pair<std::string, unsigned>, Macro> macros;
+	std::vector<boost::spirit::utree> treesToKill;
+	bool usedAlloc = false;
 };
 
 } // namespace eth

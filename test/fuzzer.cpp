@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * Executable for use with AFL <http://lcamtuf.coredump.cx/afl>.
  */
@@ -39,150 +39,151 @@ namespace {
 bool quiet = false;
 
 string contains(string const &_haystack, vector<string> const &_needles) {
-  for (string const &needle : _needles)
-    if (_haystack.find(needle) != string::npos)
-      return needle;
-  return "";
+	for (string const &needle : _needles)
+		if (_haystack.find(needle) != string::npos)
+			return needle;
+	return "";
 }
 
 void testConstantOptimizer() {
-  if (!quiet)
-    cout << "Testing constant optimizer" << endl;
-  vector<u256> numbers;
-  while (!cin.eof()) {
-    h256 data;
-    cin.read(reinterpret_cast<char *>(data.data()), 32);
-    numbers.push_back(u256(data));
-  }
-  if (!quiet)
-    cout << "Got " << numbers.size() << " inputs:" << endl;
+	if (!quiet)
+		cout << "Testing constant optimizer" << endl;
+	vector<u256> numbers;
+	while (!cin.eof()) {
+		h256 data;
+		cin.read(reinterpret_cast<char *>(data.data()), 32);
+		numbers.push_back(u256(data));
+	}
+	if (!quiet)
+		cout << "Got " << numbers.size() << " inputs:" << endl;
 
-  Assembly assembly;
-  for (u256 const &n : numbers) {
-    if (!quiet)
-      cout << n << endl;
-    assembly.append(n);
-  }
-  for (bool isCreation : {false, true}) {
-    for (unsigned runs : {1, 2, 3, 20, 40, 100, 200, 400, 1000}) {
-      ConstantOptimisationMethod::optimiseConstants(
-          isCreation, runs, assembly,
-          const_cast<AssemblyItems &>(assembly.items()));
-    }
-  }
+	Assembly assembly;
+	for (u256 const &n : numbers) {
+		if (!quiet)
+			cout << n << endl;
+		assembly.append(n);
+	}
+	for (bool isCreation : {false, true}) {
+		for (unsigned runs : {1, 2, 3, 20, 40, 100, 200, 400, 1000}) {
+			ConstantOptimisationMethod::optimiseConstants(
+				isCreation, runs, assembly,
+				const_cast<AssemblyItems &>(assembly.items()));
+		}
+	}
 }
 
 string readInput() {
-  string input;
-  while (!cin.eof()) {
-    string s;
-    getline(cin, s);
-    input += s + '\n';
-  }
-  return input;
+	string input;
+	while (!cin.eof()) {
+		string s;
+		getline(cin, s);
+		input += s + '\n';
+	}
+	return input;
 }
 
 void testStandardCompiler() {
-  if (!quiet)
-    cout << "Testing compiler via JSON interface." << endl;
-  string input = readInput();
-  string outputString(compileStandard(input.c_str(), NULL));
-  Json::Value output;
-  if (!Json::Reader().parse(outputString, output)) {
-    cout << "Compiler produced invalid JSON output." << endl;
-    abort();
-  }
-  if (output.isMember("errors"))
-    for (auto const &error : output["errors"]) {
-      string invalid =
-          contains(error["type"].asString(),
-                   vector<string>{"Exception", "InternalCompilerError"});
-      if (!invalid.empty()) {
-        cout << "Invalid error: \"" << error["type"].asString() << "\"" << endl;
-        abort();
-      }
-    }
+	if (!quiet)
+		cout << "Testing compiler via JSON interface." << endl;
+	string input = readInput();
+	string outputString(compileStandard(input.c_str(), NULL));
+	Json::Value output;
+	if (!Json::Reader().parse(outputString, output)) {
+		cout << "Compiler produced invalid JSON output." << endl;
+		abort();
+	}
+	if (output.isMember("errors"))
+		for (auto const &error : output["errors"]) {
+			string invalid =
+				contains(error["type"].asString(),
+				         vector<string>{"Exception", "InternalCompilerError"});
+			if (!invalid.empty()) {
+				cout << "Invalid error: \"" << error["type"].asString() << "\"" << endl;
+				abort();
+			}
+		}
 }
 
 void testCompiler(bool optimize) {
-  if (!quiet)
-    cout << "Testing compiler " << (optimize ? "with" : "without")
-         << " optimizer." << endl;
-  string input = readInput();
+	if (!quiet)
+		cout << "Testing compiler " << (optimize ? "with" : "without")
+		     << " optimizer." << endl;
+	string input = readInput();
 
-  string outputString(compileJSON(input.c_str(), optimize));
-  Json::Value outputJson;
-  if (!Json::Reader().parse(outputString, outputJson)) {
-    cout << "Compiler produced invalid JSON output." << endl;
-    abort();
-  }
-  if (outputJson.isMember("errors")) {
-    if (!outputJson["errors"].isArray()) {
-      cout << "Output JSON has \"errors\" but it is not an array." << endl;
-      abort();
-    }
-    for (Json::Value const &error : outputJson["errors"]) {
-      string invalid = contains(
-          error.asString(),
-          vector<string>{
-              "Internal compiler error", "Exception during compilation",
-              "Unknown exception during compilation",
-              "Unknown exception while generating contract data output",
-              "Unknown exception while generating source name output",
-              "Unknown error while generating JSON"});
-      if (!invalid.empty()) {
-        cout << "Invalid error: \"" << error.asString() << "\"" << endl;
-        abort();
-      }
-    }
-  } else if (!outputJson.isMember("contracts")) {
-    cout << "Output JSON has neither \"errors\" nor \"contracts\"." << endl;
-    abort();
-  }
+	string outputString(compileJSON(input.c_str(), optimize));
+	Json::Value outputJson;
+	if (!Json::Reader().parse(outputString, outputJson)) {
+		cout << "Compiler produced invalid JSON output." << endl;
+		abort();
+	}
+	if (outputJson.isMember("errors")) {
+		if (!outputJson["errors"].isArray()) {
+			cout << "Output JSON has \"errors\" but it is not an array." << endl;
+			abort();
+		}
+		for (Json::Value const &error : outputJson["errors"]) {
+			string invalid = contains(
+				error.asString(),
+				vector<string>{
+					"Internal compiler error", "Exception during compilation",
+					"Unknown exception during compilation",
+					"Unknown exception while generating contract data output",
+					"Unknown exception while generating source name output",
+					"Unknown error while generating JSON"
+				});
+			if (!invalid.empty()) {
+				cout << "Invalid error: \"" << error.asString() << "\"" << endl;
+				abort();
+			}
+		}
+	} else if (!outputJson.isMember("contracts")) {
+		cout << "Output JSON has neither \"errors\" nor \"contracts\"." << endl;
+		abort();
+	}
 }
 
 } // namespace
 
 int main(int argc, char **argv) {
-  po::options_description options(
-      R"(solfuzzer, fuzz-testing binary for use with AFL.
+	po::options_description options(
+		R"(solfuzzer, fuzz-testing binary for use with AFL.
 Usage: solfuzzer [Options] < input
 Reads a single source from stdin, compiles it and signals a failure for internal errors.
 
 Allowed options)",
-      po::options_description::m_default_line_length,
-      po::options_description::m_default_line_length - 23);
-  options.add_options()("help", "Show this help screen.")(
-      "quiet", "Only output errors.")(
-      "standard-json", "Test via the standard-json interface, i.e. "
-                       "input is expected to be JSON-encoded instead of "
-                       "plain source file.")(
-      "const-opt", "Run the constant optimizer instead of compiling. "
-                   "Expects a binary string of up to 32 bytes on stdin.")(
-      "without-optimizer",
-      "Run without optimizations. Cannot be used together with standard-json.");
+		po::options_description::m_default_line_length,
+		po::options_description::m_default_line_length - 23);
+	options.add_options()("help", "Show this help screen.")(
+		"quiet", "Only output errors.")(
+		"standard-json", "Test via the standard-json interface, i.e. "
+		"input is expected to be JSON-encoded instead of "
+		"plain source file.")(
+		"const-opt", "Run the constant optimizer instead of compiling. "
+		"Expects a binary string of up to 32 bytes on stdin.")(
+		"without-optimizer",
+		"Run without optimizations. Cannot be used together with standard-json.");
 
-  po::variables_map arguments;
-  try {
-    po::command_line_parser cmdLineParser(argc, argv);
-    cmdLineParser.options(options);
-    po::store(cmdLineParser.run(), arguments);
-  } catch (po::error const &_exception) {
-    cerr << _exception.what() << endl;
-    return 1;
-  }
+	po::variables_map arguments;
+	try {
+		po::command_line_parser cmdLineParser(argc, argv);
+		cmdLineParser.options(options);
+		po::store(cmdLineParser.run(), arguments);
+	} catch (po::error const &_exception) {
+		cerr << _exception.what() << endl;
+		return 1;
+	}
 
-  if (arguments.count("quiet"))
-    quiet = true;
+	if (arguments.count("quiet"))
+		quiet = true;
 
-  if (arguments.count("help"))
-    cout << options;
-  else if (arguments.count("const-opt"))
-    testConstantOptimizer();
-  else if (arguments.count("standard-json"))
-    testStandardCompiler();
-  else
-    testCompiler(!arguments.count("without-optimizer"));
+	if (arguments.count("help"))
+		cout << options;
+	else if (arguments.count("const-opt"))
+		testConstantOptimizer();
+	else if (arguments.count("standard-json"))
+		testStandardCompiler();
+	else
+		testCompiler(!arguments.count("without-optimizer"));
 
-  return 0;
+	return 0;
 }

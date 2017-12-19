@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @date 2017
  * Pull in some identifiers from the solidity::assembly namespace.
@@ -45,10 +45,10 @@ using Block = solidity::assembly::Block;
 using TypedName = solidity::assembly::TypedName;
 
 using Statement =
-    boost::variant<Instruction, Literal, Label, StackAssignment, Identifier,
-                   Assignment, FunctionCall, FunctionalInstruction,
-                   VariableDeclaration, FunctionDefinition, If, Switch, ForLoop,
-                   Block>;
+	      boost::variant<Instruction, Literal, Label, StackAssignment, Identifier,
+	                     Assignment, FunctionCall, FunctionalInstruction,
+	                     VariableDeclaration, FunctionDefinition, If, Switch, ForLoop,
+	                     Block>;
 
 } // namespace julia
 } // namespace dev

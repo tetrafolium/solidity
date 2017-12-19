@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * Framework for testing features from the analysis phase of compiler.
  */
@@ -41,75 +41,76 @@ namespace test {
 class AnalysisFramework {
 
 protected:
-  virtual std::pair<SourceUnit const *, std::shared_ptr<Error const>>
-  parseAnalyseAndReturnError(std::string const &_source,
-                             bool _reportWarnings = false,
-                             bool _insertVersionPragma = true,
-                             bool _allowMultipleErrors = false);
+virtual std::pair<SourceUnit const *, std::shared_ptr<Error const> >
+parseAnalyseAndReturnError(std::string const &_source,
+                           bool _reportWarnings = false,
+                           bool _insertVersionPragma = true,
+                           bool _allowMultipleErrors = false);
 
-  SourceUnit const *parseAndAnalyse(std::string const &_source);
-  bool success(std::string const &_source);
-  Error expectError(std::string const &_source, bool _warning = false,
-                    bool _allowMultiple = false);
+SourceUnit const *parseAndAnalyse(std::string const &_source);
+bool success(std::string const &_source);
+Error expectError(std::string const &_source, bool _warning = false,
+                  bool _allowMultiple = false);
 
-  std::string formatErrors();
-  std::string formatError(Error const &_error);
+std::string formatErrors();
+std::string formatError(Error const &_error);
 
-  static ContractDefinition const *
-  retrieveContractByName(SourceUnit const &_source, std::string const &_name);
-  static FunctionTypePointer
-  retrieveFunctionBySignature(ContractDefinition const &_contract,
-                              std::string const &_signature);
+static ContractDefinition const *
+retrieveContractByName(SourceUnit const &_source, std::string const &_name);
+static FunctionTypePointer
+retrieveFunctionBySignature(ContractDefinition const &_contract,
+                            std::string const &_signature);
 
-  std::vector<std::string> m_warningsToFilter = {
-      "This is a pre-release compiler version"};
-  dev::solidity::CompilerStack m_compiler;
+std::vector<std::string> m_warningsToFilter = {
+	"This is a pre-release compiler version"
+};
+dev::solidity::CompilerStack m_compiler;
 };
 
 #define CHECK_ERROR_OR_WARNING(text, typ, substring, warning, allowMulti)      \
-  do {                                                                         \
-    Error err = expectError((text), (warning), (allowMulti));                  \
-    BOOST_CHECK(err.type() == (Error::Type::typ));                             \
-    BOOST_CHECK(searchErrorMessage(err, (substring)));                         \
-  } while (0)
+	do {                                                                         \
+		Error err = expectError((text), (warning), (allowMulti));                  \
+		BOOST_CHECK(err.type() == (Error::Type::typ));                             \
+		BOOST_CHECK(searchErrorMessage(err, (substring)));                         \
+	} while (0)
 
 // [checkError(text, type, substring)] asserts that the compilation down to
 // typechecking emits an error of type [type] and with a message containing
 // [substring].
 #define CHECK_ERROR(text, type, substring)                                     \
-  CHECK_ERROR_OR_WARNING(text, type, substring, false, false)
+	CHECK_ERROR_OR_WARNING(text, type, substring, false, false)
 
 // [checkError(text, type, substring)] asserts that the compilation down to
 // typechecking emits an error of type [type] and with a message containing
 // [substring].
 #define CHECK_ERROR_ALLOW_MULTI(text, type, substring)                         \
-  CHECK_ERROR_OR_WARNING(text, type, substring, false, true)
+	CHECK_ERROR_OR_WARNING(text, type, substring, false, true)
 
 // [checkWarning(text, substring)] asserts that the compilation down to
 // typechecking emits a warning and with a message containing [substring].
 #define CHECK_WARNING(text, substring)                                         \
-  CHECK_ERROR_OR_WARNING(text, Warning, substring, true, false)
+	CHECK_ERROR_OR_WARNING(text, Warning, substring, true, false)
 
 // [checkWarningAllowMulti(text, substring)] aserts that the compilation down to
 // typechecking emits a warning and with a message containing [substring].
 #define CHECK_WARNING_ALLOW_MULTI(text, substring)                             \
-  CHECK_ERROR_OR_WARNING(text, Warning, substring, true, true)
+	CHECK_ERROR_OR_WARNING(text, Warning, substring, true, true)
 
 // [checkSuccess(text)] asserts that the compilation down to typechecking
 // succeeds.
 #define CHECK_SUCCESS(text)                                                    \
-  do {                                                                         \
-    BOOST_CHECK(success((text)));                                              \
-  } while (0)
+	do {                                                                         \
+		BOOST_CHECK(success((text)));                                              \
+	} while (0)
 
 #define CHECK_SUCCESS_NO_WARNINGS(text)                                        \
-  do {                                                                         \
-    auto sourceAndError = parseAnalyseAndReturnError((text), true);            \
-    std::string message;                                                       \
-    if (sourceAndError.second)                                                 \
-      message = formatError(*sourceAndError.second);                           \
-    BOOST_CHECK_MESSAGE(!sourceAndError.second, message);                      \
-  } while (0)
+	do {                                                                         \
+		auto sourceAndError = parseAnalyseAndReturnError((text), true);            \
+		std::string message;                                                       \
+		if (sourceAndError.second)                                                 \
+			message = formatError(*sourceAndError.second);                           \
+		BOOST_CHECK_MESSAGE(!sourceAndError.second, message);                      \
+	} while (0)
 
 } // namespace test
 } // namespace solidity

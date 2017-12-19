@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @file PeepholeOptimiser.h
  * Performs local optimising code changes to assembly.
@@ -31,20 +31,21 @@ using AssemblyItems = std::vector<AssemblyItem>;
 
 class PeepholeOptimisationMethod {
 public:
-  virtual size_t windowSize() const;
-  virtual bool apply(AssemblyItems::const_iterator _in,
-                     std::back_insert_iterator<AssemblyItems> _out);
+virtual size_t windowSize() const;
+virtual bool apply(AssemblyItems::const_iterator _in,
+                   std::back_insert_iterator<AssemblyItems> _out);
 };
 
 class PeepholeOptimiser {
 public:
-  explicit PeepholeOptimiser(AssemblyItems &_items) : m_items(_items) {}
+explicit PeepholeOptimiser(AssemblyItems &_items) : m_items(_items) {
+}
 
-  bool optimise();
+bool optimise();
 
 private:
-  AssemblyItems &m_items;
-  AssemblyItems m_optimisedItems;
+AssemblyItems &m_items;
+AssemblyItems m_optimisedItems;
 };
 
 } // namespace eth

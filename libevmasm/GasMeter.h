@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file GasMeter.cpp
  * @author Christian <c@ethdev.com>
  * @date 2015
@@ -81,66 +81,73 @@ static unsigned const copyGas = 3;
  */
 class GasMeter {
 public:
-  struct GasConsumption {
-    GasConsumption(unsigned _value = 0, bool _infinite = false)
-        : value(_value), isInfinite(_infinite) {}
-    GasConsumption(u256 _value, bool _infinite = false)
-        : value(_value), isInfinite(_infinite) {}
-    static GasConsumption infinite() { return GasConsumption(0, true); }
+struct GasConsumption {
+	GasConsumption(unsigned _value = 0, bool _infinite = false)
+		: value(_value), isInfinite(_infinite) {
+	}
+	GasConsumption(u256 _value, bool _infinite = false)
+		: value(_value), isInfinite(_infinite) {
+	}
+	static GasConsumption infinite() {
+		return GasConsumption(0, true);
+	}
 
-    GasConsumption &operator+=(GasConsumption const &_other);
-    bool operator<(GasConsumption const &_other) const {
-      return this->tuple() < _other.tuple();
-    }
+	GasConsumption &operator+=(GasConsumption const &_other);
+	bool operator<(GasConsumption const &_other) const {
+		return this->tuple() < _other.tuple();
+	}
 
-    std::tuple<bool const &, u256 const &> tuple() const {
-      return std::tie(isInfinite, value);
-    }
+	std::tuple<bool const &, u256 const &> tuple() const {
+		return std::tie(isInfinite, value);
+	}
 
-    u256 value;
-    bool isInfinite;
-  };
+	u256 value;
+	bool isInfinite;
+};
 
-  /// Constructs a new gas meter given the current state.
-  explicit GasMeter(std::shared_ptr<KnownState> const &_state,
-                    u256 const &_largestMemoryAccess = 0)
-      : m_state(_state), m_largestMemoryAccess(_largestMemoryAccess) {}
+/// Constructs a new gas meter given the current state.
+explicit GasMeter(std::shared_ptr<KnownState> const &_state,
+                  u256 const &_largestMemoryAccess = 0)
+	: m_state(_state), m_largestMemoryAccess(_largestMemoryAccess) {
+}
 
-  /// @returns an upper bound on the gas consumed by the given instruction and
-  /// updates the state.
-  /// @param _inculdeExternalCosts if true, include costs caused by other
-  /// contracts in calls.
-  GasConsumption estimateMax(AssemblyItem const &_item,
-                             bool _includeExternalCosts = true);
+/// @returns an upper bound on the gas consumed by the given instruction and
+/// updates the state.
+/// @param _inculdeExternalCosts if true, include costs caused by other
+/// contracts in calls.
+GasConsumption estimateMax(AssemblyItem const &_item,
+                           bool _includeExternalCosts = true);
 
-  u256 const &largestMemoryAccess() const { return m_largestMemoryAccess; }
+u256 const &largestMemoryAccess() const {
+	return m_largestMemoryAccess;
+}
 
-  static unsigned runGas(Instruction _instruction);
+static unsigned runGas(Instruction _instruction);
 
 private:
-  /// @returns _multiplier * (_value + 31) / 32, if _value is a known constant
-  /// and infinite otherwise.
-  GasConsumption wordGas(u256 const &_multiplier, ExpressionClasses::Id _value);
-  /// @returns the gas needed to access the given memory position.
-  /// @todo this assumes that memory was never accessed before and thus
-  /// over-estimates gas usage.
-  GasConsumption memoryGas(ExpressionClasses::Id _position);
-  /// @returns the memory gas for accessing the memory at a specific offset for
-  /// a number of bytes given as values on the stack at the given relative
-  /// positions.
-  GasConsumption memoryGas(int _stackPosOffset, int _stackPosSize);
+/// @returns _multiplier * (_value + 31) / 32, if _value is a known constant
+/// and infinite otherwise.
+GasConsumption wordGas(u256 const &_multiplier, ExpressionClasses::Id _value);
+/// @returns the gas needed to access the given memory position.
+/// @todo this assumes that memory was never accessed before and thus
+/// over-estimates gas usage.
+GasConsumption memoryGas(ExpressionClasses::Id _position);
+/// @returns the memory gas for accessing the memory at a specific offset for
+/// a number of bytes given as values on the stack at the given relative
+/// positions.
+GasConsumption memoryGas(int _stackPosOffset, int _stackPosSize);
 
-  std::shared_ptr<KnownState> m_state;
-  /// Largest point where memory was accessed since the creation of this object.
-  u256 m_largestMemoryAccess;
+std::shared_ptr<KnownState> m_state;
+/// Largest point where memory was accessed since the creation of this object.
+u256 m_largestMemoryAccess;
 };
 
 inline std::ostream &operator<<(std::ostream &_str,
                                 GasMeter::GasConsumption const &_consumption) {
-  if (_consumption.isInfinite)
-    return _str << "[???]";
-  else
-    return _str << std::dec << _consumption.value;
+	if (_consumption.isInfinite)
+		return _str << "[???]";
+	else
+		return _str << std::dec << _consumption.value;
 }
 
 } // namespace eth

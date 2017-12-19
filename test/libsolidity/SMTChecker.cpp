@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * Unit tests for the SMT checker.
  */
@@ -32,54 +32,54 @@ namespace test {
 
 class SMTCheckerFramework : public AnalysisFramework {
 public:
-  SMTCheckerFramework() {
-    m_warningsToFilter.push_back("Experimental features are turned on.");
-  }
+SMTCheckerFramework() {
+	m_warningsToFilter.push_back("Experimental features are turned on.");
+}
 
 protected:
-  virtual std::pair<SourceUnit const *, std::shared_ptr<Error const>>
-  parseAnalyseAndReturnError(std::string const &_source,
-                             bool _reportWarnings = false,
-                             bool _insertVersionPragma = true,
-                             bool _allowMultipleErrors = false) {
-    return AnalysisFramework::parseAnalyseAndReturnError(
-        "pragma experimental SMTChecker;\n" + _source, _reportWarnings,
-        _insertVersionPragma, _allowMultipleErrors);
-  }
+virtual std::pair<SourceUnit const *, std::shared_ptr<Error const> >
+parseAnalyseAndReturnError(std::string const &_source,
+                           bool _reportWarnings = false,
+                           bool _insertVersionPragma = true,
+                           bool _allowMultipleErrors = false) {
+	return AnalysisFramework::parseAnalyseAndReturnError(
+		"pragma experimental SMTChecker;\n" + _source, _reportWarnings,
+		_insertVersionPragma, _allowMultipleErrors);
+}
 };
 
 BOOST_FIXTURE_TEST_SUITE(SMTChecker, SMTCheckerFramework)
 
 BOOST_AUTO_TEST_CASE(smoke_test) {
-  string text = R"(
+	string text = R"(
 		contract C { }
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(simple_overflow) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint a, uint b) public pure returns (uint) { return a + b; }
 		}
 	)";
-  CHECK_WARNING(text, "Overflow (resulting value larger than");
+	CHECK_WARNING(text, "Overflow (resulting value larger than");
 }
 
 BOOST_AUTO_TEST_CASE(warn_on_typecast) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f() public pure returns (uint) {
 				return uint8(1);
 			}
 		}
 	)";
-  CHECK_WARNING(text,
-                "Assertion checker does not yet implement this expression.");
+	CHECK_WARNING(text,
+	              "Assertion checker does not yet implement this expression.");
 }
 
 BOOST_AUTO_TEST_CASE(warn_on_struct) {
-  string text = R"(
+	string text = R"(
 		pragma experimental ABIEncoderV2;
 		contract C {
 			struct A { uint a; uint b; }
@@ -88,55 +88,55 @@ BOOST_AUTO_TEST_CASE(warn_on_struct) {
 			}
 		}
 	)";
-  /// Multiple warnings, should check for: Assertion checker does not yet
-  /// implement this expression.
-  CHECK_WARNING_ALLOW_MULTI(text, "");
+	/// Multiple warnings, should check for: Assertion checker does not yet
+	/// implement this expression.
+	CHECK_WARNING_ALLOW_MULTI(text, "");
 }
 
 BOOST_AUTO_TEST_CASE(simple_assert) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint a) public pure { assert(a == 2); }
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here for");
+	CHECK_WARNING(text, "Assertion violation happens here for");
 }
 
 BOOST_AUTO_TEST_CASE(simple_assert_with_require) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint a) public pure { require(a < 10); assert(a < 20); }
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(assignment_in_declaration) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f() public pure { uint a = 2; assert(a == 2); }
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(use_before_declaration) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f() public pure { a = 3; uint a = 2; assert(a == 2); }
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f() public pure { assert(a == 0); uint a = 2; assert(a == 2); }
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(function_call_does_not_clear_local_vars) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f() public {
 				uint a = 3;
@@ -147,12 +147,12 @@ BOOST_AUTO_TEST_CASE(function_call_does_not_clear_local_vars) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(branches_clear_variables) {
-  // Only clears accessed variables
-  string text = R"(
+	// Only clears accessed variables
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -162,9 +162,9 @@ BOOST_AUTO_TEST_CASE(branches_clear_variables) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  // It is just a plain clear and will not combine branches.
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	// It is just a plain clear and will not combine branches.
+	text = R"(
 	contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -175,9 +175,9 @@ BOOST_AUTO_TEST_CASE(branches_clear_variables) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  // Clear also works on the else branch
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	// Clear also works on the else branch
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -189,9 +189,9 @@ BOOST_AUTO_TEST_CASE(branches_clear_variables) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  // Variable is not cleared, if it is only read.
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	// Variable is not cleared, if it is only read.
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -204,11 +204,11 @@ BOOST_AUTO_TEST_CASE(branches_clear_variables) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(branches_assert_condition) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				if (x > 10) {
@@ -221,8 +221,8 @@ BOOST_AUTO_TEST_CASE(branches_assert_condition) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				if (x > 10) {
@@ -239,11 +239,11 @@ BOOST_AUTO_TEST_CASE(branches_assert_condition) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(ways_to_clear_variables) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(ways_to_clear_variables) {
 			}
 		}
 	)";
-  text = R"(
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -265,8 +265,8 @@ BOOST_AUTO_TEST_CASE(ways_to_clear_variables) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				uint a = 3;
@@ -277,12 +277,12 @@ BOOST_AUTO_TEST_CASE(ways_to_clear_variables) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
+	CHECK_WARNING(text, "Assertion violation happens here");
 }
 
 BOOST_AUTO_TEST_CASE(while_loop_simple) {
-  // Check that variables are cleared
-  string text = R"(
+	// Check that variables are cleared
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				x = 2;
@@ -293,9 +293,9 @@ BOOST_AUTO_TEST_CASE(while_loop_simple) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  // Check that condition is assumed.
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	// Check that condition is assumed.
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				while (x == 2) {
@@ -304,9 +304,9 @@ BOOST_AUTO_TEST_CASE(while_loop_simple) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  // Check that condition is not assumed after the body anymore
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	// Check that condition is not assumed after the body anymore
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				while (x == 2) {
@@ -315,9 +315,9 @@ BOOST_AUTO_TEST_CASE(while_loop_simple) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  // Check that negation of condition is not assumed after the body anymore
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	// Check that negation of condition is not assumed after the body anymore
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				while (x == 2) {
@@ -326,9 +326,9 @@ BOOST_AUTO_TEST_CASE(while_loop_simple) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
-  // Check that side-effects of condition are taken into account
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation happens here");
+	// Check that side-effects of condition are taken into account
+	text = R"(
 		contract C {
 			function f(uint x, uint y) public pure {
 				x = 7;
@@ -338,39 +338,39 @@ BOOST_AUTO_TEST_CASE(while_loop_simple) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation happens here");
+	CHECK_WARNING(text, "Assertion violation happens here");
 }
 
 BOOST_AUTO_TEST_CASE(constant_condition) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				if (x >= 0) { revert(); }
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Condition is always true");
-  text = R"(
+	CHECK_WARNING(text, "Condition is always true");
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				if (x >= 10) { if (x < 10) { revert(); } }
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Condition is always false");
-  // a plain literal constant is fine
-  text = R"(
+	CHECK_WARNING(text, "Condition is always false");
+	// a plain literal constant is fine
+	text = R"(
 		contract C {
 			function f(uint) public pure {
 				if (true) { revert(); }
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(for_loop) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x) public pure {
 				require(x == 2);
@@ -379,8 +379,8 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				for (; x == 2; ) {
@@ -389,8 +389,8 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				for (uint y = 2; x < 10; ) {
@@ -399,8 +399,8 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				for (uint y = 2; x < 10; y = 3) {
@@ -409,8 +409,8 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation");
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation");
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				for (uint y = 2; x < 10; ) {
@@ -420,8 +420,8 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation");
-  text = R"(
+	CHECK_WARNING(text, "Assertion violation");
+	text = R"(
 		contract C {
 			function f(uint x) public pure {
 				for (uint y = 2; x < 10; ) {
@@ -431,19 +431,19 @@ BOOST_AUTO_TEST_CASE(for_loop) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Assertion violation");
+	CHECK_WARNING(text, "Assertion violation");
 }
 
 BOOST_AUTO_TEST_CASE(division) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x, uint y) public pure returns (uint) {
 				return x / y;
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Division by zero");
-  text = R"(
+	CHECK_WARNING(text, "Division by zero");
+	text = R"(
 		contract C {
 			function f(uint x, uint y) public pure returns (uint) {
 				require(y != 0);
@@ -451,8 +451,8 @@ BOOST_AUTO_TEST_CASE(division) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure returns (int) {
 				require(y != 0);
@@ -460,8 +460,8 @@ BOOST_AUTO_TEST_CASE(division) {
 			}
 		}
 	)";
-  CHECK_WARNING(text, "Overflow");
-  text = R"(
+	CHECK_WARNING(text, "Overflow");
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure returns (int) {
 				require(y != 0);
@@ -470,11 +470,11 @@ BOOST_AUTO_TEST_CASE(division) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
-  string text = R"(
+	string text = R"(
 		contract C {
 			function f(uint x, uint y) public pure {
 				x = 7;
@@ -483,8 +483,8 @@ BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure {
 				x = 7;
@@ -493,8 +493,8 @@ BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure {
 				x = -7;
@@ -503,8 +503,8 @@ BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure {
 				x = 7;
@@ -513,8 +513,8 @@ BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
-  text = R"(
+	CHECK_SUCCESS_NO_WARNINGS(text);
+	text = R"(
 		contract C {
 			function f(int x, int y) public pure {
 				x = -7;
@@ -523,7 +523,7 @@ BOOST_AUTO_TEST_CASE(division_truncates_correctly) {
 			}
 		}
 	)";
-  CHECK_SUCCESS_NO_WARNINGS(text);
+	CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

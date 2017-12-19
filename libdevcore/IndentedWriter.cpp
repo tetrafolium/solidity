@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @date 2017
  * Indented text writer.
@@ -26,35 +26,35 @@ using namespace std;
 using namespace dev;
 
 string IndentedWriter::format() const {
-  string result;
-  for (auto const &line : m_lines)
-    result += string(line.indentation * 4, ' ') + line.contents + "\n";
-  return result;
+	string result;
+	for (auto const &line : m_lines)
+		result += string(line.indentation * 4, ' ') + line.contents + "\n";
+	return result;
 }
 
 void IndentedWriter::newLine() {
-  if (!m_lines.back().contents.empty())
-    m_lines.push_back({string(), m_lines.back().indentation});
+	if (!m_lines.back().contents.empty())
+		m_lines.push_back({string(), m_lines.back().indentation});
 }
 
 void IndentedWriter::indent() {
-  newLine();
-  m_lines.back().indentation++;
+	newLine();
+	m_lines.back().indentation++;
 }
 
 void IndentedWriter::unindent() {
-  newLine();
-  assertThrow(m_lines.back().indentation > 0, IndentedWriterError,
-              "Negative indentation.");
-  m_lines.back().indentation--;
+	newLine();
+	assertThrow(m_lines.back().indentation > 0, IndentedWriterError,
+	            "Negative indentation.");
+	m_lines.back().indentation--;
 }
 
 void IndentedWriter::add(string const &_str) {
-  m_lines.back().contents += _str;
+	m_lines.back().contents += _str;
 }
 
 void IndentedWriter::addLine(string const &_line) {
-  newLine();
-  add(_line);
-  newLine();
+	newLine();
+	add(_line);
+	newLine();
 }

@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file ConstantOptimiser.cpp
  * @author Christian <c@ethdev.com>
  * @date 2015
@@ -42,57 +42,60 @@ class Assembly;
  */
 class ConstantOptimisationMethod {
 public:
-  /// Tries to optimised how constants are represented in the source code and
-  /// modifies
-  /// @a _assembly and its @a _items.
-  /// @returns zero if no optimisations could be performed.
-  static unsigned optimiseConstants(bool _isCreation, size_t _runs,
-                                    Assembly &_assembly, AssemblyItems &_items);
+/// Tries to optimised how constants are represented in the source code and
+/// modifies
+/// @a _assembly and its @a _items.
+/// @returns zero if no optimisations could be performed.
+static unsigned optimiseConstants(bool _isCreation, size_t _runs,
+                                  Assembly &_assembly, AssemblyItems &_items);
 
-  struct Params {
-    bool isCreation; ///< Whether this is called during contract creation or
-                     ///< runtime.
-    size_t runs; ///< Estimated number of calls per opcode oven the lifetime of
-                 ///< the contract.
-    size_t multiplicity; ///< Number of times the constant appears in the code.
-  };
+struct Params {
+	bool isCreation; ///< Whether this is called during contract creation or
+	                 ///< runtime.
+	size_t runs; ///< Estimated number of calls per opcode oven the lifetime of
+	             ///< the contract.
+	size_t multiplicity; ///< Number of times the constant appears in the code.
+};
 
-  explicit ConstantOptimisationMethod(Params const &_params, u256 const &_value)
-      : m_params(_params), m_value(_value) {}
-  virtual bigint gasNeeded() const = 0;
-  /// Executes the method, potentially appending to the assembly and returns a
-  /// vector of assembly items the constant should be relpaced with in one
-  /// sweep. If the vector is empty, the constants will not be deleted.
-  virtual AssemblyItems execute(Assembly &_assembly) const = 0;
+explicit ConstantOptimisationMethod(Params const &_params, u256 const &_value)
+	: m_params(_params), m_value(_value) {
+}
+virtual bigint gasNeeded() const = 0;
+/// Executes the method, potentially appending to the assembly and returns a
+/// vector of assembly items the constant should be relpaced with in one
+/// sweep. If the vector is empty, the constants will not be deleted.
+virtual AssemblyItems execute(Assembly &_assembly) const = 0;
 
 protected:
-  size_t dataSize() const {
-    return std::max<size_t>(1, dev::bytesRequired(m_value));
-  }
+size_t dataSize() const {
+	return std::max<size_t>(1, dev::bytesRequired(m_value));
+}
 
-  /// @returns the run gas for the given items ignoring special gas costs
-  static bigint simpleRunGas(AssemblyItems const &_items);
-  /// @returns the gas needed to store the given data literally
-  bigint dataGas(bytes const &_data) const;
-  /// @returns the gas needed to store the value literally
-  bigint dataGas() const { return dataGas(toCompactBigEndian(m_value, 1)); }
-  static size_t bytesRequired(AssemblyItems const &_items);
-  /// @returns the combined estimated gas usage taking @a m_params into account.
-  bigint combineGas(bigint const &_runGas, bigint const &_repeatedDataGas,
-                    bigint const &_uniqueDataGas) const {
-    // _runGas is not multiplied by _multiplicity because the runs are "per
-    // opcode"
-    return m_params.runs * _runGas + m_params.multiplicity * _repeatedDataGas +
-           _uniqueDataGas;
-  }
+/// @returns the run gas for the given items ignoring special gas costs
+static bigint simpleRunGas(AssemblyItems const &_items);
+/// @returns the gas needed to store the given data literally
+bigint dataGas(bytes const &_data) const;
+/// @returns the gas needed to store the value literally
+bigint dataGas() const {
+	return dataGas(toCompactBigEndian(m_value, 1));
+}
+static size_t bytesRequired(AssemblyItems const &_items);
+/// @returns the combined estimated gas usage taking @a m_params into account.
+bigint combineGas(bigint const &_runGas, bigint const &_repeatedDataGas,
+                  bigint const &_uniqueDataGas) const {
+	// _runGas is not multiplied by _multiplicity because the runs are "per
+	// opcode"
+	return m_params.runs * _runGas + m_params.multiplicity * _repeatedDataGas +
+	       _uniqueDataGas;
+}
 
-  /// Replaces all constants i by the code given in @a _replacement[i].
-  static void
-  replaceConstants(AssemblyItems &_items,
-                   std::map<u256, AssemblyItems> const &_replacements);
+/// Replaces all constants i by the code given in @a _replacement[i].
+static void
+replaceConstants(AssemblyItems &_items,
+                 std::map<u256, AssemblyItems> const &_replacements);
 
-  Params m_params;
-  u256 const &m_value;
+Params m_params;
+u256 const &m_value;
 };
 
 /**
@@ -101,12 +104,13 @@ protected:
  */
 class LiteralMethod : public ConstantOptimisationMethod {
 public:
-  explicit LiteralMethod(Params const &_params, u256 const &_value)
-      : ConstantOptimisationMethod(_params, _value) {}
-  virtual bigint gasNeeded() const override;
-  virtual AssemblyItems execute(Assembly &) const override {
-    return AssemblyItems{};
-  }
+explicit LiteralMethod(Params const &_params, u256 const &_value)
+	: ConstantOptimisationMethod(_params, _value) {
+}
+virtual bigint gasNeeded() const override;
+virtual AssemblyItems execute(Assembly &) const override {
+	return AssemblyItems {};
+}
 };
 
 /**
@@ -115,12 +119,12 @@ public:
  */
 class CodeCopyMethod : public ConstantOptimisationMethod {
 public:
-  explicit CodeCopyMethod(Params const &_params, u256 const &_value);
-  virtual bigint gasNeeded() const override;
-  virtual AssemblyItems execute(Assembly &_assembly) const override;
+explicit CodeCopyMethod(Params const &_params, u256 const &_value);
+virtual bigint gasNeeded() const override;
+virtual AssemblyItems execute(Assembly &_assembly) const override;
 
 protected:
-  static AssemblyItems const &copyRoutine();
+static AssemblyItems const &copyRoutine();
 };
 
 /**
@@ -128,29 +132,33 @@ protected:
  */
 class ComputeMethod : public ConstantOptimisationMethod {
 public:
-  explicit ComputeMethod(Params const &_params, u256 const &_value)
-      : ConstantOptimisationMethod(_params, _value) {
-    m_routine = findRepresentation(m_value);
-    assertThrow(checkRepresentation(m_value, m_routine), OptimizerException,
-                "Invalid constant expression created.");
-  }
+explicit ComputeMethod(Params const &_params, u256 const &_value)
+	: ConstantOptimisationMethod(_params, _value) {
+	m_routine = findRepresentation(m_value);
+	assertThrow(checkRepresentation(m_value, m_routine), OptimizerException,
+	            "Invalid constant expression created.");
+}
 
-  virtual bigint gasNeeded() const override { return gasNeeded(m_routine); }
-  virtual AssemblyItems execute(Assembly &) const override { return m_routine; }
+virtual bigint gasNeeded() const override {
+	return gasNeeded(m_routine);
+}
+virtual AssemblyItems execute(Assembly &) const override {
+	return m_routine;
+}
 
 protected:
-  /// Tries to recursively find a way to compute @a _value.
-  AssemblyItems findRepresentation(u256 const &_value);
-  /// Recomputes the value from the calculated representation and checks for
-  /// correctness.
-  static bool checkRepresentation(u256 const &_value,
-                                  AssemblyItems const &_routine);
-  bigint gasNeeded(AssemblyItems const &_routine) const;
+/// Tries to recursively find a way to compute @a _value.
+AssemblyItems findRepresentation(u256 const &_value);
+/// Recomputes the value from the calculated representation and checks for
+/// correctness.
+static bool checkRepresentation(u256 const &_value,
+                                AssemblyItems const &_routine);
+bigint gasNeeded(AssemblyItems const &_routine) const;
 
-  /// Counter for the complexity of optimization, will stop when it reaches
-  /// zero.
-  size_t m_maxSteps = 10000;
-  AssemblyItems m_routine;
+/// Counter for the complexity of optimization, will stop when it reaches
+/// zero.
+size_t m_maxSteps = 10000;
+AssemblyItems m_routine;
 };
 
 } // namespace eth

@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * Unit tests for IndentedWriter.
  */
@@ -30,36 +30,36 @@ namespace test {
 BOOST_AUTO_TEST_SUITE(IndentedWriterTest)
 
 BOOST_AUTO_TEST_CASE(empty) {
-  IndentedWriter iw;
-  BOOST_CHECK_EQUAL(iw.format(), "\n");
+	IndentedWriter iw;
+	BOOST_CHECK_EQUAL(iw.format(), "\n");
 }
 
 BOOST_AUTO_TEST_CASE(new_lines) {
-  IndentedWriter iw;
-  iw.newLine();
-  BOOST_CHECK_EQUAL(iw.format(), "\n");
+	IndentedWriter iw;
+	iw.newLine();
+	BOOST_CHECK_EQUAL(iw.format(), "\n");
 }
 
 BOOST_AUTO_TEST_CASE(text_without_newline) {
-  IndentedWriter iw;
-  iw.add("Hello World");
-  BOOST_CHECK_EQUAL(iw.format(), "Hello World\n");
+	IndentedWriter iw;
+	iw.add("Hello World");
+	BOOST_CHECK_EQUAL(iw.format(), "Hello World\n");
 }
 
 BOOST_AUTO_TEST_CASE(text_with_newline) {
-  IndentedWriter iw;
-  iw.addLine("Hello World");
-  BOOST_CHECK_EQUAL(iw.format(), "Hello World\n\n");
+	IndentedWriter iw;
+	iw.addLine("Hello World");
+	BOOST_CHECK_EQUAL(iw.format(), "Hello World\n\n");
 }
 
 BOOST_AUTO_TEST_CASE(indent) {
-  IndentedWriter iw;
-  iw.addLine("Hello");
-  iw.indent();
-  iw.addLine("World");
-  iw.unindent();
-  iw.addLine("and everyone else");
-  BOOST_CHECK_EQUAL(iw.format(), "Hello\n    World\nand everyone else\n\n");
+	IndentedWriter iw;
+	iw.addLine("Hello");
+	iw.indent();
+	iw.addLine("World");
+	iw.unindent();
+	iw.addLine("and everyone else");
+	BOOST_CHECK_EQUAL(iw.format(), "Hello\n    World\nand everyone else\n\n");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #pragma once
 
@@ -29,22 +29,22 @@ namespace dev {
 
 /// Base class for all exceptions.
 struct Exception : virtual std::exception, virtual boost::exception {
-  const char *what() const noexcept override;
+	const char *what() const noexcept override;
 
-  /// @returns "FileName:LineNumber" referring to the point where the exception
-  /// was thrown.
-  std::string lineInfo() const;
+	/// @returns "FileName:LineNumber" referring to the point where the exception
+	/// was thrown.
+	std::string lineInfo() const;
 
-  /// @returns the errinfo_comment of this exception.
-  std::string const *comment() const noexcept;
+	/// @returns the errinfo_comment of this exception.
+	std::string const *comment() const noexcept;
 
 private:
 };
 
 #define DEV_SIMPLE_EXCEPTION(X)                                                \
-  struct X : virtual Exception {                                               \
-    const char *what() const noexcept override { return #X; }                  \
-  }
+	struct X : virtual Exception {                                               \
+		const char *what() const noexcept override { return #X; }                  \
+	}
 
 DEV_SIMPLE_EXCEPTION(InvalidAddress);
 DEV_SIMPLE_EXCEPTION(BadHexCharacter);

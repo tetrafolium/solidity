@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Christian <c@ethdev.com>
  * @date 2014
@@ -29,33 +29,33 @@ using namespace dev;
 using namespace dev::solidity;
 
 void Compiler::compileContract(
-    ContractDefinition const &_contract,
-    std::map<const ContractDefinition *, eth::Assembly const *> const
-        &_contracts,
-    bytes const &_metadata) {
-  ContractCompiler runtimeCompiler(nullptr, m_runtimeContext, m_optimize);
-  runtimeCompiler.compileContract(_contract, _contracts);
-  m_runtimeContext.appendAuxiliaryData(_metadata);
+	ContractDefinition const &_contract,
+	std::map<const ContractDefinition *, eth::Assembly const *> const
+	&_contracts,
+	bytes const &_metadata) {
+	ContractCompiler runtimeCompiler(nullptr, m_runtimeContext, m_optimize);
+	runtimeCompiler.compileContract(_contract, _contracts);
+	m_runtimeContext.appendAuxiliaryData(_metadata);
 
-  // This might modify m_runtimeContext because it can access runtime functions
-  // at creation time.
-  ContractCompiler creationCompiler(&runtimeCompiler, m_context, m_optimize);
-  m_runtimeSub = creationCompiler.compileConstructor(_contract, _contracts);
+	// This might modify m_runtimeContext because it can access runtime functions
+	// at creation time.
+	ContractCompiler creationCompiler(&runtimeCompiler, m_context, m_optimize);
+	m_runtimeSub = creationCompiler.compileConstructor(_contract, _contracts);
 
-  m_context.optimise(m_optimize, m_optimizeRuns);
+	m_context.optimise(m_optimize, m_optimizeRuns);
 }
 
 void Compiler::compileClone(
-    ContractDefinition const &_contract,
-    map<ContractDefinition const *, eth::Assembly const *> const &_contracts) {
-  ContractCompiler runtimeCompiler(nullptr, m_runtimeContext, m_optimize);
-  ContractCompiler cloneCompiler(&runtimeCompiler, m_context, m_optimize);
-  m_runtimeSub = cloneCompiler.compileClone(_contract, _contracts);
+	ContractDefinition const &_contract,
+	map<ContractDefinition const *, eth::Assembly const *> const &_contracts) {
+	ContractCompiler runtimeCompiler(nullptr, m_runtimeContext, m_optimize);
+	ContractCompiler cloneCompiler(&runtimeCompiler, m_context, m_optimize);
+	m_runtimeSub = cloneCompiler.compileClone(_contract, _contracts);
 
-  m_context.optimise(m_optimize, m_optimizeRuns);
+	m_context.optimise(m_optimize, m_optimizeRuns);
 }
 
 eth::AssemblyItem
 Compiler::functionEntryLabel(FunctionDefinition const &_function) const {
-  return m_runtimeContext.functionEntryLabelIfExists(_function);
+	return m_runtimeContext.functionEntryLabelIfExists(_function);
 }

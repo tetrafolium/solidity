@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Alex Beregszaszi
  * @date 2016
@@ -35,26 +35,27 @@ namespace solidity {
  */
 class StandardCompiler : boost::noncopyable {
 public:
-  /// Creates a new StandardCompiler.
-  /// @param _readFile callback to used to read files for import statements.
-  /// Must return and must not emit exceptions.
-  explicit StandardCompiler(
-      ReadCallback::Callback const &_readFile = ReadCallback::Callback())
-      : m_compilerStack(_readFile), m_readFile(_readFile) {}
+/// Creates a new StandardCompiler.
+/// @param _readFile callback to used to read files for import statements.
+/// Must return and must not emit exceptions.
+explicit StandardCompiler(
+	ReadCallback::Callback const &_readFile = ReadCallback::Callback())
+	: m_compilerStack(_readFile), m_readFile(_readFile) {
+}
 
-  /// Sets all input parameters according to @a _input which conforms to the
-  /// standardized input format, performs compilation and returns a standardized
-  /// output.
-  Json::Value compile(Json::Value const &_input);
-  /// Parses input as JSON and peforms the above processing steps, returning a
-  /// serialized JSON output. Parsing errors are returned as regular errors.
-  std::string compile(std::string const &_input);
+/// Sets all input parameters according to @a _input which conforms to the
+/// standardized input format, performs compilation and returns a standardized
+/// output.
+Json::Value compile(Json::Value const &_input);
+/// Parses input as JSON and peforms the above processing steps, returning a
+/// serialized JSON output. Parsing errors are returned as regular errors.
+std::string compile(std::string const &_input);
 
 private:
-  Json::Value compileInternal(Json::Value const &_input);
+Json::Value compileInternal(Json::Value const &_input);
 
-  CompilerStack m_compilerStack;
-  ReadCallback::Callback m_readFile;
+CompilerStack m_compilerStack;
+ReadCallback::Callback m_readFile;
 };
 
 } // namespace solidity

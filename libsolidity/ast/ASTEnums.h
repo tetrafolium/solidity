@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @date 2017
  * Enums for AST classes.
@@ -33,18 +33,18 @@ enum class StateMutability { Pure, View, NonPayable, Payable };
 
 inline std::string
 stateMutabilityToString(StateMutability const &_stateMutability) {
-  switch (_stateMutability) {
-  case StateMutability::Pure:
-    return "pure";
-  case StateMutability::View:
-    return "view";
-  case StateMutability::NonPayable:
-    return "nonpayable";
-  case StateMutability::Payable:
-    return "payable";
-  default:
-    solAssert(false, "Unknown state mutability.");
-  }
+	switch (_stateMutability) {
+	case StateMutability::Pure:
+		return "pure";
+	case StateMutability::View:
+		return "view";
+	case StateMutability::NonPayable:
+		return "nonpayable";
+	case StateMutability::Payable:
+		return "payable";
+	default:
+		solAssert(false, "Unknown state mutability.");
+	}
 }
 
 } // namespace solidity

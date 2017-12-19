@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Rhett <roadriverrail@gmail.com>
  * @date 2017
@@ -29,106 +29,110 @@ using namespace dev;
 using namespace dev::solidity;
 
 ErrorReporter &ErrorReporter::operator=(ErrorReporter const &_errorReporter) {
-  if (&_errorReporter == this)
-    return *this;
-  m_errorList = _errorReporter.m_errorList;
-  return *this;
+	if (&_errorReporter == this)
+		return *this;
+	m_errorList = _errorReporter.m_errorList;
+	return *this;
 }
 
 void ErrorReporter::warning(string const &_description) {
-  error(Error::Type::Warning, SourceLocation(), _description);
+	error(Error::Type::Warning, SourceLocation(), _description);
 }
 
 void ErrorReporter::warning(SourceLocation const &_location,
                             string const &_description) {
-  error(Error::Type::Warning, _location, _description);
+	error(Error::Type::Warning, _location, _description);
 }
 
 void ErrorReporter::warning(SourceLocation const &_location,
                             string const &_description,
                             SecondarySourceLocation const &_secondaryLocation) {
-  error(Error::Type::Warning, _location, _secondaryLocation, _description);
+	error(Error::Type::Warning, _location, _secondaryLocation, _description);
 }
 
 void ErrorReporter::error(Error::Type _type, SourceLocation const &_location,
                           string const &_description) {
-  auto err = make_shared<Error>(_type);
-  *err << errinfo_sourceLocation(_location) << errinfo_comment(_description);
+	auto err = make_shared<Error>(_type);
+	*err << errinfo_sourceLocation(_location) << errinfo_comment(_description);
 
-  m_errorList.push_back(err);
+	m_errorList.push_back(err);
 }
 
 void ErrorReporter::error(Error::Type _type, SourceLocation const &_location,
                           SecondarySourceLocation const &_secondaryLocation,
                           string const &_description) {
-  auto err = make_shared<Error>(_type);
-  *err << errinfo_sourceLocation(_location)
-       << errinfo_secondarySourceLocation(_secondaryLocation)
-       << errinfo_comment(_description);
+	auto err = make_shared<Error>(_type);
+	*err << errinfo_sourceLocation(_location)
+	     << errinfo_secondarySourceLocation(_secondaryLocation)
+	     << errinfo_comment(_description);
 
-  m_errorList.push_back(err);
+	m_errorList.push_back(err);
 }
 
 void ErrorReporter::fatalError(Error::Type _type,
                                SourceLocation const &_location,
                                string const &_description) {
-  error(_type, _location, _description);
-  BOOST_THROW_EXCEPTION(FatalError());
+	error(_type, _location, _description);
+	BOOST_THROW_EXCEPTION(FatalError());
 }
 
-ErrorList const &ErrorReporter::errors() const { return m_errorList; }
+ErrorList const &ErrorReporter::errors() const {
+	return m_errorList;
+}
 
-void ErrorReporter::clear() { m_errorList.clear(); }
+void ErrorReporter::clear() {
+	m_errorList.clear();
+}
 
 void ErrorReporter::declarationError(
-    SourceLocation const &_location,
-    SecondarySourceLocation const &_secondaryLocation,
-    string const &_description) {
-  error(Error::Type::DeclarationError, _location, _secondaryLocation,
-        _description);
+	SourceLocation const &_location,
+	SecondarySourceLocation const &_secondaryLocation,
+	string const &_description) {
+	error(Error::Type::DeclarationError, _location, _secondaryLocation,
+	      _description);
 }
 
 void ErrorReporter::declarationError(SourceLocation const &_location,
                                      string const &_description) {
-  error(Error::Type::DeclarationError, _location, _description);
+	error(Error::Type::DeclarationError, _location, _description);
 }
 
 void ErrorReporter::fatalDeclarationError(SourceLocation const &_location,
                                           std::string const &_description) {
-  fatalError(Error::Type::DeclarationError, _location, _description);
+	fatalError(Error::Type::DeclarationError, _location, _description);
 }
 
 void ErrorReporter::parserError(SourceLocation const &_location,
                                 string const &_description) {
-  error(Error::Type::ParserError, _location, _description);
+	error(Error::Type::ParserError, _location, _description);
 }
 
 void ErrorReporter::fatalParserError(SourceLocation const &_location,
                                      string const &_description) {
-  fatalError(Error::Type::ParserError, _location, _description);
+	fatalError(Error::Type::ParserError, _location, _description);
 }
 
 void ErrorReporter::syntaxError(SourceLocation const &_location,
                                 string const &_description) {
-  error(Error::Type::SyntaxError, _location, _description);
+	error(Error::Type::SyntaxError, _location, _description);
 }
 
 void ErrorReporter::typeError(SourceLocation const &_location,
                               SecondarySourceLocation const &_secondaryLocation,
                               string const &_description) {
-  error(Error::Type::TypeError, _location, _secondaryLocation, _description);
+	error(Error::Type::TypeError, _location, _secondaryLocation, _description);
 }
 
 void ErrorReporter::typeError(SourceLocation const &_location,
                               string const &_description) {
-  error(Error::Type::TypeError, _location, _description);
+	error(Error::Type::TypeError, _location, _description);
 }
 
 void ErrorReporter::fatalTypeError(SourceLocation const &_location,
                                    string const &_description) {
-  fatalError(Error::Type::TypeError, _location, _description);
+	fatalError(Error::Type::TypeError, _location, _description);
 }
 
 void ErrorReporter::docstringParsingError(string const &_description) {
-  error(Error::Type::DocstringParsingError, SourceLocation(), _description);
+	error(Error::Type::DocstringParsingError, SourceLocation(), _description);
 }

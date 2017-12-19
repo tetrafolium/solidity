@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include <string>
 
@@ -22,16 +22,17 @@ namespace solidity {
 namespace test {
 
 static std::string const NewEncoderPragma =
-    "pragma experimental ABIEncoderV2;\n";
+	"pragma experimental ABIEncoderV2;\n";
 
 #define NEW_ENCODER(CODE)                                                      \
-  {                                                                            \
-    sourceCode = NewEncoderPragma + sourceCode;                                \
-    { CODE }                                                                   \
-  }
+	{                                                                            \
+		sourceCode = NewEncoderPragma + sourceCode;                                \
+		{ CODE \
+		}                                                                   \
+	}
 
 #define BOTH_ENCODERS(CODE)                                                    \
-  { {CODE} NEW_ENCODER(CODE) }
+	{ {CODE} NEW_ENCODER(CODE) }
 
 } // namespace test
 } // namespace solidity

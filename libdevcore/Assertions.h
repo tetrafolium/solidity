@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @file Assertions.h
  * @author Christian <c@ethdev.com>
@@ -40,12 +40,12 @@ namespace dev {
 /// not met. Use it as assertThrow(1 == 1, ExceptionType, "Mathematics is
 /// wrong."); Do NOT supply an exception object as the second parameter.
 #define assertThrow(_condition, _ExceptionType, _description)                  \
-  do {                                                                         \
-    if (!(_condition))                                                         \
-      ::boost::throw_exception(_ExceptionType()                                \
-                               << ::dev::errinfo_comment(_description)         \
-                               << ::boost::throw_function(ETH_FUNC)            \
-                               << ::boost::throw_file(__FILE__)                \
-                               << ::boost::throw_line(__LINE__));              \
-  } while (false)
+	do {                                                                         \
+		if (!(_condition))                                                         \
+			::boost::throw_exception(_ExceptionType()                                \
+			                         << ::dev::errinfo_comment(_description)         \
+			                         << ::boost::throw_function(ETH_FUNC)            \
+			                         << ::boost::throw_file(__FILE__)                \
+			                         << ::boost::throw_line(__LINE__));              \
+	} while (false)
 }

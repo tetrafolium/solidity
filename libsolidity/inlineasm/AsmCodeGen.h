@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Christian <c@ethdev.com>
  * @date 2016
@@ -36,13 +36,13 @@ struct Block;
 
 class CodeGenerator {
 public:
-  /// Performs code generation and appends generated to to _assembly.
-  static void
-  assemble(Block const &_parsedData, AsmAnalysisInfo &_analysisInfo,
-           eth::Assembly &_assembly,
-           julia::ExternalIdentifierAccess const &_identifierAccess =
-               julia::ExternalIdentifierAccess(),
-           bool _useNamedLabelsForFunctions = false);
+/// Performs code generation and appends generated to to _assembly.
+static void
+assemble(Block const &_parsedData, AsmAnalysisInfo &_analysisInfo,
+         eth::Assembly &_assembly,
+         julia::ExternalIdentifierAccess const &_identifierAccess =
+		 julia::ExternalIdentifierAccess(),
+         bool _useNamedLabelsForFunctions = false);
 };
 
 } // namespace assembly

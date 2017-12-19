@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Christian <c@ethdev.com>
  * @date 2016
@@ -47,10 +47,10 @@ struct Block;
 struct TypedName;
 
 using Statement =
-    boost::variant<Instruction, Literal, Label, StackAssignment, Identifier,
-                   Assignment, FunctionCall, FunctionalInstruction,
-                   VariableDeclaration, FunctionDefinition, If, Switch, ForLoop,
-                   Block>;
+	      boost::variant<Instruction, Literal, Label, StackAssignment, Identifier,
+	                     Assignment, FunctionCall, FunctionalInstruction,
+	                     VariableDeclaration, FunctionDefinition, If, Switch, ForLoop,
+	                     Block>;
 
 } // namespace assembly
 } // namespace solidity

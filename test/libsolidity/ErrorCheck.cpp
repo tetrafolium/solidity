@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file ErrorCheck.cpp
  * @author Yoichi Hirai <i@yoichihirai.com>
  * @date 2016
@@ -28,14 +28,14 @@ using namespace std;
 
 bool dev::solidity::searchErrorMessage(Error const &_err,
                                        std::string const &_substr) {
-  if (string const *errorMessage = _err.comment()) {
-    if (errorMessage->find(_substr) == std::string::npos) {
-      cout << "Expected message \"" << _substr << "\" but found \""
-           << *errorMessage << "\".\n";
-      return false;
-    }
-    return true;
-  } else
-    cout << "Expected error message but found none." << endl;
-  return _substr.empty();
+	if (string const *errorMessage = _err.comment()) {
+		if (errorMessage->find(_substr) == std::string::npos) {
+			cout << "Expected message \"" << _substr << "\" but found \""
+			     << *errorMessage << "\".\n";
+			return false;
+		}
+		return true;
+	} else
+		cout << "Expected error message but found none." << endl;
+	return _substr.empty();
 }

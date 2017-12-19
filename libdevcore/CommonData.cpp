@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file CommonData.cpp
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
@@ -30,75 +30,75 @@ using namespace std;
 using namespace dev;
 
 int dev::fromHex(char _i, WhenError _throw) {
-  if (_i >= '0' && _i <= '9')
-    return _i - '0';
-  if (_i >= 'a' && _i <= 'f')
-    return _i - 'a' + 10;
-  if (_i >= 'A' && _i <= 'F')
-    return _i - 'A' + 10;
-  if (_throw == WhenError::Throw)
-    BOOST_THROW_EXCEPTION(BadHexCharacter() << errinfo_invalidSymbol(_i));
-  else
-    return -1;
+	if (_i >= '0' && _i <= '9')
+		return _i - '0';
+	if (_i >= 'a' && _i <= 'f')
+		return _i - 'a' + 10;
+	if (_i >= 'A' && _i <= 'F')
+		return _i - 'A' + 10;
+	if (_throw == WhenError::Throw)
+		BOOST_THROW_EXCEPTION(BadHexCharacter() << errinfo_invalidSymbol(_i));
+	else
+		return -1;
 }
 
 bytes dev::fromHex(std::string const &_s, WhenError _throw) {
-  unsigned s = (_s.size() >= 2 && _s[0] == '0' && _s[1] == 'x') ? 2 : 0;
-  std::vector<uint8_t> ret;
-  ret.reserve((_s.size() - s + 1) / 2);
+	unsigned s = (_s.size() >= 2 && _s[0] == '0' && _s[1] == 'x') ? 2 : 0;
+	std::vector<uint8_t> ret;
+	ret.reserve((_s.size() - s + 1) / 2);
 
-  if (_s.size() % 2) {
-    int h = fromHex(_s[s++], WhenError::DontThrow);
-    if (h != -1)
-      ret.push_back(h);
-    else if (_throw == WhenError::Throw)
-      BOOST_THROW_EXCEPTION(BadHexCharacter());
-    else
-      return bytes();
-  }
-  for (unsigned i = s; i < _s.size(); i += 2) {
-    int h = fromHex(_s[i], WhenError::DontThrow);
-    int l = fromHex(_s[i + 1], WhenError::DontThrow);
-    if (h != -1 && l != -1)
-      ret.push_back((byte)(h * 16 + l));
-    else if (_throw == WhenError::Throw)
-      BOOST_THROW_EXCEPTION(BadHexCharacter());
-    else
-      return bytes();
-  }
-  return ret;
+	if (_s.size() % 2) {
+		int h = fromHex(_s[s++], WhenError::DontThrow);
+		if (h != -1)
+			ret.push_back(h);
+		else if (_throw == WhenError::Throw)
+			BOOST_THROW_EXCEPTION(BadHexCharacter());
+		else
+			return bytes();
+	}
+	for (unsigned i = s; i < _s.size(); i += 2) {
+		int h = fromHex(_s[i], WhenError::DontThrow);
+		int l = fromHex(_s[i + 1], WhenError::DontThrow);
+		if (h != -1 && l != -1)
+			ret.push_back((byte)(h * 16 + l));
+		else if (_throw == WhenError::Throw)
+			BOOST_THROW_EXCEPTION(BadHexCharacter());
+		else
+			return bytes();
+	}
+	return ret;
 }
 
 bool dev::passesAddressChecksum(string const &_str, bool _strict) {
-  string s = _str.substr(0, 2) == "0x" ? _str.substr(2) : _str;
+	string s = _str.substr(0, 2) == "0x" ? _str.substr(2) : _str;
 
-  if (s.length() != 40)
-    return false;
+	if (s.length() != 40)
+		return false;
 
-  if (!_strict && (_str.find_first_of("abcdef") == string::npos ||
-                   _str.find_first_of("ABCDEF") == string::npos))
-    return true;
+	if (!_strict && (_str.find_first_of("abcdef") == string::npos ||
+	                 _str.find_first_of("ABCDEF") == string::npos))
+		return true;
 
-  return _str == dev::getChecksummedAddress(_str);
+	return _str == dev::getChecksummedAddress(_str);
 }
 
 string dev::getChecksummedAddress(string const &_addr) {
-  string s = _addr.substr(0, 2) == "0x" ? _addr.substr(2) : _addr;
-  assertThrow(s.length() == 40, InvalidAddress, "");
-  assertThrow(s.find_first_not_of("0123456789abcdefABCDEF") == string::npos,
-              InvalidAddress, "");
+	string s = _addr.substr(0, 2) == "0x" ? _addr.substr(2) : _addr;
+	assertThrow(s.length() == 40, InvalidAddress, "");
+	assertThrow(s.find_first_not_of("0123456789abcdefABCDEF") == string::npos,
+	            InvalidAddress, "");
 
-  h256 hash =
-      keccak256(boost::algorithm::to_lower_copy(s, std::locale::classic()));
+	h256 hash =
+		keccak256(boost::algorithm::to_lower_copy(s, std::locale::classic()));
 
-  string ret = "0x";
-  for (size_t i = 0; i < 40; ++i) {
-    char addressCharacter = s[i];
-    unsigned nibble = (unsigned(hash[i / 2]) >> (4 * (1 - (i % 2)))) & 0xf;
-    if (nibble >= 8)
-      ret += toupper(addressCharacter);
-    else
-      ret += tolower(addressCharacter);
-  }
-  return ret;
+	string ret = "0x";
+	for (size_t i = 0; i < 40; ++i) {
+		char addressCharacter = s[i];
+		unsigned nibble = (unsigned(hash[i / 2]) >> (4 * (1 - (i % 2)))) & 0xf;
+		if (nibble >= 8)
+			ret += toupper(addressCharacter);
+		else
+			ret += tolower(addressCharacter);
+	}
+	return ret;
 }

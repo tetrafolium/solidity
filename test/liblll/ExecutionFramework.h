@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Alex Beregszaszi
  * @date 2016
@@ -38,26 +38,26 @@ namespace test {
 class LLLExecutionFramework : public ExecutionFramework {
 
 public:
-  LLLExecutionFramework();
+LLLExecutionFramework();
 
-  virtual bytes const &compileAndRunWithoutCheck(
-      std::string const &_sourceCode, u256 const &_value = 0,
-      std::string const &_contractName = "", bytes const &_arguments = bytes(),
-      std::map<std::string, Address> const &_libraryAddresses =
-          std::map<std::string, Address>()) override {
-    BOOST_REQUIRE(_contractName.empty());
-    BOOST_REQUIRE(_libraryAddresses.empty());
+virtual bytes const &compileAndRunWithoutCheck(
+	std::string const &_sourceCode, u256 const &_value = 0,
+	std::string const &_contractName = "", bytes const &_arguments = bytes(),
+	std::map<std::string, Address> const &_libraryAddresses =
+		std::map<std::string, Address>()) override {
+	BOOST_REQUIRE(_contractName.empty());
+	BOOST_REQUIRE(_libraryAddresses.empty());
 
-    std::vector<std::string> errors;
-    bytes bytecode = eth::compileLLL(_sourceCode, m_optimize, &errors);
-    if (!errors.empty()) {
-      for (auto const &error : errors)
-        std::cerr << error << std::endl;
-      BOOST_ERROR("Compiling contract failed");
-    }
-    sendMessage(bytecode + _arguments, true, _value);
-    return m_output;
-  }
+	std::vector<std::string> errors;
+	bytes bytecode = eth::compileLLL(_sourceCode, m_optimize, &errors);
+	if (!errors.empty()) {
+		for (auto const &error : errors)
+			std::cerr << error << std::endl;
+		BOOST_ERROR("Compiling contract failed");
+	}
+	sendMessage(bytecode + _arguments, true, _value);
+	return m_output;
+}
 };
 
 } // namespace test

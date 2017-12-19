@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file boostTest.cpp
  * @author Marko Simovic <markobarko@gmail.com>
  * @date 2014
@@ -41,26 +41,26 @@ using namespace boost::unit_test;
 
 namespace {
 void removeTestSuite(std::string const &_name) {
-  master_test_suite_t &master = framework::master_test_suite();
-  auto id = master.get(_name);
-  assert(id != INV_TEST_UNIT_ID);
-  master.remove(id);
+	master_test_suite_t &master = framework::master_test_suite();
+	auto id = master.get(_name);
+	assert(id != INV_TEST_UNIT_ID);
+	master.remove(id);
 }
 } // namespace
 
 test_suite *init_unit_test_suite(int /*argc*/, char * /*argv*/ []) {
-  master_test_suite_t &master = framework::master_test_suite();
-  master.p_name.value = "SolidityTests";
-  if (dev::test::Options::get().disableIPC) {
-    for (auto suite :
-         {"ABIDecoderTest", "ABIEncoderTest", "SolidityAuctionRegistrar",
-          "SolidityFixedFeeRegistrar", "SolidityWallet", "LLLERC20", "LLLENS",
-          "LLLEndToEndTest", "GasMeterTests", "SolidityEndToEndTest",
-          "SolidityOptimizer"})
-      removeTestSuite(suite);
-  }
-  if (dev::test::Options::get().disableSMT)
-    removeTestSuite("SMTChecker");
+	master_test_suite_t &master = framework::master_test_suite();
+	master.p_name.value = "SolidityTests";
+	if (dev::test::Options::get().disableIPC) {
+		for (auto suite :
+		     {"ABIDecoderTest", "ABIEncoderTest", "SolidityAuctionRegistrar",
+		      "SolidityFixedFeeRegistrar", "SolidityWallet", "LLLERC20", "LLLENS",
+		      "LLLEndToEndTest", "GasMeterTests", "SolidityEndToEndTest",
+		      "SolidityOptimizer"})
+			removeTestSuite(suite);
+	}
+	if (dev::test::Options::get().disableSMT)
+		removeTestSuite("SMTChecker");
 
-  return 0;
+	return 0;
 }

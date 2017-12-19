@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Christian <c@ethdev.com>
  * @date 2015
@@ -36,27 +36,28 @@ class TypeChecker;
  */
 class ConstantEvaluator : private ASTConstVisitor {
 public:
-  ConstantEvaluator(
-      ErrorReporter &_errorReporter, size_t _newDepth = 0,
-      std::shared_ptr<std::map<ASTNode const *, TypePointer>> _types =
-          std::make_shared<std::map<ASTNode const *, TypePointer>>())
-      : m_errorReporter(_errorReporter), m_depth(_newDepth), m_types(_types) {}
+ConstantEvaluator(
+	ErrorReporter &_errorReporter, size_t _newDepth = 0,
+	std::shared_ptr<std::map<ASTNode const *, TypePointer> > _types =
+		std::make_shared<std::map<ASTNode const *, TypePointer> >())
+	: m_errorReporter(_errorReporter), m_depth(_newDepth), m_types(_types) {
+}
 
-  TypePointer evaluate(Expression const &_expr);
+TypePointer evaluate(Expression const &_expr);
 
 private:
-  virtual void endVisit(BinaryOperation const &_operation);
-  virtual void endVisit(UnaryOperation const &_operation);
-  virtual void endVisit(Literal const &_literal);
-  virtual void endVisit(Identifier const &_identifier);
+virtual void endVisit(BinaryOperation const &_operation);
+virtual void endVisit(UnaryOperation const &_operation);
+virtual void endVisit(Literal const &_literal);
+virtual void endVisit(Identifier const &_identifier);
 
-  void setType(ASTNode const &_node, TypePointer const &_type);
-  TypePointer type(ASTNode const &_node);
+void setType(ASTNode const &_node, TypePointer const &_type);
+TypePointer type(ASTNode const &_node);
 
-  ErrorReporter &m_errorReporter;
-  /// Current recursion depth.
-  size_t m_depth = 0;
-  std::shared_ptr<std::map<ASTNode const *, TypePointer>> m_types;
+ErrorReporter &m_errorReporter;
+/// Current recursion depth.
+size_t m_depth = 0;
+std::shared_ptr<std::map<ASTNode const *, TypePointer> > m_types;
 };
 
 } // namespace solidity

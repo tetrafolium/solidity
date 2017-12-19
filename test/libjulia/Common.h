@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @date 2017
  * Common functions the iulia tests.
@@ -31,7 +31,7 @@ namespace dev {
 namespace solidity {
 class Scanner;
 class Error;
-using ErrorList = std::vector<std::shared_ptr<Error const>>;
+using ErrorList = std::vector<std::shared_ptr<Error const> >;
 namespace assembly {
 struct AsmAnalysisInfo;
 }
@@ -42,7 +42,7 @@ namespace test {
 void printErrors(solidity::ErrorList const &_errors,
                  solidity::Scanner const &_scanner);
 std::pair<std::shared_ptr<solidity::assembly::Block>,
-          std::shared_ptr<solidity::assembly::AsmAnalysisInfo>>
+          std::shared_ptr<solidity::assembly::AsmAnalysisInfo> >
 parse(std::string const &_source, bool _julia = true);
 solidity::assembly::Block disambiguate(std::string const &_source,
                                        bool _julia = true);

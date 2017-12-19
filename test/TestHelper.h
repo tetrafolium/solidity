@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file TestHelper.h
  */
 
@@ -28,16 +28,16 @@ namespace dev {
 namespace test {
 
 struct Options : boost::noncopyable {
-  std::string ipcPath;
-  bool showMessages = false;
-  bool optimize = false;
-  bool disableIPC = false;
-  bool disableSMT = false;
+	std::string ipcPath;
+	bool showMessages = false;
+	bool optimize = false;
+	bool disableIPC = false;
+	bool disableSMT = false;
 
-  static Options const &get();
+	static Options const &get();
 
 private:
-  Options();
+	Options();
 };
 
 } // namespace test

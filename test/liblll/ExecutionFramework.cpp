@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Alex Beregszaszi
  * @date 2016
@@ -27,4 +27,5 @@
 using namespace dev::test;
 using namespace dev::lll::test;
 
-LLLExecutionFramework::LLLExecutionFramework() : ExecutionFramework() {}
+LLLExecutionFramework::LLLExecutionFramework() : ExecutionFramework() {
+}

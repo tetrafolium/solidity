@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Christian <c@ethdev.com>
  * @date 2015
@@ -39,77 +39,78 @@ namespace test {
 
 class GasMeterTestFramework : public SolidityExecutionFramework {
 public:
-  GasMeterTestFramework() {}
-  void compile(string const &_sourceCode) {
-    m_compiler.reset(false);
-    m_compiler.addSource("", "pragma solidity >=0.0;\n" + _sourceCode);
-    m_compiler.setOptimiserSettings(dev::test::Options::get().optimize);
-    BOOST_REQUIRE_MESSAGE(m_compiler.compile(), "Compiling contract failed");
+GasMeterTestFramework() {
+}
+void compile(string const &_sourceCode) {
+	m_compiler.reset(false);
+	m_compiler.addSource("", "pragma solidity >=0.0;\n" + _sourceCode);
+	m_compiler.setOptimiserSettings(dev::test::Options::get().optimize);
+	BOOST_REQUIRE_MESSAGE(m_compiler.compile(), "Compiling contract failed");
 
-    AssemblyItems const *items =
-        m_compiler.runtimeAssemblyItems(m_compiler.lastContractName());
-    ASTNode const &sourceUnit = m_compiler.ast("");
-    BOOST_REQUIRE(items != nullptr);
-    m_gasCosts = GasEstimator::breakToStatementLevel(
-        GasEstimator::structuralEstimation(
-            *items, vector<ASTNode const *>({&sourceUnit})),
-        {&sourceUnit});
-  }
+	AssemblyItems const *items =
+		m_compiler.runtimeAssemblyItems(m_compiler.lastContractName());
+	ASTNode const &sourceUnit = m_compiler.ast("");
+	BOOST_REQUIRE(items != nullptr);
+	m_gasCosts = GasEstimator::breakToStatementLevel(
+		GasEstimator::structuralEstimation(
+			*items, vector<ASTNode const *>({&sourceUnit})),
+		{&sourceUnit});
+}
 
-  void testCreationTimeGas(string const &_sourceCode) {
-    compileAndRun(_sourceCode);
-    auto state = make_shared<KnownState>();
-    PathGasMeter meter(
-        *m_compiler.assemblyItems(m_compiler.lastContractName()));
-    GasMeter::GasConsumption gas = meter.estimateMax(0, state);
-    u256 bytecodeSize(m_compiler.runtimeObject(m_compiler.lastContractName())
-                          .bytecode.size());
-    // costs for deployment
-    gas += bytecodeSize * GasCosts::createDataGas;
-    // costs for transaction
-    gas += gasForTransaction(
-        m_compiler.object(m_compiler.lastContractName()).bytecode, true);
+void testCreationTimeGas(string const &_sourceCode) {
+	compileAndRun(_sourceCode);
+	auto state = make_shared<KnownState>();
+	PathGasMeter meter(
+		*m_compiler.assemblyItems(m_compiler.lastContractName()));
+	GasMeter::GasConsumption gas = meter.estimateMax(0, state);
+	u256 bytecodeSize(m_compiler.runtimeObject(m_compiler.lastContractName())
+	                  .bytecode.size());
+	// costs for deployment
+	gas += bytecodeSize * GasCosts::createDataGas;
+	// costs for transaction
+	gas += gasForTransaction(
+		m_compiler.object(m_compiler.lastContractName()).bytecode, true);
 
-    BOOST_REQUIRE(!gas.isInfinite);
-    BOOST_CHECK(gas.value == m_gasUsed);
-  }
+	BOOST_REQUIRE(!gas.isInfinite);
+	BOOST_CHECK(gas.value == m_gasUsed);
+}
 
-  /// Compares the gas computed by PathGasMeter for the given signature (but
-  /// unknown arguments) against the actual gas usage computed by the VM on the
-  /// given set of argument variants.
-  void testRunTimeGas(string const &_sig, vector<bytes> _argumentVariants) {
-    u256 gasUsed = 0;
-    GasMeter::GasConsumption gas;
-    FixedHash<4> hash(dev::keccak256(_sig));
-    for (bytes const &arguments : _argumentVariants) {
-      sendMessage(hash.asBytes() + arguments, false, 0);
-      gasUsed = max(gasUsed, m_gasUsed);
-      gas = max(gas, gasForTransaction(hash.asBytes() + arguments, false));
-    }
+/// Compares the gas computed by PathGasMeter for the given signature (but
+/// unknown arguments) against the actual gas usage computed by the VM on the
+/// given set of argument variants.
+void testRunTimeGas(string const &_sig, vector<bytes> _argumentVariants) {
+	u256 gasUsed = 0;
+	GasMeter::GasConsumption gas;
+	FixedHash<4> hash(dev::keccak256(_sig));
+	for (bytes const &arguments : _argumentVariants) {
+		sendMessage(hash.asBytes() + arguments, false, 0);
+		gasUsed = max(gasUsed, m_gasUsed);
+		gas = max(gas, gasForTransaction(hash.asBytes() + arguments, false));
+	}
 
-    gas += GasEstimator::functionalEstimation(
-        *m_compiler.runtimeAssemblyItems(m_compiler.lastContractName()), _sig);
-    BOOST_REQUIRE(!gas.isInfinite);
-    BOOST_CHECK(gas.value == m_gasUsed);
-  }
+	gas += GasEstimator::functionalEstimation(
+		*m_compiler.runtimeAssemblyItems(m_compiler.lastContractName()), _sig);
+	BOOST_REQUIRE(!gas.isInfinite);
+	BOOST_CHECK(gas.value == m_gasUsed);
+}
 
-  static GasMeter::GasConsumption gasForTransaction(bytes const &_data,
-                                                    bool _isCreation) {
-    GasMeter::GasConsumption gas =
-        _isCreation ? GasCosts::txCreateGas : GasCosts::txGas;
-    for (auto i : _data)
-      gas += i != 0 ? GasCosts::txDataNonZeroGas : GasCosts::txDataZeroGas;
-    return gas;
-  }
+static GasMeter::GasConsumption gasForTransaction(bytes const &_data,
+                                                  bool _isCreation) {
+	GasMeter::GasConsumption gas =
+		_isCreation ? GasCosts::txCreateGas : GasCosts::txGas;
+	for (auto i : _data)
+		gas += i != 0 ? GasCosts::txDataNonZeroGas : GasCosts::txDataZeroGas;
+	return gas;
+}
 
 protected:
-  map<ASTNode const *, eth::GasMeter::GasConsumption> m_gasCosts;
+map<ASTNode const *, eth::GasMeter::GasConsumption> m_gasCosts;
 };
 
 BOOST_FIXTURE_TEST_SUITE(GasMeterTests, GasMeterTestFramework)
 
 BOOST_AUTO_TEST_CASE(non_overlapping_filtered_costs) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			bytes x;
 			function f(uint a) returns (uint b) {
@@ -122,28 +123,28 @@ BOOST_AUTO_TEST_CASE(non_overlapping_filtered_costs) {
 			}
 		}
 	)";
-  compile(sourceCode);
-  for (auto first = m_gasCosts.cbegin(); first != m_gasCosts.cend(); ++first) {
-    auto second = first;
-    for (++second; second != m_gasCosts.cend(); ++second)
-      if (first->first->location().intersects(second->first->location())) {
-        BOOST_CHECK_MESSAGE(false, "Source locations should not overlap!");
-        auto scannerFromSource =
-            [&](string const &_sourceName) -> Scanner const & {
-          return m_compiler.scanner(_sourceName);
-        };
-        SourceReferenceFormatter::printSourceLocation(
-            cout, &first->first->location(), scannerFromSource);
-        SourceReferenceFormatter::printSourceLocation(
-            cout, &second->first->location(), scannerFromSource);
-      }
-  }
+	compile(sourceCode);
+	for (auto first = m_gasCosts.cbegin(); first != m_gasCosts.cend(); ++first) {
+		auto second = first;
+		for (++second; second != m_gasCosts.cend(); ++second)
+			if (first->first->location().intersects(second->first->location())) {
+				BOOST_CHECK_MESSAGE(false, "Source locations should not overlap!");
+				auto scannerFromSource =
+					[&](string const &_sourceName) -> Scanner const & {
+						return m_compiler.scanner(_sourceName);
+					};
+				SourceReferenceFormatter::printSourceLocation(
+					cout, &first->first->location(), scannerFromSource);
+				SourceReferenceFormatter::printSourceLocation(
+					cout, &second->first->location(), scannerFromSource);
+			}
+	}
 }
 
 BOOST_AUTO_TEST_CASE(simple_contract) {
-  // Tests a simple "deploy contract" code without constructor. The actual
-  // contract is not relevant.
-  char const *sourceCode = R"(
+	// Tests a simple "deploy contract" code without constructor. The actual
+	// contract is not relevant.
+	char const *sourceCode = R"(
 		contract test {
 			bytes32 public shaValue;
 			function f(uint a) {
@@ -151,11 +152,11 @@ BOOST_AUTO_TEST_CASE(simple_contract) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
+	testCreationTimeGas(sourceCode);
 }
 
 BOOST_AUTO_TEST_CASE(store_keccak256) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			bytes32 public shaValue;
 			function test(uint a) {
@@ -163,11 +164,11 @@ BOOST_AUTO_TEST_CASE(store_keccak256) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
+	testCreationTimeGas(sourceCode);
 }
 
 BOOST_AUTO_TEST_CASE(updating_store) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			uint data;
 			uint data2;
@@ -178,11 +179,11 @@ BOOST_AUTO_TEST_CASE(updating_store) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
+	testCreationTimeGas(sourceCode);
 }
 
 BOOST_AUTO_TEST_CASE(branches) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			uint data;
 			uint data2;
@@ -194,12 +195,12 @@ BOOST_AUTO_TEST_CASE(branches) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
 }
 
 BOOST_AUTO_TEST_CASE(function_calls) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			uint data;
 			uint data2;
@@ -214,12 +215,12 @@ BOOST_AUTO_TEST_CASE(function_calls) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
 }
 
 BOOST_AUTO_TEST_CASE(multiple_external_functions) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract test {
 			uint data;
 			uint data2;
@@ -234,13 +235,13 @@ BOOST_AUTO_TEST_CASE(multiple_external_functions) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
-  testRunTimeGas("g(uint256)", vector<bytes>{encodeArgs(2)});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("f(uint256)", vector<bytes>{encodeArgs(2), encodeArgs(8)});
+	testRunTimeGas("g(uint256)", vector<bytes>{encodeArgs(2)});
 }
 
 BOOST_AUTO_TEST_CASE(exponent_size) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract A {
 			function g(uint x) returns (uint) {
 				return x ** 0x100;
@@ -250,26 +251,26 @@ BOOST_AUTO_TEST_CASE(exponent_size) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("g(uint256)", vector<bytes>{encodeArgs(2)});
-  testRunTimeGas("h(uint256)", vector<bytes>{encodeArgs(2)});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("g(uint256)", vector<bytes>{encodeArgs(2)});
+	testRunTimeGas("h(uint256)", vector<bytes>{encodeArgs(2)});
 }
 
 BOOST_AUTO_TEST_CASE(balance_gas) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract A {
 			function lookup_balance(address a) returns (uint) {
 				return a.balance;
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("lookup_balance(address)",
-                 vector<bytes>{encodeArgs(2), encodeArgs(100)});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("lookup_balance(address)",
+	               vector<bytes>{encodeArgs(2), encodeArgs(100)});
 }
 
 BOOST_AUTO_TEST_CASE(extcodesize_gas) {
-  char const *sourceCode = R"(
+	char const *sourceCode = R"(
 		contract A {
 			function f() returns (uint _s) {
 				assembly {
@@ -278,8 +279,8 @@ BOOST_AUTO_TEST_CASE(extcodesize_gas) {
 			}
 		}
 	)";
-  testCreationTimeGas(sourceCode);
-  testRunTimeGas("f()", vector<bytes>{encodeArgs()});
+	testCreationTimeGas(sourceCode);
+	testRunTimeGas("f()", vector<bytes>{encodeArgs()});
 }
 
 BOOST_AUTO_TEST_SUITE_END()

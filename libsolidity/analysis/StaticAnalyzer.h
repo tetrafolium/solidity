@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * @author Federico Bond <federicobond@gmail.com>
  * @date 2016
@@ -40,55 +40,56 @@ namespace solidity {
  */
 class StaticAnalyzer : private ASTConstVisitor {
 public:
-  /// @param _errorReporter provides the error logging functionality.
-  explicit StaticAnalyzer(ErrorReporter &_errorReporter)
-      : m_errorReporter(_errorReporter) {}
+/// @param _errorReporter provides the error logging functionality.
+explicit StaticAnalyzer(ErrorReporter &_errorReporter)
+	: m_errorReporter(_errorReporter) {
+}
 
-  /// Performs static analysis on the given source unit and all of its
-  /// sub-nodes.
-  /// @returns true iff all checks passed. Note even if all checks passed,
-  /// errors() can still contain warnings
-  bool analyze(SourceUnit const &_sourceUnit);
+/// Performs static analysis on the given source unit and all of its
+/// sub-nodes.
+/// @returns true iff all checks passed. Note even if all checks passed,
+/// errors() can still contain warnings
+bool analyze(SourceUnit const &_sourceUnit);
 
 private:
-  virtual bool visit(ContractDefinition const &_contract) override;
-  virtual void endVisit(ContractDefinition const &_contract) override;
+virtual bool visit(ContractDefinition const &_contract) override;
+virtual void endVisit(ContractDefinition const &_contract) override;
 
-  virtual bool visit(FunctionDefinition const &_function) override;
-  virtual void endVisit(FunctionDefinition const &_function) override;
+virtual bool visit(FunctionDefinition const &_function) override;
+virtual void endVisit(FunctionDefinition const &_function) override;
 
-  virtual bool visit(ExpressionStatement const &_statement) override;
-  virtual bool visit(VariableDeclaration const &_variable) override;
-  virtual bool visit(Identifier const &_identifier) override;
-  virtual bool visit(Return const &_return) override;
-  virtual bool visit(MemberAccess const &_memberAccess) override;
-  virtual bool visit(InlineAssembly const &_inlineAssembly) override;
+virtual bool visit(ExpressionStatement const &_statement) override;
+virtual bool visit(VariableDeclaration const &_variable) override;
+virtual bool visit(Identifier const &_identifier) override;
+virtual bool visit(Return const &_return) override;
+virtual bool visit(MemberAccess const &_memberAccess) override;
+virtual bool visit(InlineAssembly const &_inlineAssembly) override;
 
-  /// @returns the size of this type in storage, including all sub-types.
-  static bigint
-  structureSizeEstimate(Type const &_type,
-                        std::set<StructDefinition const *> &_structsSeen);
+/// @returns the size of this type in storage, including all sub-types.
+static bigint
+structureSizeEstimate(Type const &_type,
+                      std::set<StructDefinition const *> &_structsSeen);
 
-  ErrorReporter &m_errorReporter;
+ErrorReporter &m_errorReporter;
 
-  /// Flag that indicates whether the current contract definition is a library.
-  bool m_library = false;
+/// Flag that indicates whether the current contract definition is a library.
+bool m_library = false;
 
-  /// Flag that indicates whether a public function does not contain the
-  /// "payable" modifier.
-  bool m_nonPayablePublic = false;
+/// Flag that indicates whether a public function does not contain the
+/// "payable" modifier.
+bool m_nonPayablePublic = false;
 
-  /// Number of uses of each (named) local variable in a function, counter is
-  /// initialized with zero.
-  std::map<VariableDeclaration const *, int> m_localVarUseCount;
+/// Number of uses of each (named) local variable in a function, counter is
+/// initialized with zero.
+std::map<VariableDeclaration const *, int> m_localVarUseCount;
 
-  FunctionDefinition const *m_currentFunction = nullptr;
+FunctionDefinition const *m_currentFunction = nullptr;
 
-  /// Flag that indicates a constructor.
-  bool m_constructor = false;
+/// Flag that indicates a constructor.
+bool m_constructor = false;
 
-  /// Current contract.
-  ContractDefinition const *m_currentContract = nullptr;
+/// Current contract.
+ContractDefinition const *m_currentContract = nullptr;
 };
 
 } // namespace solidity

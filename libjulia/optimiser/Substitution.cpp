@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /**
  * Specific AST copier that replaces certain identifiers with expressions.
  */
@@ -27,11 +27,11 @@ using namespace dev;
 using namespace dev::julia;
 
 Statement Substitution::translate(Statement const &_statement) {
-  if (_statement.type() == typeid(Identifier)) {
-    string const &name = boost::get<Identifier>(_statement).name;
-    if (m_substitutions.count(name))
-      // No recursive substitution
-      return ASTCopier().translate(*m_substitutions.at(name));
-  }
-  return ASTCopier::translate(_statement);
+	if (_statement.type() == typeid(Identifier)) {
+		string const &name = boost::get<Identifier>(_statement).name;
+		if (m_substitutions.count(name))
+			// No recursive substitution
+			return ASTCopier().translate(*m_substitutions.at(name));
+	}
+	return ASTCopier::translate(_statement);
 }

@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file UndefMacros.h
  * @author Lefteris  <lefteris@ethdev.com>
  * @date 2015
@@ -38,10 +38,10 @@
 #endif
 
 #elif defined(DELETE) || defined(IN) || defined(VOID) || defined(THIS) ||      \
-    defined(CONST) || defined(interface)
+        defined(CONST) || defined(interface)
 
-#error "The preceding macros in this header file are reserved for V8's "\
-"TOKEN_LIST. Please add a platform specific define above to undefine "\
-"overlapping macros."
+#error "The preceding macros in this header file are reserved for V8's " \
+        "TOKEN_LIST. Please add a platform specific define above to undefine " \
+        "overlapping macros."
 
 #endif

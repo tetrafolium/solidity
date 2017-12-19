@@ -13,7 +13,7 @@
 
         You should have received a copy of the GNU General Public License
         along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 /** @file CommonIO.h
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
@@ -47,17 +47,17 @@ void writeFile(std::string const &_file, bytesConstRef _data,
 /// pre-exists.
 inline void writeFile(std::string const &_file, bytes const &_data,
                       bool _writeDeleteRename = false) {
-  writeFile(_file, bytesConstRef(&_data), _writeDeleteRename);
+	writeFile(_file, bytesConstRef(&_data), _writeDeleteRename);
 }
 inline void writeFile(std::string const &_file, std::string const &_data,
                       bool _writeDeleteRename = false) {
-  writeFile(_file, bytesConstRef(_data), _writeDeleteRename);
+	writeFile(_file, bytesConstRef(_data), _writeDeleteRename);
 }
 /// Converts arbitrary value to string representation using std::stringstream.
 template <class _T> std::string toString(_T const &_t) {
-  std::ostringstream o;
-  o << _t;
-  return o.str();
+	std::ostringstream o;
+	o << _t;
+	return o.str();
 }
 
 } // namespace dev
