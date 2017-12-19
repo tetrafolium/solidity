@@ -35,6 +35,7 @@ def extract_test_cases(path):
 
     return tests
 
+
 # Contract sources are indented by 4 spaces.
 # Look for `pragma solidity` and abort a line not indented properly.
 # If the comment `// This will not compile` is above the pragma,
@@ -80,7 +81,8 @@ def extract_docs_cases(path):
 
 def write_cases(tests):
     for test in tests:
-        open('test_%s.sol' % hashlib.sha256(test).hexdigest(), 'wb').write(test)
+        open('test_%s.sol' % hashlib.sha256(test).hexdigest(),
+             'wb').write(test)
 
 
 if __name__ == '__main__':

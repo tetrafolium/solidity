@@ -21,7 +21,7 @@ for optimize in [False, True]:
             for contractName in sorted(result['contracts'].keys()):
                 report.write(contractName + ' ' +
                              result['contracts'][contractName]['bin'] + '\n')
-                report.write(contractName + ' ' +
-                             result['contracts'][contractName]['metadata'] + '\n')
+                report.write(contractName + ' ' + result['contracts']
+                             [contractName]['metadata'] + '\n')
         except:
             report.write(f + ": ERROR\n")
