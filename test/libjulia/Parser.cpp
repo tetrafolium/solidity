@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(multiple_assignment) {
 		"Label name / variable name must precede \",\" (multiple assignment).");
 	CHECK_ERROR(
 		"{ let x:u256 function f() -> a:u256, b:u256 {} x, 123:u256 := f() }",
-		ParserError, "Variable name expected in multiple assignemnt.");
+		ParserError, "Variable name expected in multiple assignment.");
 
 	/// NOTE: Travis hiccups if not having a variable
 	char const *text = R"(

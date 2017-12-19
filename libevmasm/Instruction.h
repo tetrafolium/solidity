@@ -36,7 +36,7 @@ DEV_SIMPLE_EXCEPTION(InvalidOpcode);
 enum class Instruction : uint8_t {
 	STOP = 0x00, ///< halts execution
 	ADD,   ///< addition operation
-	MUL,   ///< mulitplication operation
+	MUL,   ///< multiplication operation
 	SUB,   ///< subtraction operation
 	DIV,   ///< integer division operation
 	SDIV,  ///< signed integer division operation
@@ -47,11 +47,11 @@ enum class Instruction : uint8_t {
 	EXP,   ///< exponential operation
 	SIGNEXTEND, ///< extend length of signed integer
 
-	LT = 0x10, ///< less-than comparision
-	GT,  ///< greater-than comparision
-	SLT, ///< signed less-than comparision
-	SGT, ///< signed greater-than comparision
-	EQ,  ///< equality comparision
+	LT = 0x10, ///< less-than comparison
+	GT,  ///< greater-than comparison
+	SLT, ///< signed less-than comparison
+	SGT, ///< signed greater-than comparison
+	EQ,  ///< equality comparison
 	ISZERO, ///< simple not operator
 	AND, ///< bitwise AND operation
 	OR,  ///< bitwise OR operation

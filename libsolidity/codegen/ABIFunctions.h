@@ -186,7 +186,7 @@ std::string roundUpFunction();
 std::string arrayLengthFunction(ArrayType const &_type);
 /// @returns the name of a function that computes the number of bytes required
 /// to store an array in memory given its length (internally encoded, not ABI
-/// encoded). The function reverts for too large lengthes.
+/// encoded). The function reverts for too large lengths.
 std::string arrayAllocationSizeFunction(ArrayType const &_type);
 /// @returns the name of a function that converts a storage slot number
 /// or a memory pointer to the slot number / memory pointer for the data

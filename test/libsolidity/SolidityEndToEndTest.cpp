@@ -3964,7 +3964,7 @@ BOOST_AUTO_TEST_CASE(inline_member_init) {
 	ABI_CHECK(callContractFunction("get()"), encodeArgs(5, 6, 8));
 }
 
-BOOST_AUTO_TEST_CASE(inline_member_init_inheritence) {
+BOOST_AUTO_TEST_CASE(inline_member_init_inheritance) {
 	char const *sourceCode = R"(
 		contract Base {
 			function Base(){}
@@ -3981,7 +3981,7 @@ BOOST_AUTO_TEST_CASE(inline_member_init_inheritence) {
 	ABI_CHECK(callContractFunction("getDMember()"), encodeArgs(6));
 }
 
-BOOST_AUTO_TEST_CASE(inline_member_init_inheritence_without_constructor) {
+BOOST_AUTO_TEST_CASE(inline_member_init_inheritance_without_constructor) {
 	char const *sourceCode = R"(
 		contract Base {
 			uint m_base = 5;
@@ -5628,9 +5628,9 @@ BOOST_AUTO_TEST_CASE(return_multiple_strings_of_various_sizes) {
 	          "QRSTUVXYZ"
 	          "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOP"
 	          "QRSTUVXYZ");
-	vector<size_t> lengthes {0, 30, 32, 63, 64, 65, 210, 300};
-	for (auto l1 : lengthes)
-		for (auto l2 : lengthes) {
+	vector<size_t> lengths {0, 30, 32, 63, 64, 65, 210, 300};
+	for (auto l1 : lengths)
+		for (auto l2 : lengths) {
 			bytes dyn1 = encodeArgs(u256(l1), s1.substr(0, l1));
 			bytes dyn2 = encodeArgs(u256(l2), s2.substr(0, l2));
 			bytes args = encodeArgs(u256(0x60), u256(l1), u256(0x60 + dyn1.size())) +
@@ -5703,9 +5703,9 @@ BOOST_AUTO_TEST_CASE(bytes_in_function_calls) {
 	          "opqrstuvwxyz");
 	string s2("ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOP"
 	          "QRSTUVXYZ");
-	vector<size_t> lengthes {0, 31, 64, 65};
-	for (auto l1 : lengthes)
-		for (auto l2 : lengthes) {
+	vector<size_t> lengths {0, 31, 64, 65};
+	for (auto l1 : lengths)
+		for (auto l2 : lengths) {
 			bytes dyn1 = encodeArgs(u256(l1), s1.substr(0, l1));
 			bytes dyn2 = encodeArgs(u256(l2), s2.substr(0, l2));
 			bytes args1 = encodeArgs(u256(0x60), u256(l1), u256(0x60 + dyn1.size())) +
@@ -5743,8 +5743,8 @@ BOOST_AUTO_TEST_CASE(return_bytes_internal) {
 	compileAndRun(sourceCode, 0, "Main");
 	string s1("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn"
 	          "opqrstuvwxyz");
-	vector<size_t> lengthes {0, 31, 64, 65};
-	for (auto l1 : lengthes) {
+	vector<size_t> lengths {0, 31, 64, 65};
+	for (auto l1 : lengths) {
 		bytes dyn1 = encodeArgs(u256(l1), s1.substr(0, l1));
 		bytes args1 = encodeArgs(u256(0x20)) + dyn1;
 		BOOST_REQUIRE(callContractFunction("set(bytes)", asString(args1)) ==
@@ -10019,7 +10019,7 @@ BOOST_AUTO_TEST_CASE(inlineasm_empty_let) {
 BOOST_AUTO_TEST_CASE(bare_call_invalid_address) {
 	char const *sourceCode = R"(
 		contract C {
-			/// Calling into non-existant account is successful (creates the account)
+			/// Calling into non-existent account is successful (creates the account)
 			function f() external view returns (bool) {
 				return address(0x4242).call();
 			}
@@ -10316,10 +10316,10 @@ BOOST_AUTO_TEST_CASE(snark) {
 			Pairing.G1Point memory p2;
 			p1.X = 1; p1.Y = 2;
 			p2.X = 1; p2.Y = 2;
-			var explict_sum = Pairing.add(p1, p2);
+			var explicit_sum = Pairing.add(p1, p2);
 			var scalar_prod = Pairing.mul(p1, 2);
-			return (explict_sum.X == scalar_prod.X &&
-					explict_sum.Y == scalar_prod.Y);
+			return (explicit_sum.X == scalar_prod.X &&
+					explicit_sum.Y == scalar_prod.Y);
 		}
 		function g() returns (bool) {
 			Pairing.G1Point memory x = Pairing.add(Pairing.P1(), Pairing.negate(Pairing.P1()));

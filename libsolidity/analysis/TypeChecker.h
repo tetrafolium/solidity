@@ -63,7 +63,7 @@ virtual bool visit(ContractDefinition const &_contract) override;
 void checkContractDuplicateFunctions(ContractDefinition const &_contract);
 void checkContractDuplicateEvents(ContractDefinition const &_contract);
 void checkContractIllegalOverrides(ContractDefinition const &_contract);
-/// Reports a type error with an appropiate message if overriden function
+/// Reports a type error with an appropriate message if overridden function
 /// signature differs. Also stores the direct super function in the AST
 /// annotations.
 void checkFunctionOverride(FunctionDefinition const &function,

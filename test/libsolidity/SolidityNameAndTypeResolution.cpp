@@ -1823,7 +1823,7 @@ BOOST_AUTO_TEST_CASE(enum_member_access) {
 	CHECK_SUCCESS(text);
 }
 
-BOOST_AUTO_TEST_CASE(enum_member_access_accross_contracts) {
+BOOST_AUTO_TEST_CASE(enum_member_access_across_contracts) {
 	char const *text = R"(
 		contract Interface {
 			enum MyEnum { One, Two }
@@ -5907,7 +5907,7 @@ BOOST_AUTO_TEST_CASE(address_test_for_bug_in_implementation) {
 }
 
 BOOST_AUTO_TEST_CASE(early_exit_on_fatal_errors) {
-	// This tests a crash that occured because we did not stop for fatal errors.
+	// This tests a crash that occurred because we did not stop for fatal errors.
 	char const *text = R"(
 		contract C {
 			struct S {

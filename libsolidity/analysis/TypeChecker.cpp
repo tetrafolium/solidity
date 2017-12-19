@@ -366,7 +366,7 @@ void TypeChecker::overrideError(FunctionDefinition const &function,
                                 string message) {
 	m_errorReporter.typeError(
 		function.location(),
-		SecondarySourceLocation().append("Overriden function is here:",
+		SecondarySourceLocation().append("Overridden function is here:",
 		                                 super.location()),
 		message);
 }
@@ -1530,7 +1530,7 @@ bool TypeChecker::visit(FunctionCall const &_functionCall) {
 		auto const &parameterNames = functionType->parameterNames();
 		if (functionType->takesArbitraryParameters())
 			m_errorReporter.typeError(_functionCall.location(),
-			                          "Named arguments cannnot be used for functions "
+			                          "Named arguments cannot be used for functions "
 			                          "that take arbitrary parameters.");
 		else if (parameterNames.size() > argumentNames.size())
 			m_errorReporter.typeError(_functionCall.location(),

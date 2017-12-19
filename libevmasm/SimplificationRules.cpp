@@ -69,7 +69,7 @@ template <class S> S modWorkaround(S const &_a, S const &_b) {
 }
 
 Rules::Rules() {
-	// Multiple occurences of one of these inside one rule must match the same
+	// Multiple occurrences of one of these inside one rule must match the same
 	// equivalence class. Constants.
 	Pattern A(Push);
 	Pattern B(Push);

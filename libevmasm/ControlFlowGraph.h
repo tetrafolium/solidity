@@ -37,7 +37,7 @@ using KnownStatePointer = std::shared_ptr<KnownState>;
 
 /**
  * Identifier for a block, coincides with the tag number of an AssemblyItem but
- * adds a special ID for the inital block.
+ * adds a special ID for the initial block.
  */
 class BlockId {
 public:

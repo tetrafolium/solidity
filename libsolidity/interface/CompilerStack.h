@@ -84,7 +84,7 @@ explicit CompilerStack(
 	: m_readFile(_readFile), m_errorList(), m_errorReporter(m_errorList) {
 }
 
-/// @returns the list of errors that occured during parsing and type checking.
+/// @returns the list of errors that occurred during parsing and type checking.
 ErrorList const &errors() const {
 	return m_errorReporter.errors();
 }

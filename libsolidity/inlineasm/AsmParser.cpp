@@ -141,7 +141,7 @@ assembly::Statement Parser::parseStatement() {
 			expectToken(Token::Comma);
 			statement = parseElementaryOperation(false);
 			if (statement.type() != typeid(assembly::Identifier))
-				fatalParserError("Variable name expected in multiple assignemnt.");
+				fatalParserError("Variable name expected in multiple assignment.");
 			assignment.variableNames.emplace_back(
 				boost::get<assembly::Identifier>(statement));
 		} while (currentToken() == Token::Comma);

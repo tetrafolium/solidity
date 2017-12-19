@@ -30,7 +30,7 @@ namespace solidity {
 
 /**
  * Standard JSON compiler interface, which expects a JSON input and returns a
- * JSON ouput. See
+ * JSON output. See
  * docs/using-the-compiler#compiler-input-and-output-json-description.
  */
 class StandardCompiler : boost::noncopyable {
