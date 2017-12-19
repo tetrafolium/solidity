@@ -11,8 +11,10 @@ import json
 import re
 import sys
 
+
 def comp(version_string):
     return [int(c) for c in version_string.split('.')]
+
 
 path = os.path.dirname(os.path.realpath(__file__))
 with open(path + '/../docs/bugs.json') as bugsFile:

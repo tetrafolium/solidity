@@ -59,6 +59,7 @@ def readDependencies(fname):
                         os.system("chmod +w " + fname)
                         os.system(command)
 
+
 root = sys.argv[1]
 for (dirpath, dirnames, filenames) in os.walk(root):
     for filename in filenames:
