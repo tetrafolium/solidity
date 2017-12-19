@@ -23,7 +23,7 @@ inspecode:
 
   cpplint:          ### for C++
     options:
-      filter:           # 62609, if no filter options
+      --filter:         # 62609, if no filter options
       - -whitespace     # 59855
       - -build          #  1156
       - -readability    #  1019
