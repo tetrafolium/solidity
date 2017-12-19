@@ -38,13 +38,13 @@ namespace julia
 class Substitution: public ASTCopier
 {
 public:
-	Substitution(std::map<std::string, Statement const*> const& _substitutions):
-		m_substitutions(_substitutions)
-	{}
-	virtual Statement translate(Statement const& _statement) override;
+    Substitution(std::map<std::string, Statement const*> const& _substitutions):
+        m_substitutions(_substitutions)
+    {}
+    virtual Statement translate(Statement const& _statement) override;
 
 private:
-	std::map<std::string, Statement const*> const& m_substitutions;
+    std::map<std::string, Statement const*> const& m_substitutions;
 };
 
 }

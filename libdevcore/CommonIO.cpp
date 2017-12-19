@@ -41,80 +41,80 @@ namespace
 template <typename _T>
 inline _T readFile(std::string const& _file)
 {
-	_T ret;
-	size_t const c_elementSize = sizeof(typename _T::value_type);
-	std::ifstream is(_file, std::ifstream::binary);
-	if (!is)
-		return ret;
+    _T ret;
+    size_t const c_elementSize = sizeof(typename _T::value_type);
+    std::ifstream is(_file, std::ifstream::binary);
+    if (!is)
+        return ret;
 
-	// get length of file:
-	is.seekg(0, is.end);
-	streamoff length = is.tellg();
-	if (length == 0)
-		return ret; // do not read empty file (MSVC does not like it)
-	is.seekg(0, is.beg);
+    // get length of file:
+    is.seekg(0, is.end);
+    streamoff length = is.tellg();
+    if (length == 0)
+        return ret; // do not read empty file (MSVC does not like it)
+    is.seekg(0, is.beg);
 
-	ret.resize((length + c_elementSize - 1) / c_elementSize);
-	is.read(const_cast<char*>(reinterpret_cast<char const*>(ret.data())), length);
-	return ret;
+    ret.resize((length + c_elementSize - 1) / c_elementSize);
+    is.read(const_cast<char*>(reinterpret_cast<char const*>(ret.data())), length);
+    return ret;
 }
 
 }
 
 string dev::readFileAsString(string const& _file)
 {
-	return readFile<string>(_file);
+    return readFile<string>(_file);
 }
 
 string dev::readStandardInput()
 {
-	string ret;
-	while (!cin.eof())
-	{
-		string tmp;
-		// NOTE: this will read until EOF or NL
-		getline(cin, tmp);
-		ret.append(tmp);
-		ret.append("\n");
-	}
-	return ret;
+    string ret;
+    while (!cin.eof())
+    {
+        string tmp;
+        // NOTE: this will read until EOF or NL
+        getline(cin, tmp);
+        ret.append(tmp);
+        ret.append("\n");
+    }
+    return ret;
 }
 
 void dev::writeFile(std::string const& _file, bytesConstRef _data, bool _writeDeleteRename)
 {
-	namespace fs = boost::filesystem;
-	if (_writeDeleteRename)
-	{
-		fs::path tempPath = fs::unique_path(_file + "-%%%%%%");
-		writeFile(tempPath.string(), _data, false);
-		// will delete _file if it exists
-		fs::rename(tempPath, _file);
-	}
-	else
-	{
-		// create directory if not existent
-		fs::path p(_file);
-		if (!fs::exists(p.parent_path()))
-		{
-			fs::create_directories(p.parent_path());
-			try
-			{
-				fs::permissions(p.parent_path(), fs::owner_all);
-			}
-			catch (...)
-			{
-			}
-		}
+    namespace fs = boost::filesystem;
+    if (_writeDeleteRename)
+    {
+        fs::path tempPath = fs::unique_path(_file + "-%%%%%%");
+        writeFile(tempPath.string(), _data, false);
+        // will delete _file if it exists
+        fs::rename(tempPath, _file);
+    }
+    else
+    {
+        // create directory if not existent
+        fs::path p(_file);
+        if (!fs::exists(p.parent_path()))
+        {
+            fs::create_directories(p.parent_path());
+            try
+            {
+                fs::permissions(p.parent_path(), fs::owner_all);
+            }
+            catch (...)
+            {
+            }
+        }
 
-		ofstream s(_file, ios::trunc | ios::binary);
-		s.write(reinterpret_cast<char const*>(_data.data()), _data.size());
-		assertThrow(s, FileError, "Could not write to file: " + _file);
-		try
-		{
-			fs::permissions(_file, fs::owner_read|fs::owner_write);
-		}
-		catch (...)
-		{
-		}
-	}
+        ofstream s(_file, ios::trunc | ios::binary);
+        s.write(reinterpret_cast<char const*>(_data.data()), _data.size());
+        assertThrow(s, FileError, "Could not write to file: " + _file);
+        try
+        {
+            fs::permissions(_file, fs::owner_read|fs::owner_write);
+        }
+        catch (...)
+        {
+        }
+    }
 }

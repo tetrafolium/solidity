@@ -38,7 +38,7 @@ using ErrorList = std::vector<std::shared_ptr<Error const>>;
 struct CompilerError: virtual Exception {};
 struct InternalCompilerError: virtual Exception {};
 struct FatalError: virtual Exception {};
-struct UnimplementedFeatureError: virtual Exception{};
+struct UnimplementedFeatureError: virtual Exception {};
 
 /// Assertion that throws an InternalCompilerError containing the given description if it is not met.
 #define solAssert(CONDITION, DESCRIPTION) \
@@ -53,49 +53,53 @@ struct UnimplementedFeatureError: virtual Exception{};
 class Error: virtual public Exception
 {
 public:
-	enum class Type
-	{
-		DeclarationError,
-		DocstringParsingError,
-		ParserError,
-		TypeError,
-		SyntaxError,
-		Warning
-	};
+    enum class Type
+    {
+        DeclarationError,
+        DocstringParsingError,
+        ParserError,
+        TypeError,
+        SyntaxError,
+        Warning
+    };
 
-	explicit Error(
-		Type _type,
-		SourceLocation const& _location = SourceLocation(),
-		std::string const& _description = std::string()
-	);
+    explicit Error(
+        Type _type,
+        SourceLocation const& _location = SourceLocation(),
+        std::string const& _description = std::string()
+    );
 
-	Error(Type _type, std::string const& _description, SourceLocation const& _location = SourceLocation());
+    Error(Type _type, std::string const& _description, SourceLocation const& _location = SourceLocation());
 
-	Type type() const { return m_type; }
-	std::string const& typeName() const { return m_typeName; }
+    Type type() const {
+        return m_type;
+    }
+    std::string const& typeName() const {
+        return m_typeName;
+    }
 
-	/// helper functions
-	static Error const* containsErrorOfType(ErrorList const& _list, Error::Type _type)
-	{
-		for (auto e: _list)
-		{
-			if (e->type() == _type)
-				return e.get();
-		}
-		return nullptr;
-	}
-	static bool containsOnlyWarnings(ErrorList const& _list)
-	{
-		for (auto e: _list)
-		{
-			if (e->type() != Type::Warning)
-				return false;
-		}
-		return true;
-	}
+    /// helper functions
+    static Error const* containsErrorOfType(ErrorList const& _list, Error::Type _type)
+    {
+        for (auto e: _list)
+        {
+            if (e->type() == _type)
+                return e.get();
+        }
+        return nullptr;
+    }
+    static bool containsOnlyWarnings(ErrorList const& _list)
+    {
+        for (auto e: _list)
+        {
+            if (e->type() != Type::Warning)
+                return false;
+        }
+        return true;
+    }
 private:
-	Type m_type;
-	std::string m_typeName;
+    Type m_type;
+    std::string m_typeName;
 };
 
 
@@ -104,24 +108,24 @@ using errorSourceLocationInfo = std::pair<std::string, SourceLocation>;
 class SecondarySourceLocation
 {
 public:
-	SecondarySourceLocation& append(std::string const& _errMsg, SourceLocation const& _sourceLocation)
-	{
-		infos.push_back(std::make_pair(_errMsg, _sourceLocation));
-		return *this;
-	}
-	/// Limits the number of secondary source locations to 32 and appends a notice to the
-	/// error message.
-	void limitSize(std::string& _message)
-	{
-		size_t occurrences = infos.size();
-		if (occurrences > 32)
-		{
-			infos.resize(32);
-			_message += " Truncated from " + boost::lexical_cast<std::string>(occurrences) + " to the first 32 occurrences.";
-		}
-	}
+    SecondarySourceLocation& append(std::string const& _errMsg, SourceLocation const& _sourceLocation)
+    {
+        infos.push_back(std::make_pair(_errMsg, _sourceLocation));
+        return *this;
+    }
+    /// Limits the number of secondary source locations to 32 and appends a notice to the
+    /// error message.
+    void limitSize(std::string& _message)
+    {
+        size_t occurrences = infos.size();
+        if (occurrences > 32)
+        {
+            infos.resize(32);
+            _message += " Truncated from " + boost::lexical_cast<std::string>(occurrences) + " to the first 32 occurrences.";
+        }
+    }
 
-	std::vector<errorSourceLocationInfo> infos;
+    std::vector<errorSourceLocationInfo> infos;
 };
 
 

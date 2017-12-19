@@ -27,43 +27,43 @@ using namespace dev;
 using namespace dev::solidity;
 
 Error::Error(Type _type, SourceLocation const& _location, string const& _description):
-	m_type(_type)
+    m_type(_type)
 {
-	switch(m_type)
-	{
-	case Type::DeclarationError:
-		m_typeName = "DeclarationError";
-		break;
-	case Type::DocstringParsingError:
-		m_typeName = "DocstringParsingError";
-		break;
-	case Type::ParserError:
-		m_typeName = "ParserError";
-		break;
-	case Type::SyntaxError:
-		m_typeName = "SyntaxError";
-		break;
-	case Type::TypeError:
-		m_typeName = "TypeError";
-		break;
-	case Type::Warning:
-		m_typeName = "Warning";
-		break;
-	default:
-		solAssert(false, "");
-		break;
-	}
+    switch(m_type)
+    {
+    case Type::DeclarationError:
+        m_typeName = "DeclarationError";
+        break;
+    case Type::DocstringParsingError:
+        m_typeName = "DocstringParsingError";
+        break;
+    case Type::ParserError:
+        m_typeName = "ParserError";
+        break;
+    case Type::SyntaxError:
+        m_typeName = "SyntaxError";
+        break;
+    case Type::TypeError:
+        m_typeName = "TypeError";
+        break;
+    case Type::Warning:
+        m_typeName = "Warning";
+        break;
+    default:
+        solAssert(false, "");
+        break;
+    }
 
-	if (!_location.isEmpty())
-		*this << errinfo_sourceLocation(_location);
-	if (!_description.empty())
-		*this << errinfo_comment(_description);
+    if (!_location.isEmpty())
+        *this << errinfo_sourceLocation(_location);
+    if (!_description.empty())
+        *this << errinfo_comment(_description);
 }
 
 Error::Error(Error::Type _type, const std::string& _description, const SourceLocation& _location):
-	Error(_type)
+    Error(_type)
 {
-	if (!_location.isEmpty())
-		*this << errinfo_sourceLocation(_location);
-	*this << errinfo_comment(_description);
+    if (!_location.isEmpty())
+        *this << errinfo_sourceLocation(_location);
+    *this << errinfo_comment(_description);
 }

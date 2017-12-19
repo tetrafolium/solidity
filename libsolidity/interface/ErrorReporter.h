@@ -36,73 +36,73 @@ class ErrorReporter
 {
 public:
 
-	explicit ErrorReporter(ErrorList& _errors):
-		m_errorList(_errors) { }
+    explicit ErrorReporter(ErrorList& _errors):
+        m_errorList(_errors) { }
 
-	ErrorReporter(ErrorReporter const& _errorReporter) noexcept:
-		m_errorList(_errorReporter.m_errorList) { }
+    ErrorReporter(ErrorReporter const& _errorReporter) noexcept:
+        m_errorList(_errorReporter.m_errorList) { }
 
-	ErrorReporter& operator=(ErrorReporter const& _errorReporter);
+    ErrorReporter& operator=(ErrorReporter const& _errorReporter);
 
-	void warning(std::string const& _description);
+    void warning(std::string const& _description);
 
-	void warning(SourceLocation const& _location, std::string const& _description);
+    void warning(SourceLocation const& _location, std::string const& _description);
 
-	void warning(
-		SourceLocation const& _location,
-		std::string const& _description,
-		SecondarySourceLocation const& _secondaryLocation
-	);
+    void warning(
+        SourceLocation const& _location,
+        std::string const& _description,
+        SecondarySourceLocation const& _secondaryLocation
+    );
 
-	void error(
-		Error::Type _type,
-		SourceLocation const& _location,
-		std::string const& _description
-	);
+    void error(
+        Error::Type _type,
+        SourceLocation const& _location,
+        std::string const& _description
+    );
 
-	void declarationError(
-		SourceLocation const& _location,
-		SecondarySourceLocation const& _secondaryLocation,
-		std::string const& _description
-	);
+    void declarationError(
+        SourceLocation const& _location,
+        SecondarySourceLocation const& _secondaryLocation,
+        std::string const& _description
+    );
 
-	void declarationError(SourceLocation const& _location, std::string const& _description);
+    void declarationError(SourceLocation const& _location, std::string const& _description);
 
-	void fatalDeclarationError(SourceLocation const& _location, std::string const& _description);
+    void fatalDeclarationError(SourceLocation const& _location, std::string const& _description);
 
-	void parserError(SourceLocation const& _location, std::string const& _description);
+    void parserError(SourceLocation const& _location, std::string const& _description);
 
-	void fatalParserError(SourceLocation const& _location, std::string const& _description);
+    void fatalParserError(SourceLocation const& _location, std::string const& _description);
 
-	void syntaxError(SourceLocation const& _location, std::string const& _description);
+    void syntaxError(SourceLocation const& _location, std::string const& _description);
 
-	void typeError(
-		SourceLocation const& _location,
-		SecondarySourceLocation const& _secondaryLocation = SecondarySourceLocation(),
-		std::string const& _description = std::string()
-	);
+    void typeError(
+        SourceLocation const& _location,
+        SecondarySourceLocation const& _secondaryLocation = SecondarySourceLocation(),
+        std::string const& _description = std::string()
+    );
 
-	void typeError(SourceLocation const& _location, std::string const& _description);
+    void typeError(SourceLocation const& _location, std::string const& _description);
 
-	void fatalTypeError(SourceLocation const& _location, std::string const& _description);
+    void fatalTypeError(SourceLocation const& _location, std::string const& _description);
 
-	void docstringParsingError(std::string const& _description);
+    void docstringParsingError(std::string const& _description);
 
-	ErrorList const& errors() const;
+    ErrorList const& errors() const;
 
-	void clear();
+    void clear();
 
 private:
-	void error(Error::Type _type,
-		SourceLocation const& _location,
-		SecondarySourceLocation const& _secondaryLocation,
-		std::string const& _description = std::string());
+    void error(Error::Type _type,
+               SourceLocation const& _location,
+               SecondarySourceLocation const& _secondaryLocation,
+               std::string const& _description = std::string());
 
-	void fatalError(Error::Type _type,
-		SourceLocation const& _location = SourceLocation(),
-		std::string const& _description = std::string());
+    void fatalError(Error::Type _type,
+                    SourceLocation const& _location = SourceLocation(),
+                    std::string const& _description = std::string());
 
-	ErrorList& m_errorList;
+    ErrorList& m_errorList;
 };
 
 

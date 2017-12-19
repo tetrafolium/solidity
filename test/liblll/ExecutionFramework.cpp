@@ -28,6 +28,6 @@ using namespace dev::test;
 using namespace dev::lll::test;
 
 LLLExecutionFramework::LLLExecutionFramework() :
-	ExecutionFramework()
+    ExecutionFramework()
 {
 }

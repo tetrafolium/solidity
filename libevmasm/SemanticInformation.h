@@ -37,24 +37,24 @@ class AssemblyItem;
  */
 struct SemanticInformation
 {
-	/// @returns true if the given items starts a new block for common subexpression analysis.
-	static bool breaksCSEAnalysisBlock(AssemblyItem const& _item);
-	/// @returns true if the item is a two-argument operation whose value does not depend on the
-	/// order of its arguments.
-	static bool isCommutativeOperation(AssemblyItem const& _item);
-	static bool isDupInstruction(AssemblyItem const& _item);
-	static bool isSwapInstruction(AssemblyItem const& _item);
-	static bool isJumpInstruction(AssemblyItem const& _item);
-	static bool altersControlFlow(AssemblyItem const& _item);
-	/// @returns false if the value put on the stack by _item depends on anything else than
-	/// the information in the current block header, memory, storage or stack.
-	static bool isDeterministic(AssemblyItem const& _item);
-	/// @returns true if the given instruction modifies memory.
-	static bool invalidatesMemory(solidity::Instruction _instruction);
-	/// @returns true if the given instruction modifies storage (even indirectly).
-	static bool invalidatesStorage(solidity::Instruction _instruction);
-	static bool invalidInPureFunctions(solidity::Instruction _instruction);
-	static bool invalidInViewFunctions(solidity::Instruction _instruction);
+    /// @returns true if the given items starts a new block for common subexpression analysis.
+    static bool breaksCSEAnalysisBlock(AssemblyItem const& _item);
+    /// @returns true if the item is a two-argument operation whose value does not depend on the
+    /// order of its arguments.
+    static bool isCommutativeOperation(AssemblyItem const& _item);
+    static bool isDupInstruction(AssemblyItem const& _item);
+    static bool isSwapInstruction(AssemblyItem const& _item);
+    static bool isJumpInstruction(AssemblyItem const& _item);
+    static bool altersControlFlow(AssemblyItem const& _item);
+    /// @returns false if the value put on the stack by _item depends on anything else than
+    /// the information in the current block header, memory, storage or stack.
+    static bool isDeterministic(AssemblyItem const& _item);
+    /// @returns true if the given instruction modifies memory.
+    static bool invalidatesMemory(solidity::Instruction _instruction);
+    /// @returns true if the given instruction modifies storage (even indirectly).
+    static bool invalidatesStorage(solidity::Instruction _instruction);
+    static bool invalidInPureFunctions(solidity::Instruction _instruction);
+    static bool invalidInViewFunctions(solidity::Instruction _instruction);
 };
 
 }

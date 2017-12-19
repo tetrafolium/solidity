@@ -38,98 +38,98 @@ namespace solidity {
 class ContractCompiler: private ASTConstVisitor
 {
 public:
-	explicit ContractCompiler(ContractCompiler* _runtimeCompiler, CompilerContext& _context, bool _optimise):
-		m_optimise(_optimise),
-		m_runtimeCompiler(_runtimeCompiler),
-		m_context(_context)
-	{
-		m_context = CompilerContext(_runtimeCompiler ? &_runtimeCompiler->m_context : nullptr);
-	}
+    explicit ContractCompiler(ContractCompiler* _runtimeCompiler, CompilerContext& _context, bool _optimise):
+        m_optimise(_optimise),
+        m_runtimeCompiler(_runtimeCompiler),
+        m_context(_context)
+    {
+        m_context = CompilerContext(_runtimeCompiler ? &_runtimeCompiler->m_context : nullptr);
+    }
 
-	void compileContract(
-		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
-	);
-	/// Compiles the constructor part of the contract.
-	/// @returns the identifier of the runtime sub-assembly.
-	size_t compileConstructor(
-		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
-	);
-	/// Compiles a contract that uses DELEGATECALL to call into a pre-deployed version of the given
-	/// contract at runtime, but contains the full creation-time code.
-	/// @returns the identifier of the runtime sub-assembly.
-	size_t compileClone(
-		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
-	);
+    void compileContract(
+        ContractDefinition const& _contract,
+        std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+    );
+    /// Compiles the constructor part of the contract.
+    /// @returns the identifier of the runtime sub-assembly.
+    size_t compileConstructor(
+        ContractDefinition const& _contract,
+        std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+    );
+    /// Compiles a contract that uses DELEGATECALL to call into a pre-deployed version of the given
+    /// contract at runtime, but contains the full creation-time code.
+    /// @returns the identifier of the runtime sub-assembly.
+    size_t compileClone(
+        ContractDefinition const& _contract,
+        std::map<ContractDefinition const*, eth::Assembly const*> const& _contracts
+    );
 
 private:
-	/// Registers the non-function objects inside the contract with the context and stores the basic
-	/// information about the contract like the AST annotations.
-	void initializeContext(
-		ContractDefinition const& _contract,
-		std::map<ContractDefinition const*, eth::Assembly const*> const& _compiledContracts
-	);
-	/// Adds the code that is run at creation time. Should be run after exchanging the run-time context
-	/// with a new and initialized context. Adds the constructor code.
-	/// @returns the identifier of the runtime sub assembly
-	size_t packIntoContractCreator(ContractDefinition const& _contract);
-	/// Appends state variable initialisation and constructor code.
-	void appendInitAndConstructorCode(ContractDefinition const& _contract);
-	void appendBaseConstructor(FunctionDefinition const& _constructor);
-	void appendConstructor(FunctionDefinition const& _constructor);
-	void appendFunctionSelector(ContractDefinition const& _contract);
-	void appendCallValueCheck();
-	/// Creates code that unpacks the arguments for the given function represented by a vector of TypePointers.
-	/// From memory if @a _fromMemory is true, otherwise from call data.
-	/// Expects source offset on the stack, which is removed.
-	void appendCalldataUnpacker(TypePointers const& _typeParameters, bool _fromMemory = false);
-	void appendReturnValuePacker(TypePointers const& _typeParameters, bool _isLibrary);
+    /// Registers the non-function objects inside the contract with the context and stores the basic
+    /// information about the contract like the AST annotations.
+    void initializeContext(
+        ContractDefinition const& _contract,
+        std::map<ContractDefinition const*, eth::Assembly const*> const& _compiledContracts
+    );
+    /// Adds the code that is run at creation time. Should be run after exchanging the run-time context
+    /// with a new and initialized context. Adds the constructor code.
+    /// @returns the identifier of the runtime sub assembly
+    size_t packIntoContractCreator(ContractDefinition const& _contract);
+    /// Appends state variable initialisation and constructor code.
+    void appendInitAndConstructorCode(ContractDefinition const& _contract);
+    void appendBaseConstructor(FunctionDefinition const& _constructor);
+    void appendConstructor(FunctionDefinition const& _constructor);
+    void appendFunctionSelector(ContractDefinition const& _contract);
+    void appendCallValueCheck();
+    /// Creates code that unpacks the arguments for the given function represented by a vector of TypePointers.
+    /// From memory if @a _fromMemory is true, otherwise from call data.
+    /// Expects source offset on the stack, which is removed.
+    void appendCalldataUnpacker(TypePointers const& _typeParameters, bool _fromMemory = false);
+    void appendReturnValuePacker(TypePointers const& _typeParameters, bool _isLibrary);
 
-	void registerStateVariables(ContractDefinition const& _contract);
-	void initializeStateVariables(ContractDefinition const& _contract);
+    void registerStateVariables(ContractDefinition const& _contract);
+    void initializeStateVariables(ContractDefinition const& _contract);
 
-	virtual bool visit(VariableDeclaration const& _variableDeclaration) override;
-	virtual bool visit(FunctionDefinition const& _function) override;
-	virtual bool visit(InlineAssembly const& _inlineAssembly) override;
-	virtual bool visit(IfStatement const& _ifStatement) override;
-	virtual bool visit(WhileStatement const& _whileStatement) override;
-	virtual bool visit(ForStatement const& _forStatement) override;
-	virtual bool visit(Continue const& _continueStatement) override;
-	virtual bool visit(Break const& _breakStatement) override;
-	virtual bool visit(Return const& _return) override;
-	virtual bool visit(Throw const& _throw) override;
-	virtual bool visit(VariableDeclarationStatement const& _variableDeclarationStatement) override;
-	virtual bool visit(ExpressionStatement const& _expressionStatement) override;
-	virtual bool visit(PlaceholderStatement const&) override;
+    virtual bool visit(VariableDeclaration const& _variableDeclaration) override;
+    virtual bool visit(FunctionDefinition const& _function) override;
+    virtual bool visit(InlineAssembly const& _inlineAssembly) override;
+    virtual bool visit(IfStatement const& _ifStatement) override;
+    virtual bool visit(WhileStatement const& _whileStatement) override;
+    virtual bool visit(ForStatement const& _forStatement) override;
+    virtual bool visit(Continue const& _continueStatement) override;
+    virtual bool visit(Break const& _breakStatement) override;
+    virtual bool visit(Return const& _return) override;
+    virtual bool visit(Throw const& _throw) override;
+    virtual bool visit(VariableDeclarationStatement const& _variableDeclarationStatement) override;
+    virtual bool visit(ExpressionStatement const& _expressionStatement) override;
+    virtual bool visit(PlaceholderStatement const&) override;
 
-	/// Repeatedly visits all function which are referenced but which are not compiled yet.
-	void appendMissingFunctions();
+    /// Repeatedly visits all function which are referenced but which are not compiled yet.
+    void appendMissingFunctions();
 
-	/// Appends one layer of function modifier code of the current function, or the function
-	/// body itself if the last modifier was reached.
-	void appendModifierOrFunctionCode();
+    /// Appends one layer of function modifier code of the current function, or the function
+    /// body itself if the last modifier was reached.
+    void appendModifierOrFunctionCode();
 
-	void appendStackVariableInitialisation(VariableDeclaration const& _variable);
-	void compileExpression(Expression const& _expression, TypePointer const& _targetType = TypePointer());
+    void appendStackVariableInitialisation(VariableDeclaration const& _variable);
+    void compileExpression(Expression const& _expression, TypePointer const& _targetType = TypePointer());
 
-	/// @returns the runtime assembly for clone contracts.
-	static eth::AssemblyPointer cloneRuntime();
+    /// @returns the runtime assembly for clone contracts.
+    static eth::AssemblyPointer cloneRuntime();
 
-	bool const m_optimise;
-	/// Pointer to the runtime compiler in case this is a creation compiler.
-	ContractCompiler* m_runtimeCompiler = nullptr;
-	CompilerContext& m_context;
-	std::vector<eth::AssemblyItem> m_breakTags; ///< tag to jump to for a "break" statement
-	std::vector<eth::AssemblyItem> m_continueTags; ///< tag to jump to for a "continue" statement
-	/// Tag to jump to for a "return" statement, needs to be stacked because of modifiers.
-	std::vector<eth::AssemblyItem> m_returnTags;
-	unsigned m_modifierDepth = 0;
-	FunctionDefinition const* m_currentFunction = nullptr;
-	unsigned m_stackCleanupForReturn = 0; ///< this number of stack elements need to be removed before jump to m_returnTag
-	// arguments for base constructors, filled in derived-to-base order
-	std::map<FunctionDefinition const*, std::vector<ASTPointer<Expression>> const*> m_baseArguments;
+    bool const m_optimise;
+    /// Pointer to the runtime compiler in case this is a creation compiler.
+    ContractCompiler* m_runtimeCompiler = nullptr;
+    CompilerContext& m_context;
+    std::vector<eth::AssemblyItem> m_breakTags; ///< tag to jump to for a "break" statement
+    std::vector<eth::AssemblyItem> m_continueTags; ///< tag to jump to for a "continue" statement
+    /// Tag to jump to for a "return" statement, needs to be stacked because of modifiers.
+    std::vector<eth::AssemblyItem> m_returnTags;
+    unsigned m_modifierDepth = 0;
+    FunctionDefinition const* m_currentFunction = nullptr;
+    unsigned m_stackCleanupForReturn = 0; ///< this number of stack elements need to be removed before jump to m_returnTag
+    // arguments for base constructors, filled in derived-to-base order
+    std::map<FunctionDefinition const*, std::vector<ASTPointer<Expression>> const*> m_baseArguments;
 };
 
 }

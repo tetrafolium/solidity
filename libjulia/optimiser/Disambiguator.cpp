@@ -34,52 +34,52 @@ using Scope = dev::solidity::assembly::Scope;
 
 string Disambiguator::translateIdentifier(string const& _originalName)
 {
-	solAssert(!m_scopes.empty() && m_scopes.back(), "");
-	Scope::Identifier const* id = m_scopes.back()->lookup(_originalName);
-	solAssert(id, "");
-	if (!m_translations.count(id))
-	{
-		string translated = _originalName;
-		size_t suffix = 0;
-		while (m_usedNames.count(translated))
-		{
-			suffix++;
-			translated = _originalName + "_" + std::to_string(suffix);
-		}
-		m_usedNames.insert(translated);
-		m_translations[id] = translated;
-	}
-	return m_translations.at(id);
+    solAssert(!m_scopes.empty() && m_scopes.back(), "");
+    Scope::Identifier const* id = m_scopes.back()->lookup(_originalName);
+    solAssert(id, "");
+    if (!m_translations.count(id))
+    {
+        string translated = _originalName;
+        size_t suffix = 0;
+        while (m_usedNames.count(translated))
+        {
+            suffix++;
+            translated = _originalName + "_" + std::to_string(suffix);
+        }
+        m_usedNames.insert(translated);
+        m_translations[id] = translated;
+    }
+    return m_translations.at(id);
 }
 
 void Disambiguator::enterScope(Block const& _block)
 {
-	enterScopeInternal(*m_info.scopes.at(&_block));
+    enterScopeInternal(*m_info.scopes.at(&_block));
 }
 
 void Disambiguator::leaveScope(Block const& _block)
 {
-	leaveScopeInternal(*m_info.scopes.at(&_block));
+    leaveScopeInternal(*m_info.scopes.at(&_block));
 }
 
 void Disambiguator::enterFunction(FunctionDefinition const& _function)
 {
-	enterScopeInternal(*m_info.scopes.at(m_info.virtualBlocks.at(&_function).get()));
+    enterScopeInternal(*m_info.scopes.at(m_info.virtualBlocks.at(&_function).get()));
 }
 
 void Disambiguator::leaveFunction(FunctionDefinition const& _function)
 {
-	leaveScopeInternal(*m_info.scopes.at(m_info.virtualBlocks.at(&_function).get()));
+    leaveScopeInternal(*m_info.scopes.at(m_info.virtualBlocks.at(&_function).get()));
 }
 
 void Disambiguator::enterScopeInternal(Scope& _scope)
 {
-	m_scopes.push_back(&_scope);
+    m_scopes.push_back(&_scope);
 }
 
 void Disambiguator::leaveScopeInternal(Scope& _scope)
 {
-	solAssert(!m_scopes.empty(), "");
-	solAssert(m_scopes.back() == &_scope, "");
-	m_scopes.pop_back();
+    solAssert(!m_scopes.empty(), "");
+    solAssert(m_scopes.back() == &_scope, "");
+    m_scopes.pop_back();
 }

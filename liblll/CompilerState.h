@@ -31,26 +31,26 @@ namespace eth
 
 struct Macro
 {
-	std::vector<std::string> args;
-	boost::spirit::utree code;
-	std::map<std::string, CodeFragment> env;
+    std::vector<std::string> args;
+    boost::spirit::utree code;
+    std::map<std::string, CodeFragment> env;
 };
 
 struct CompilerState
 {
-	CompilerState();
+    CompilerState();
 
-	CodeFragment const& getDef(std::string const& _s) const;
-	void populateStandard();
+    CodeFragment const& getDef(std::string const& _s) const;
+    void populateStandard();
 
-	unsigned stackSize = 128;
-	std::map<std::string, std::pair<unsigned, unsigned>> vars;       ///< maps name to stack offset & size.
-	std::map<std::string, CodeFragment> defs;
-	std::map<std::string, CodeFragment> args;
-	std::map<std::string, CodeFragment> outers;
-	std::map<std::pair<std::string, unsigned>, Macro> macros;
-	std::vector<boost::spirit::utree> treesToKill;
-	bool usedAlloc = false;
+    unsigned stackSize = 128;
+    std::map<std::string, std::pair<unsigned, unsigned>> vars;       ///< maps name to stack offset & size.
+    std::map<std::string, CodeFragment> defs;
+    std::map<std::string, CodeFragment> args;
+    std::map<std::string, CodeFragment> outers;
+    std::map<std::pair<std::string, unsigned>, Macro> macros;
+    std::vector<boost::spirit::utree> treesToKill;
+    bool usedAlloc = false;
 };
 
 }

@@ -41,19 +41,19 @@ struct DocTag;
 class Natspec
 {
 public:
-	/// Get the User documentation of the contract
-	/// @param _contractDef The contract definition
-	/// @return             A JSON representation of the contract's user documentation
-	static Json::Value userDocumentation(ContractDefinition const& _contractDef);
-	/// Genereates the Developer's documentation of the contract
-	/// @param _contractDef The contract definition
-	/// @return             A JSON representation
-	///                     of the contract's developer documentation
-	static Json::Value devDocumentation(ContractDefinition const& _contractDef);
+    /// Get the User documentation of the contract
+    /// @param _contractDef The contract definition
+    /// @return             A JSON representation of the contract's user documentation
+    static Json::Value userDocumentation(ContractDefinition const& _contractDef);
+    /// Genereates the Developer's documentation of the contract
+    /// @param _contractDef The contract definition
+    /// @return             A JSON representation
+    ///                     of the contract's developer documentation
+    static Json::Value devDocumentation(ContractDefinition const& _contractDef);
 
 private:
-	/// @returns concatenation of all content under the given tag name.
-	static std::string extractDoc(std::multimap<std::string, DocTag> const& _tags, std::string const& _name);
+    /// @returns concatenation of all content under the given tag name.
+    static std::string extractDoc(std::multimap<std::string, DocTag> const& _tags, std::string const& _name);
 };
 
 } //solidity NS

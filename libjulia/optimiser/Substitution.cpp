@@ -28,12 +28,12 @@ using namespace dev::julia;
 
 Statement Substitution::translate(Statement const& _statement)
 {
-	if (_statement.type() == typeid(Identifier))
-	{
-		string const& name = boost::get<Identifier>(_statement).name;
-		if (m_substitutions.count(name))
-			// No recursive substitution
-			return ASTCopier().translate(*m_substitutions.at(name));
-	}
-	return ASTCopier::translate(_statement);
+    if (_statement.type() == typeid(Identifier))
+    {
+        string const& name = boost::get<Identifier>(_statement).name;
+        if (m_substitutions.count(name))
+            // No recursive substitution
+            return ASTCopier().translate(*m_substitutions.at(name));
+    }
+    return ASTCopier::translate(_statement);
 }

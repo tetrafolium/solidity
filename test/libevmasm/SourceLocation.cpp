@@ -35,12 +35,12 @@ BOOST_AUTO_TEST_SUITE(SourceLocationTest)
 
 BOOST_AUTO_TEST_CASE(test_fail)
 {
-	BOOST_CHECK(SourceLocation() == SourceLocation());
-	BOOST_CHECK(SourceLocation(0, 3, std::make_shared<std::string>("sourceA")) != SourceLocation(0, 3, std::make_shared<std::string>("sourceB")));
-	BOOST_CHECK(SourceLocation(0, 3, std::make_shared<std::string>("source")) == SourceLocation(0, 3, std::make_shared<std::string>("source")));
-	BOOST_CHECK(SourceLocation(3, 7, std::make_shared<std::string>("source")).contains(SourceLocation(4, 6, std::make_shared<std::string>("source"))));
-	BOOST_CHECK(!SourceLocation(3, 7, std::make_shared<std::string>("sourceA")).contains(SourceLocation(4, 6, std::make_shared<std::string>("sourceB"))));
-	BOOST_CHECK(SourceLocation(3, 7, std::make_shared<std::string>("sourceA")) < SourceLocation(4, 6, std::make_shared<std::string>("sourceB")));
+    BOOST_CHECK(SourceLocation() == SourceLocation());
+    BOOST_CHECK(SourceLocation(0, 3, std::make_shared<std::string>("sourceA")) != SourceLocation(0, 3, std::make_shared<std::string>("sourceB")));
+    BOOST_CHECK(SourceLocation(0, 3, std::make_shared<std::string>("source")) == SourceLocation(0, 3, std::make_shared<std::string>("source")));
+    BOOST_CHECK(SourceLocation(3, 7, std::make_shared<std::string>("source")).contains(SourceLocation(4, 6, std::make_shared<std::string>("source"))));
+    BOOST_CHECK(!SourceLocation(3, 7, std::make_shared<std::string>("sourceA")).contains(SourceLocation(4, 6, std::make_shared<std::string>("sourceB"))));
+    BOOST_CHECK(SourceLocation(3, 7, std::make_shared<std::string>("sourceA")) < SourceLocation(4, 6, std::make_shared<std::string>("sourceB")));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

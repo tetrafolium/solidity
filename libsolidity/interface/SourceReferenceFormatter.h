@@ -41,36 +41,36 @@ class CompilerStack; // forward
 struct SourceReferenceFormatter
 {
 public:
-	using ScannerFromSourceNameFun = std::function<Scanner const&(std::string const&)>;
-	/// Prints source location if it is given.
-	static void printSourceLocation(
-		std::ostream& _stream,
-		SourceLocation const* _location,
-		ScannerFromSourceNameFun const& _scannerFromSourceName
-	);
-	static void printExceptionInformation(
-		std::ostream& _stream,
-		Exception const& _exception,
-		std::string const& _name,
-		ScannerFromSourceNameFun const& _scannerFromSourceName
-	);
-	static std::string formatExceptionInformation(
-		Exception const& _exception,
-		std::string const& _name,
-		ScannerFromSourceNameFun const& _scannerFromSourceName
-	)
-	{
-		std::ostringstream errorOutput;
-		printExceptionInformation(errorOutput, _exception, _name, _scannerFromSourceName);
-		return errorOutput.str();
-	}
+    using ScannerFromSourceNameFun = std::function<Scanner const&(std::string const&)>;
+    /// Prints source location if it is given.
+    static void printSourceLocation(
+        std::ostream& _stream,
+        SourceLocation const* _location,
+        ScannerFromSourceNameFun const& _scannerFromSourceName
+    );
+    static void printExceptionInformation(
+        std::ostream& _stream,
+        Exception const& _exception,
+        std::string const& _name,
+        ScannerFromSourceNameFun const& _scannerFromSourceName
+    );
+    static std::string formatExceptionInformation(
+        Exception const& _exception,
+        std::string const& _name,
+        ScannerFromSourceNameFun const& _scannerFromSourceName
+    )
+    {
+        std::ostringstream errorOutput;
+        printExceptionInformation(errorOutput, _exception, _name, _scannerFromSourceName);
+        return errorOutput.str();
+    }
 private:
-	/// Prints source name if location is given.
-	static void printSourceName(
-		std::ostream& _stream,
-		SourceLocation const* _location,
-		ScannerFromSourceNameFun const& _scannerFromSourceName
-	);
+    /// Prints source name if location is given.
+    static void printSourceName(
+        std::ostream& _stream,
+        SourceLocation const* _location,
+        ScannerFromSourceNameFun const& _scannerFromSourceName
+    );
 };
 
 }

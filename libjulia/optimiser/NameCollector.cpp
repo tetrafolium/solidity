@@ -28,17 +28,17 @@ using namespace dev::julia;
 
 void NameCollector::operator()(VariableDeclaration const& _varDecl)
 {
-	for (auto const& var: _varDecl.variables)
-		m_names.insert(var.name);
+    for (auto const& var: _varDecl.variables)
+        m_names.insert(var.name);
 }
 
 void NameCollector::operator ()(FunctionDefinition const& _funDef)
 {
-	m_names.insert(_funDef.name);
-	m_functions[_funDef.name] = &_funDef;
-	for (auto const arg: _funDef.parameters)
-		m_names.insert(arg.name);
-	for (auto const ret: _funDef.returnVariables)
-		m_names.insert(ret.name);
-	ASTWalker::operator ()(_funDef);
+    m_names.insert(_funDef.name);
+    m_functions[_funDef.name] = &_funDef;
+    for (auto const arg: _funDef.parameters)
+        m_names.insert(arg.name);
+    for (auto const ret: _funDef.returnVariables)
+        m_names.insert(ret.name);
+    ASTWalker::operator ()(_funDef);
 }

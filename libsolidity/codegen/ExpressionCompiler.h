@@ -52,93 +52,93 @@ class ArrayType;
 class ExpressionCompiler: private ASTConstVisitor
 {
 public:
-	/// Appends code for a State Variable accessor function
-	static void appendStateVariableAccessor(CompilerContext& _context, VariableDeclaration const& _varDecl, bool _optimize = false);
+    /// Appends code for a State Variable accessor function
+    static void appendStateVariableAccessor(CompilerContext& _context, VariableDeclaration const& _varDecl, bool _optimize = false);
 
-	explicit ExpressionCompiler(CompilerContext& _compilerContext, bool _optimize = false):
-		m_optimize(_optimize), m_context(_compilerContext) {}
+    explicit ExpressionCompiler(CompilerContext& _compilerContext, bool _optimize = false):
+        m_optimize(_optimize), m_context(_compilerContext) {}
 
-	/// Compile the given @a _expression and leave its value on the stack.
-	void compile(Expression const& _expression);
+    /// Compile the given @a _expression and leave its value on the stack.
+    void compile(Expression const& _expression);
 
-	/// Appends code to set a state variable to its initial value/expression.
-	void appendStateVariableInitialization(VariableDeclaration const& _varDecl);
+    /// Appends code to set a state variable to its initial value/expression.
+    void appendStateVariableInitialization(VariableDeclaration const& _varDecl);
 
-	/// Appends code for a State Variable accessor function
-	void appendStateVariableAccessor(VariableDeclaration const& _varDecl);
+    /// Appends code for a State Variable accessor function
+    void appendStateVariableAccessor(VariableDeclaration const& _varDecl);
 
-	/// Appends code for a Constant State Variable accessor function
-	void appendConstStateVariableAccessor(const VariableDeclaration& _varDecl);
+    /// Appends code for a Constant State Variable accessor function
+    void appendConstStateVariableAccessor(const VariableDeclaration& _varDecl);
 
 private:
-	virtual bool visit(Conditional const& _condition) override;
-	virtual bool visit(Assignment const& _assignment) override;
-	virtual bool visit(TupleExpression const& _tuple) override;
-	virtual bool visit(UnaryOperation const& _unaryOperation) override;
-	virtual bool visit(BinaryOperation const& _binaryOperation) override;
-	virtual bool visit(FunctionCall const& _functionCall) override;
-	virtual bool visit(NewExpression const& _newExpression) override;
-	virtual bool visit(MemberAccess const& _memberAccess) override;
-	virtual bool visit(IndexAccess const& _indexAccess) override;
-	virtual void endVisit(Identifier const& _identifier) override;
-	virtual void endVisit(Literal const& _literal) override;
+    virtual bool visit(Conditional const& _condition) override;
+    virtual bool visit(Assignment const& _assignment) override;
+    virtual bool visit(TupleExpression const& _tuple) override;
+    virtual bool visit(UnaryOperation const& _unaryOperation) override;
+    virtual bool visit(BinaryOperation const& _binaryOperation) override;
+    virtual bool visit(FunctionCall const& _functionCall) override;
+    virtual bool visit(NewExpression const& _newExpression) override;
+    virtual bool visit(MemberAccess const& _memberAccess) override;
+    virtual bool visit(IndexAccess const& _indexAccess) override;
+    virtual void endVisit(Identifier const& _identifier) override;
+    virtual void endVisit(Literal const& _literal) override;
 
-	///@{
-	///@name Append code for various operator types
-	void appendAndOrOperatorCode(BinaryOperation const& _binaryOperation);
-	void appendCompareOperatorCode(Token::Value _operator, Type const& _type);
-	void appendOrdinaryBinaryOperatorCode(Token::Value _operator, Type const& _type);
+    ///@{
+    ///@name Append code for various operator types
+    void appendAndOrOperatorCode(BinaryOperation const& _binaryOperation);
+    void appendCompareOperatorCode(Token::Value _operator, Type const& _type);
+    void appendOrdinaryBinaryOperatorCode(Token::Value _operator, Type const& _type);
 
-	void appendArithmeticOperatorCode(Token::Value _operator, Type const& _type);
-	void appendBitOperatorCode(Token::Value _operator);
-	void appendShiftOperatorCode(Token::Value _operator, Type const& _valueType, Type const& _shiftAmountType);
-	/// @}
+    void appendArithmeticOperatorCode(Token::Value _operator, Type const& _type);
+    void appendBitOperatorCode(Token::Value _operator);
+    void appendShiftOperatorCode(Token::Value _operator, Type const& _valueType, Type const& _shiftAmountType);
+    /// @}
 
-	/// Appends code to call a function of the given type with the given arguments.
-	void appendExternalFunctionCall(
-		FunctionType const& _functionType,
-		std::vector<ASTPointer<Expression const>> const& _arguments
-	);
-	/// Appends code that evaluates a single expression and moves the result to memory. The memory offset is
-	/// expected to be on the stack and is updated by this call.
-	void appendExpressionCopyToMemory(Type const& _expectedType, Expression const& _expression);
+    /// Appends code to call a function of the given type with the given arguments.
+    void appendExternalFunctionCall(
+        FunctionType const& _functionType,
+        std::vector<ASTPointer<Expression const>> const& _arguments
+    );
+    /// Appends code that evaluates a single expression and moves the result to memory. The memory offset is
+    /// expected to be on the stack and is updated by this call.
+    void appendExpressionCopyToMemory(Type const& _expectedType, Expression const& _expression);
 
-	/// Appends code for a variable that might be a constant or not
-	void appendVariable(VariableDeclaration const& _variable, Expression const& _expression);
-	/// Sets the current LValue to a new one (of the appropriate type) from the given declaration.
-	/// Also retrieves the value if it was not requested by @a _expression.
-	void setLValueFromDeclaration(Declaration const& _declaration, Expression const& _expression);
-	/// Sets the current LValue to a StorageItem holding the type of @a _expression. The reference is assumed
-	/// to be on the stack.
-	/// Also retrieves the value if it was not requested by @a _expression.
-	void setLValueToStorageItem(Expression const& _expression);
-	/// Sets the current LValue to a new LValue constructed from the arguments.
-	/// Also retrieves the value if it was not requested by @a _expression.
-	template <class _LValueType, class... _Arguments>
-	void setLValue(Expression const& _expression, _Arguments const&... _arguments);
+    /// Appends code for a variable that might be a constant or not
+    void appendVariable(VariableDeclaration const& _variable, Expression const& _expression);
+    /// Sets the current LValue to a new one (of the appropriate type) from the given declaration.
+    /// Also retrieves the value if it was not requested by @a _expression.
+    void setLValueFromDeclaration(Declaration const& _declaration, Expression const& _expression);
+    /// Sets the current LValue to a StorageItem holding the type of @a _expression. The reference is assumed
+    /// to be on the stack.
+    /// Also retrieves the value if it was not requested by @a _expression.
+    void setLValueToStorageItem(Expression const& _expression);
+    /// Sets the current LValue to a new LValue constructed from the arguments.
+    /// Also retrieves the value if it was not requested by @a _expression.
+    template <class _LValueType, class... _Arguments>
+    void setLValue(Expression const& _expression, _Arguments const&... _arguments);
 
-	/// @returns true if the operator applied to the given type requires a cleanup prior to the
-	/// operation.
-	static bool cleanupNeededForOp(Type::Category _type, Token::Value _op);
+    /// @returns true if the operator applied to the given type requires a cleanup prior to the
+    /// operation.
+    static bool cleanupNeededForOp(Type::Category _type, Token::Value _op);
 
-	/// @returns the CompilerUtils object containing the current context.
-	CompilerUtils utils();
+    /// @returns the CompilerUtils object containing the current context.
+    CompilerUtils utils();
 
-	bool m_optimize;
-	CompilerContext& m_context;
-	std::unique_ptr<LValue> m_currentLValue;
+    bool m_optimize;
+    CompilerContext& m_context;
+    std::unique_ptr<LValue> m_currentLValue;
 
 };
 
 template <class _LValueType, class... _Arguments>
 void ExpressionCompiler::setLValue(Expression const& _expression, _Arguments const&... _arguments)
 {
-	solAssert(!m_currentLValue, "Current LValue not reset before trying to set new one.");
-	std::unique_ptr<_LValueType> lvalue(new _LValueType(m_context, _arguments...));
-	if (_expression.annotation().lValueRequested)
-		m_currentLValue = move(lvalue);
-	else
-		lvalue->retrieveValue(_expression.location(), true);
+    solAssert(!m_currentLValue, "Current LValue not reset before trying to set new one.");
+    std::unique_ptr<_LValueType> lvalue(new _LValueType(m_context, _arguments...));
+    if (_expression.annotation().lValueRequested)
+        m_currentLValue = move(lvalue);
+    else
+        lvalue->retrieveValue(_expression.location(), true);
 }
 
 }

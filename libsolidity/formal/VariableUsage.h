@@ -36,14 +36,14 @@ class Declaration;
 class VariableUsage
 {
 public:
-	explicit VariableUsage(ASTNode const& _node);
+    explicit VariableUsage(ASTNode const& _node);
 
-	std::vector<Declaration const*> touchedVariables(ASTNode const& _node) const;
+    std::vector<Declaration const*> touchedVariables(ASTNode const& _node) const;
 
 private:
-	// Variable touched by a specific AST node.
-	std::map<ASTNode const*, Declaration const*> m_touchedVariable;
-	std::map<ASTNode const*, std::vector<ASTNode const*>> m_children;
+    // Variable touched by a specific AST node.
+    std::map<ASTNode const*, Declaration const*> m_touchedVariable;
+    std::map<ASTNode const*, std::vector<ASTNode const*>> m_children;
 };
 
 }

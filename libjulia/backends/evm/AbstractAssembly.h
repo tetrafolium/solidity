@@ -47,53 +47,53 @@ namespace julia
 class AbstractAssembly
 {
 public:
-	using LabelID = size_t;
+    using LabelID = size_t;
 
-	virtual ~AbstractAssembly() {}
+    virtual ~AbstractAssembly() {}
 
-	/// Set a new source location valid starting from the next instruction.
-	virtual void setSourceLocation(SourceLocation const& _location) = 0;
-	/// Retrieve the current height of the stack. This does not have to be zero
-	/// at the beginning.
-	virtual int stackHeight() const = 0;
-	/// Append an EVM instruction.
-	virtual void appendInstruction(solidity::Instruction _instruction) = 0;
-	/// Append a constant.
-	virtual void appendConstant(u256 const& _constant) = 0;
-	/// Append a label.
-	virtual void appendLabel(LabelID _labelId) = 0;
-	/// Append a label reference.
-	virtual void appendLabelReference(LabelID _labelId) = 0;
-	/// Generate a new unique label.
-	virtual LabelID newLabelId() = 0;
-	/// Returns a label identified by the given name. Creates it if it does not yet exist.
-	virtual LabelID namedLabel(std::string const& _name) = 0;
-	/// Append a reference to a to-be-linked symobl.
-	/// Currently, we assume that the value is always a 20 byte number.
-	virtual void appendLinkerSymbol(std::string const& _name) = 0;
+    /// Set a new source location valid starting from the next instruction.
+    virtual void setSourceLocation(SourceLocation const& _location) = 0;
+    /// Retrieve the current height of the stack. This does not have to be zero
+    /// at the beginning.
+    virtual int stackHeight() const = 0;
+    /// Append an EVM instruction.
+    virtual void appendInstruction(solidity::Instruction _instruction) = 0;
+    /// Append a constant.
+    virtual void appendConstant(u256 const& _constant) = 0;
+    /// Append a label.
+    virtual void appendLabel(LabelID _labelId) = 0;
+    /// Append a label reference.
+    virtual void appendLabelReference(LabelID _labelId) = 0;
+    /// Generate a new unique label.
+    virtual LabelID newLabelId() = 0;
+    /// Returns a label identified by the given name. Creates it if it does not yet exist.
+    virtual LabelID namedLabel(std::string const& _name) = 0;
+    /// Append a reference to a to-be-linked symobl.
+    /// Currently, we assume that the value is always a 20 byte number.
+    virtual void appendLinkerSymbol(std::string const& _name) = 0;
 
-	/// Append a jump instruction.
-	/// @param _stackDiffAfter the stack adjustment after this instruction.
-	/// This is helpful to stack height analysis if there is no continuing control flow.
-	virtual void appendJump(int _stackDiffAfter) = 0;
+    /// Append a jump instruction.
+    /// @param _stackDiffAfter the stack adjustment after this instruction.
+    /// This is helpful to stack height analysis if there is no continuing control flow.
+    virtual void appendJump(int _stackDiffAfter) = 0;
 
-	/// Append a jump-to-immediate operation.
-	/// @param _stackDiffAfter the stack adjustment after this instruction.
-	virtual void appendJumpTo(LabelID _labelId, int _stackDiffAfter = 0) = 0;
-	/// Append a jump-to-if-immediate operation.
-	virtual void appendJumpToIf(LabelID _labelId) = 0;
-	/// Start a subroutine identified by @a _labelId that takes @a _arguments
-	/// stack slots as arguments.
-	virtual void appendBeginsub(LabelID _labelId, int _arguments) = 0;
-	/// Call a subroutine identified by @a _labelId, taking @a _arguments from the
-	/// stack upon call and putting @a _returns arguments onto the stack upon return.
-	virtual void appendJumpsub(LabelID _labelId, int _arguments, int _returns) = 0;
-	/// Return from a subroutine.
-	/// @param _stackDiffAfter the stack adjustment after this instruction.
-	virtual void appendReturnsub(int _returns, int _stackDiffAfter = 0) = 0;
+    /// Append a jump-to-immediate operation.
+    /// @param _stackDiffAfter the stack adjustment after this instruction.
+    virtual void appendJumpTo(LabelID _labelId, int _stackDiffAfter = 0) = 0;
+    /// Append a jump-to-if-immediate operation.
+    virtual void appendJumpToIf(LabelID _labelId) = 0;
+    /// Start a subroutine identified by @a _labelId that takes @a _arguments
+    /// stack slots as arguments.
+    virtual void appendBeginsub(LabelID _labelId, int _arguments) = 0;
+    /// Call a subroutine identified by @a _labelId, taking @a _arguments from the
+    /// stack upon call and putting @a _returns arguments onto the stack upon return.
+    virtual void appendJumpsub(LabelID _labelId, int _arguments, int _returns) = 0;
+    /// Return from a subroutine.
+    /// @param _stackDiffAfter the stack adjustment after this instruction.
+    virtual void appendReturnsub(int _returns, int _stackDiffAfter = 0) = 0;
 
-	/// Append the assembled size as a constant.
-	virtual void appendAssemblySize() = 0;
+    /// Append the assembled size as a constant.
+    virtual void appendAssemblySize() = 0;
 };
 
 enum class IdentifierContext { LValue, RValue };
@@ -102,15 +102,15 @@ enum class IdentifierContext { LValue, RValue };
 /// to inline assembly (not used in standalone assembly mode).
 struct ExternalIdentifierAccess
 {
-	using Resolver = std::function<size_t(solidity::assembly::Identifier const&, IdentifierContext, bool /*_crossesFunctionBoundary*/)>;
-	/// Resolve a an external reference given by the identifier in the given context.
-	/// @returns the size of the value (number of stack slots) or size_t(-1) if not found.
-	Resolver resolve;
-	using CodeGenerator = std::function<void(solidity::assembly::Identifier const&, IdentifierContext, julia::AbstractAssembly&)>;
-	/// Generate code for retrieving the value (rvalue context) or storing the value (lvalue context)
-	/// of an identifier. The code should be appended to the assembly. In rvalue context, the value is supposed
-	/// to be put onto the stack, in lvalue context, the value is assumed to be at the top of the stack.
-	CodeGenerator generateCode;
+    using Resolver = std::function<size_t(solidity::assembly::Identifier const&, IdentifierContext, bool /*_crossesFunctionBoundary*/)>;
+    /// Resolve a an external reference given by the identifier in the given context.
+    /// @returns the size of the value (number of stack slots) or size_t(-1) if not found.
+    Resolver resolve;
+    using CodeGenerator = std::function<void(solidity::assembly::Identifier const&, IdentifierContext, julia::AbstractAssembly&)>;
+    /// Generate code for retrieving the value (rvalue context) or storing the value (lvalue context)
+    /// of an identifier. The code should be appended to the assembly. In rvalue context, the value is supposed
+    /// to be put onto the stack, in lvalue context, the value is assumed to be at the top of the stack.
+    CodeGenerator generateCode;
 };
 
 

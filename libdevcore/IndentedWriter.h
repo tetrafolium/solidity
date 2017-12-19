@@ -34,34 +34,38 @@ DEV_SIMPLE_EXCEPTION(IndentedWriterError);
 class IndentedWriter
 {
 public:
-	explicit IndentedWriter(): m_lines(std::vector<Line>{{std::string(), 0}}) {}
+    explicit IndentedWriter(): m_lines(std::vector<Line> {
+        {
+            std::string(), 0
+        }
+    }) {}
 
-	// Returns the formatted output.
-	std::string format() const;
+    // Returns the formatted output.
+    std::string format() const;
 
-	// Go one indentation level in.
-	void indent();
+    // Go one indentation level in.
+    void indent();
 
-	// Go one indentation level out.
-	void unindent();
+    // Go one indentation level out.
+    void unindent();
 
-	// Add text.
-	void add(std::string const& _str);
+    // Add text.
+    void add(std::string const& _str);
 
-	// Add text with new line.
-	void addLine(std::string const& _line);
+    // Add text with new line.
+    void addLine(std::string const& _line);
 
-	// Add new line.
-	void newLine();
+    // Add new line.
+    void newLine();
 
 private:
-	struct Line
-	{
-		std::string contents;
-		unsigned indentation;
-	};
+    struct Line
+    {
+        std::string contents;
+        unsigned indentation;
+    };
 
-	std::vector<Line> m_lines;
+    std::vector<Line> m_lines;
 };
 
 }

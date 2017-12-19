@@ -30,15 +30,15 @@ namespace dev
 /// Serialise the JSON object (@a _input) with indentation
 inline std::string jsonPrettyPrint(Json::Value const& _input)
 {
-	return Json::StyledWriter().write(_input);
+    return Json::StyledWriter().write(_input);
 }
 
 /// Serialise the JSON object (@a _input) without indentation
 inline std::string jsonCompactPrint(Json::Value const& _input)
 {
-	Json::FastWriter writer;
-	writer.omitEndingLineFeed();
-	return writer.write(_input);
+    Json::FastWriter writer;
+    writer.omitEndingLineFeed();
+    return writer.write(_input);
 }
 
 }

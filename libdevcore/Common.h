@@ -51,7 +51,7 @@
 // It is quite old now, and requiring end-users to use a newer Boost release is probably not unreasonable.
 #include <boost/version.hpp>
 #if (BOOST_VERSION == 105800)
-	#include "boost_multiprecision_number_compare_bug_workaround.hpp"
+#include "boost_multiprecision_number_compare_bug_workaround.hpp"
 #endif // (BOOST_VERSION == 105800)
 
 #include <boost/multiprecision/cpp_int.hpp>
@@ -91,43 +91,45 @@ using strings = std::vector<std::string>;
 /// Interprets @a _u as a two's complement signed number and returns the resulting s256.
 inline s256 u2s(u256 _u)
 {
-	static const bigint c_end = bigint(1) << 256;
-	if (boost::multiprecision::bit_test(_u, 255))
-		return s256(-(c_end - _u));
-	else
-		return s256(_u);
+    static const bigint c_end = bigint(1) << 256;
+    if (boost::multiprecision::bit_test(_u, 255))
+        return s256(-(c_end - _u));
+    else
+        return s256(_u);
 }
 
 /// @returns the two's complement signed representation of the signed number _u.
 inline u256 s2u(s256 _u)
 {
-	static const bigint c_end = bigint(1) << 256;
+    static const bigint c_end = bigint(1) << 256;
     if (_u >= 0)
-		return u256(_u);
+        return u256(_u);
     else
-		return u256(c_end + _u);
+        return u256(c_end + _u);
 }
 
 inline std::ostream& operator<<(std::ostream& os, bytes const& _bytes)
 {
-	std::ostringstream ss;
-	ss << std::hex;
-	std::copy(_bytes.begin(), _bytes.end(), std::ostream_iterator<int>(ss, ","));
-	std::string result = ss.str();
-	result.pop_back();
-	os << "[" + result + "]";
-	return os;
+    std::ostringstream ss;
+    ss << std::hex;
+    std::copy(_bytes.begin(), _bytes.end(), std::ostream_iterator<int>(ss, ","));
+    std::string result = ss.str();
+    result.pop_back();
+    os << "[" + result + "]";
+    return os;
 }
 
 /// RAII utility class whose destructor calls a given function.
 class ScopeGuard
 {
 public:
-	explicit ScopeGuard(std::function<void(void)> _f): m_f(_f) {}
-	~ScopeGuard() { m_f(); }
+    explicit ScopeGuard(std::function<void(void)> _f): m_f(_f) {}
+    ~ScopeGuard() {
+        m_f();
+    }
 
 private:
-	std::function<void(void)> m_f;
+    std::function<void(void)> m_f;
 };
 
 }

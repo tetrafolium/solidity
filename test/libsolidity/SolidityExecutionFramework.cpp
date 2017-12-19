@@ -29,6 +29,6 @@ using namespace dev::solidity;
 using namespace dev::solidity::test;
 
 SolidityExecutionFramework::SolidityExecutionFramework() :
-	ExecutionFramework()
+    ExecutionFramework()
 {
 }

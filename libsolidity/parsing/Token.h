@@ -247,114 +247,156 @@ namespace solidity
 class Token
 {
 public:
-	// All token values.
-	// attention! msvc issue:
-	// http://stackoverflow.com/questions/9567868/compile-errors-after-adding-v8-to-my-project-c2143-c2059
-	// @todo: avoid TOKEN_LIST macro
+    // All token values.
+    // attention! msvc issue:
+    // http://stackoverflow.com/questions/9567868/compile-errors-after-adding-v8-to-my-project-c2143-c2059
+    // @todo: avoid TOKEN_LIST macro
 #define T(name, string, precedence) name,
-	enum Value
-	{
-		TOKEN_LIST(T, T)
-		NUM_TOKENS
-	};
+    enum Value
+    {
+        TOKEN_LIST(T, T)
+        NUM_TOKENS
+    };
 #undef T
 
-	// @returns a string corresponding to the C++ token name
-	// (e.g. "LT" for the token LT).
-	static char const* name(Value tok)
-	{
-		solAssert(tok < NUM_TOKENS, "");
-		return m_name[tok];
-	}
+    // @returns a string corresponding to the C++ token name
+    // (e.g. "LT" for the token LT).
+    static char const* name(Value tok)
+    {
+        solAssert(tok < NUM_TOKENS, "");
+        return m_name[tok];
+    }
 
-	// Predicates
-	static bool isElementaryTypeName(Value tok) { return Int <= tok && tok < TypesEnd; }
-	static bool isAssignmentOp(Value tok) { return Assign <= tok && tok <= AssignMod; }
-	static bool isBinaryOp(Value op) { return Comma <= op && op <= Exp; }
-	static bool isCommutativeOp(Value op) { return op == BitOr || op == BitXor || op == BitAnd ||
-				op == Add || op == Mul || op == Equal || op == NotEqual; }
-	static bool isArithmeticOp(Value op) { return Add <= op && op <= Exp; }
-	static bool isCompareOp(Value op) { return Equal <= op && op <= GreaterThanOrEqual; }
+    // Predicates
+    static bool isElementaryTypeName(Value tok) {
+        return Int <= tok && tok < TypesEnd;
+    }
+    static bool isAssignmentOp(Value tok) {
+        return Assign <= tok && tok <= AssignMod;
+    }
+    static bool isBinaryOp(Value op) {
+        return Comma <= op && op <= Exp;
+    }
+    static bool isCommutativeOp(Value op) {
+        return op == BitOr || op == BitXor || op == BitAnd ||
+               op == Add || op == Mul || op == Equal || op == NotEqual;
+    }
+    static bool isArithmeticOp(Value op) {
+        return Add <= op && op <= Exp;
+    }
+    static bool isCompareOp(Value op) {
+        return Equal <= op && op <= GreaterThanOrEqual;
+    }
 
-	static Value AssignmentToBinaryOp(Value op)
-	{
-		solAssert(isAssignmentOp(op) && op != Assign, "");
-		return Value(op + (BitOr - AssignBitOr));
-	}
+    static Value AssignmentToBinaryOp(Value op)
+    {
+        solAssert(isAssignmentOp(op) && op != Assign, "");
+        return Value(op + (BitOr - AssignBitOr));
+    }
 
-	static bool isBitOp(Value op) { return (BitOr <= op && op <= BitAnd) || op == BitNot; }
-	static bool isBooleanOp(Value op) { return (Or <= op && op <= And) || op == Not; }
-	static bool isUnaryOp(Value op) { return (Not <= op && op <= Delete) || op == Add || op == Sub; }
-	static bool isCountOp(Value op) { return op == Inc || op == Dec; }
-	static bool isShiftOp(Value op) { return (SHL <= op) && (op <= SHR); }
-	static bool isVisibilitySpecifier(Value op) { return isVariableVisibilitySpecifier(op) || op == External; }
-	static bool isVariableVisibilitySpecifier(Value op) { return op == Public || op == Private || op == Internal; }
-	static bool isLocationSpecifier(Value op) { return op == Memory || op == Storage; }
-	static bool isStateMutabilitySpecifier(Value op) { return op == Pure || op == Constant || op == View || op == Payable; }
-	static bool isEtherSubdenomination(Value op) { return op == SubWei || op == SubSzabo || op == SubFinney || op == SubEther; }
-	static bool isTimeSubdenomination(Value op) { return op == SubSecond || op == SubMinute || op == SubHour || op == SubDay || op == SubWeek || op == SubYear; }
-	static bool isReservedKeyword(Value op) { return (Abstract <= op && op <= TypeOf); }
+    static bool isBitOp(Value op) {
+        return (BitOr <= op && op <= BitAnd) || op == BitNot;
+    }
+    static bool isBooleanOp(Value op) {
+        return (Or <= op && op <= And) || op == Not;
+    }
+    static bool isUnaryOp(Value op) {
+        return (Not <= op && op <= Delete) || op == Add || op == Sub;
+    }
+    static bool isCountOp(Value op) {
+        return op == Inc || op == Dec;
+    }
+    static bool isShiftOp(Value op) {
+        return (SHL <= op) && (op <= SHR);
+    }
+    static bool isVisibilitySpecifier(Value op) {
+        return isVariableVisibilitySpecifier(op) || op == External;
+    }
+    static bool isVariableVisibilitySpecifier(Value op) {
+        return op == Public || op == Private || op == Internal;
+    }
+    static bool isLocationSpecifier(Value op) {
+        return op == Memory || op == Storage;
+    }
+    static bool isStateMutabilitySpecifier(Value op) {
+        return op == Pure || op == Constant || op == View || op == Payable;
+    }
+    static bool isEtherSubdenomination(Value op) {
+        return op == SubWei || op == SubSzabo || op == SubFinney || op == SubEther;
+    }
+    static bool isTimeSubdenomination(Value op) {
+        return op == SubSecond || op == SubMinute || op == SubHour || op == SubDay || op == SubWeek || op == SubYear;
+    }
+    static bool isReservedKeyword(Value op) {
+        return (Abstract <= op && op <= TypeOf);
+    }
 
-	// @returns a string corresponding to the JS token string
-	// (.e., "<" for the token LT) or NULL if the token doesn't
-	// have a (unique) string (e.g. an IDENTIFIER).
-	static char const* toString(Value tok)
-	{
-		solAssert(tok < NUM_TOKENS, "");
-		return m_string[tok];
-	}
+    // @returns a string corresponding to the JS token string
+    // (.e., "<" for the token LT) or NULL if the token doesn't
+    // have a (unique) string (e.g. an IDENTIFIER).
+    static char const* toString(Value tok)
+    {
+        solAssert(tok < NUM_TOKENS, "");
+        return m_string[tok];
+    }
 
-	// @returns the precedence > 0 for binary and compare
-	// operators; returns 0 otherwise.
-	static int precedence(Value tok)
-	{
-		solAssert(tok < NUM_TOKENS, "");
-		return m_precedence[tok];
-	}
+    // @returns the precedence > 0 for binary and compare
+    // operators; returns 0 otherwise.
+    static int precedence(Value tok)
+    {
+        solAssert(tok < NUM_TOKENS, "");
+        return m_precedence[tok];
+    }
 
-	static std::tuple<Token::Value, unsigned int, unsigned int> fromIdentifierOrKeyword(std::string const& _literal);
+    static std::tuple<Token::Value, unsigned int, unsigned int> fromIdentifierOrKeyword(std::string const& _literal);
 
 private:
-	// @returns -1 on error (invalid digit or number too large)
-	static int parseSize(std::string::const_iterator _begin, std::string::const_iterator _end);
-	// @returns the keyword with name @a _name or Token::Identifier of no such keyword exists.
-	static Token::Value keywordByName(std::string const& _name);
-	static char const* const m_name[NUM_TOKENS];
-	static char const* const m_string[NUM_TOKENS];
-	static int8_t const m_precedence[NUM_TOKENS];
-	static char const m_tokenType[NUM_TOKENS];
+    // @returns -1 on error (invalid digit or number too large)
+    static int parseSize(std::string::const_iterator _begin, std::string::const_iterator _end);
+    // @returns the keyword with name @a _name or Token::Identifier of no such keyword exists.
+    static Token::Value keywordByName(std::string const& _name);
+    static char const* const m_name[NUM_TOKENS];
+    static char const* const m_string[NUM_TOKENS];
+    static int8_t const m_precedence[NUM_TOKENS];
+    static char const m_tokenType[NUM_TOKENS];
 };
 
 class ElementaryTypeNameToken
 {
 public:
-	ElementaryTypeNameToken(Token::Value _token, unsigned const& _firstNumber, unsigned const& _secondNumber)
-	{
-		assertDetails(_token, _firstNumber, _secondNumber);
-	}
+    ElementaryTypeNameToken(Token::Value _token, unsigned const& _firstNumber, unsigned const& _secondNumber)
+    {
+        assertDetails(_token, _firstNumber, _secondNumber);
+    }
 
-	unsigned int firstNumber() const { return m_firstNumber; }
-	unsigned int secondNumber() const { return m_secondNumber; }
-	Token::Value token() const { return m_token; }
-	///if tokValue is set to true, then returns the actual token type name, otherwise, returns full type
-	std::string toString(bool const& tokenValue = false) const 
-	{
-		std::string name = Token::toString(m_token);
-		if (tokenValue || (firstNumber() == 0 && secondNumber() == 0))
-			return name;
-		solAssert(name.size() >= 3, "Token name size should be greater than 3. Should not reach here.");
-		if (m_token == Token::FixedMxN || m_token == Token::UFixedMxN)
-			return name.substr(0, name.size() - 3) + std::to_string(m_firstNumber) + "x" + std::to_string(m_secondNumber);
-		else
-			return name.substr(0, name.size() - 1) + std::to_string(m_firstNumber);
-	}
+    unsigned int firstNumber() const {
+        return m_firstNumber;
+    }
+    unsigned int secondNumber() const {
+        return m_secondNumber;
+    }
+    Token::Value token() const {
+        return m_token;
+    }
+    ///if tokValue is set to true, then returns the actual token type name, otherwise, returns full type
+    std::string toString(bool const& tokenValue = false) const
+    {
+        std::string name = Token::toString(m_token);
+        if (tokenValue || (firstNumber() == 0 && secondNumber() == 0))
+            return name;
+        solAssert(name.size() >= 3, "Token name size should be greater than 3. Should not reach here.");
+        if (m_token == Token::FixedMxN || m_token == Token::UFixedMxN)
+            return name.substr(0, name.size() - 3) + std::to_string(m_firstNumber) + "x" + std::to_string(m_secondNumber);
+        else
+            return name.substr(0, name.size() - 1) + std::to_string(m_firstNumber);
+    }
 
 private:
-	Token::Value m_token;
-	unsigned int m_firstNumber;
-	unsigned int m_secondNumber;
-	/// throws if type is not properly sized
-	void assertDetails(Token::Value _baseType, unsigned const& _first, unsigned const& _second);
+    Token::Value m_token;
+    unsigned int m_firstNumber;
+    unsigned int m_secondNumber;
+    /// throws if type is not properly sized
+    void assertDetails(Token::Value _baseType, unsigned const& _first, unsigned const& _second);
 };
 
 }

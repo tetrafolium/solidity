@@ -26,7 +26,11 @@
 #include <libdevcore/Common.h>
 #include "Exceptions.h"
 
-namespace boost { namespace spirit { class utree; } }
+namespace boost {
+namespace spirit {
+class utree;
+}
+}
 namespace sp = boost::spirit;
 
 namespace dev

@@ -35,26 +35,26 @@ namespace eth
  */
 struct LinkerObject
 {
-	bytes bytecode;
-	/// Map from offsets in bytecode to library identifiers. The addresses starting at those offsets
-	/// need to be replaced by the actual addresses by the linker.
-	std::map<size_t, std::string> linkReferences;
+    bytes bytecode;
+    /// Map from offsets in bytecode to library identifiers. The addresses starting at those offsets
+    /// need to be replaced by the actual addresses by the linker.
+    std::map<size_t, std::string> linkReferences;
 
-	/// Appends the bytecode of @a _other and incorporates its link references.
-	void append(LinkerObject const& _other);
+    /// Appends the bytecode of @a _other and incorporates its link references.
+    void append(LinkerObject const& _other);
 
-	/// Links the given libraries by replacing their uses in the code and removes them from the references.
-	void link(std::map<std::string, h160> const& _libraryAddresses);
+    /// Links the given libraries by replacing their uses in the code and removes them from the references.
+    void link(std::map<std::string, h160> const& _libraryAddresses);
 
-	/// @returns a hex representation of the bytecode of the given object, replacing unlinked
-	/// addresses by placeholders.
-	std::string toHex() const;
+    /// @returns a hex representation of the bytecode of the given object, replacing unlinked
+    /// addresses by placeholders.
+    std::string toHex() const;
 
 private:
-	static h160 const* matchLibrary(
-		std::string const& _linkRefName,
-		std::map<std::string, h160> const& _libraryAddresses
-	);
+    static h160 const* matchLibrary(
+        std::string const& _linkRefName,
+        std::map<std::string, h160> const& _libraryAddresses
+    );
 };
 
 }

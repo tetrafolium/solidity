@@ -43,31 +43,31 @@ that users do not need to install language packs for their OS.
 static void setDefaultOrCLocale()
 {
 #if __unix__
-	if (!std::setlocale(LC_ALL, ""))
-	{
-		setenv("LC_ALL", "C", 1);
-	}
+    if (!std::setlocale(LC_ALL, ""))
+    {
+        setenv("LC_ALL", "C", 1);
+    }
 #endif
 }
 
 int main(int argc, char** argv)
 {
-	setDefaultOrCLocale();
-	dev::solidity::CommandLineInterface cli;
-	if (!cli.parseArguments(argc, argv))
-		return 1;
-	if (!cli.processInput())
-		return 1;
-	bool success = false;
-	try
-	{
-		success = cli.actOnInput();
-	}
-	catch (boost::exception const& _exception)
-	{
-		cerr << "Exception during output generation: " << boost::diagnostic_information(_exception) << endl;
-		success = false;
-	}
+    setDefaultOrCLocale();
+    dev::solidity::CommandLineInterface cli;
+    if (!cli.parseArguments(argc, argv))
+        return 1;
+    if (!cli.processInput())
+        return 1;
+    bool success = false;
+    try
+    {
+        success = cli.actOnInput();
+    }
+    catch (boost::exception const& _exception)
+    {
+        cerr << "Exception during output generation: " << boost::diagnostic_information(_exception) << endl;
+        success = false;
+    }
 
-	return success ? 0 : 1;
+    return success ? 0 : 1;
 }

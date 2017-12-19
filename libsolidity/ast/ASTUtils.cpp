@@ -30,19 +30,19 @@ using namespace dev::solidity;
 
 ASTNode const* LocationFinder::leastUpperBound()
 {
-	m_bestMatch = nullptr;
-	for (ASTNode const* rootNode: m_rootNodes)
-		rootNode->accept(*this);
+    m_bestMatch = nullptr;
+    for (ASTNode const* rootNode: m_rootNodes)
+        rootNode->accept(*this);
 
-	return m_bestMatch;
+    return m_bestMatch;
 }
 
 bool LocationFinder::visitNode(const ASTNode& _node)
 {
-	if (_node.location().contains(m_location))
-	{
-		m_bestMatch = &_node;
-		return true;
-	}
-	return false;
+    if (_node.location().contains(m_location))
+    {
+        m_bestMatch = &_node;
+        return true;
+    }
+    return false;
 }

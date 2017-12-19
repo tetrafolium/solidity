@@ -33,31 +33,31 @@ namespace smt
 class Z3Interface: public SolverInterface, public boost::noncopyable
 {
 public:
-	Z3Interface();
+    Z3Interface();
 
-	void reset() override;
+    void reset() override;
 
-	void push() override;
-	void pop() override;
+    void push() override;
+    void pop() override;
 
-	Expression newFunction(std::string _name, Sort _domain, Sort _codomain) override;
-	Expression newInteger(std::string _name) override;
-	Expression newBool(std::string _name) override;
+    Expression newFunction(std::string _name, Sort _domain, Sort _codomain) override;
+    Expression newInteger(std::string _name) override;
+    Expression newBool(std::string _name) override;
 
-	void addAssertion(Expression const& _expr) override;
-	std::pair<CheckResult, std::vector<std::string>> check(std::vector<Expression> const& _expressionsToEvaluate) override;
+    void addAssertion(Expression const& _expr) override;
+    std::pair<CheckResult, std::vector<std::string>> check(std::vector<Expression> const& _expressionsToEvaluate) override;
 
 private:
-	z3::expr toZ3Expr(Expression const& _expr);
-	z3::sort z3Sort(smt::Sort _sort);
+    z3::expr toZ3Expr(Expression const& _expr);
+    z3::sort z3Sort(smt::Sort _sort);
 
-	std::string checkSatAndGetValuesCommand(std::vector<Expression> const& _expressionsToEvaluate);
-	std::vector<std::string> parseValues(std::string::const_iterator _start, std::string::const_iterator _end);
+    std::string checkSatAndGetValuesCommand(std::vector<Expression> const& _expressionsToEvaluate);
+    std::vector<std::string> parseValues(std::string::const_iterator _start, std::string::const_iterator _end);
 
-	z3::context m_context;
-	z3::solver m_solver;
-	std::map<std::string, z3::expr> m_constants;
-	std::map<std::string, z3::func_decl> m_functions;
+    z3::context m_context;
+    z3::solver m_solver;
+    std::map<std::string, z3::expr> m_constants;
+    std::map<std::string, z3::func_decl> m_functions;
 };
 
 }

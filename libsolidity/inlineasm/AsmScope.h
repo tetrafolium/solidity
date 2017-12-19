@@ -36,89 +36,93 @@ namespace assembly
 {
 
 template <class...>
-struct GenericVisitor{};
+struct GenericVisitor {};
 
 template <class Visitable, class... Others>
 struct GenericVisitor<Visitable, Others...>: public GenericVisitor<Others...>
 {
-	using GenericVisitor<Others...>::operator ();
-	explicit GenericVisitor(
-		std::function<void(Visitable&)> _visitor,
-		std::function<void(Others&)>... _otherVisitors
-	):
-		GenericVisitor<Others...>(_otherVisitors...),
-		m_visitor(_visitor)
-	{}
+    using GenericVisitor<Others...>::operator ();
+    explicit GenericVisitor(
+        std::function<void(Visitable&)> _visitor,
+        std::function<void(Others&)>... _otherVisitors
+    ):
+        GenericVisitor<Others...>(_otherVisitors...),
+        m_visitor(_visitor)
+    {}
 
-	void operator()(Visitable& _v) const { m_visitor(_v); }
+    void operator()(Visitable& _v) const {
+        m_visitor(_v);
+    }
 
-	std::function<void(Visitable&)> m_visitor;
+    std::function<void(Visitable&)> m_visitor;
 };
 template <>
 struct GenericVisitor<>: public boost::static_visitor<> {
-	void operator()() const {}
+    void operator()() const {}
 };
 
 
 struct Scope
 {
-	using JuliaType = std::string;
-	using LabelID = size_t;
+    using JuliaType = std::string;
+    using LabelID = size_t;
 
-	struct Variable { JuliaType type; };
-	struct Label { };
-	struct Function
-	{
-		std::vector<JuliaType> arguments;
-		std::vector<JuliaType> returns;
-	};
+    struct Variable {
+        JuliaType type;
+    };
+    struct Label { };
+    struct Function
+    {
+        std::vector<JuliaType> arguments;
+        std::vector<JuliaType> returns;
+    };
 
-	using Identifier = boost::variant<Variable, Label, Function>;
-	using Visitor = GenericVisitor<Variable const, Label const, Function const>;
-	using NonconstVisitor = GenericVisitor<Variable, Label, Function>;
+    using Identifier = boost::variant<Variable, Label, Function>;
+    using Visitor = GenericVisitor<Variable const, Label const, Function const>;
+    using NonconstVisitor = GenericVisitor<Variable, Label, Function>;
 
-	bool registerVariable(std::string const& _name, JuliaType const& _type);
-	bool registerLabel(std::string const& _name);
-	bool registerFunction(
-		std::string const& _name,
-		std::vector<JuliaType> const& _arguments,
-		std::vector<JuliaType> const& _returns
-	);
+    bool registerVariable(std::string const& _name, JuliaType const& _type);
+    bool registerLabel(std::string const& _name);
+    bool registerFunction(
+        std::string const& _name,
+        std::vector<JuliaType> const& _arguments,
+        std::vector<JuliaType> const& _returns
+    );
 
-	/// Looks up the identifier in this or super scopes and returns a valid pointer if found
-	/// or a nullptr if not found. Variable lookups up across function boundaries will fail, as
-	/// will any lookups across assembly boundaries.
-	/// The pointer will be invalidated if the scope is modified.
-	/// @param _crossedFunction if true, we already crossed a function boundary during recursive lookup
-	Identifier* lookup(std::string const& _name);
-	/// Looks up the identifier in this and super scopes (will not find variables across function
-	/// boundaries and generally stops at assembly boundaries) and calls the visitor, returns
-	/// false if not found.
-	template <class V>
-	bool lookup(std::string const& _name, V const& _visitor)
-	{
-		if (Identifier* id = lookup(_name))
-		{
-			boost::apply_visitor(_visitor, *id);
-			return true;
-		}
-		else
-			return false;
-	}
-	/// @returns true if the name exists in this scope or in super scopes (also searches
-	/// across function and assembly boundaries).
-	bool exists(std::string const& _name) const;
+    /// Looks up the identifier in this or super scopes and returns a valid pointer if found
+    /// or a nullptr if not found. Variable lookups up across function boundaries will fail, as
+    /// will any lookups across assembly boundaries.
+    /// The pointer will be invalidated if the scope is modified.
+    /// @param _crossedFunction if true, we already crossed a function boundary during recursive lookup
+    Identifier* lookup(std::string const& _name);
+    /// Looks up the identifier in this and super scopes (will not find variables across function
+    /// boundaries and generally stops at assembly boundaries) and calls the visitor, returns
+    /// false if not found.
+    template <class V>
+    bool lookup(std::string const& _name, V const& _visitor)
+    {
+        if (Identifier* id = lookup(_name))
+        {
+            boost::apply_visitor(_visitor, *id);
+            return true;
+        }
+        else
+            return false;
+    }
+    /// @returns true if the name exists in this scope or in super scopes (also searches
+    /// across function and assembly boundaries).
+    bool exists(std::string const& _name) const;
 
-	/// @returns the number of variables directly registered inside the scope.
-	size_t numberOfVariables() const;
-	/// @returns true if this scope is inside a function.
-	bool insideFunction() const;
+    /// @returns the number of variables directly registered inside the scope.
+    size_t numberOfVariables() const;
+    /// @returns true if this scope is inside a function.
+    bool insideFunction() const;
 
-	Scope* superScope = nullptr;
-	/// If true, variables from the super scope are not visible here (other identifiers are),
-	/// but they are still taken into account to prevent shadowing.
-	bool functionScope = false;
-	std::map<std::string, Identifier> identifiers;
+    Scope* superScope = nullptr;
+    /// If true, variables from the super scope are not visible here (other identifiers are),
+    /// but they are still taken into account to prevent shadowing.
+    bool functionScope = false;
+    std::map<std::string, Identifier> identifiers;
 };
 
 }

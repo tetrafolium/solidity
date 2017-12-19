@@ -26,29 +26,29 @@ using namespace dev::test;
 
 Options const& Options::get()
 {
-	static Options instance;
-	return instance;
+    static Options instance;
+    return instance;
 }
 
 Options::Options()
 {
-	auto const& suite = boost::unit_test::framework::master_test_suite();
-	for (auto i = 0; i < suite.argc; i++)
-		if (string(suite.argv[i]) == "--ipcpath" && i + 1 < suite.argc)
-		{
-			ipcPath = suite.argv[i + 1];
-			i++;
-		}
-		else if (string(suite.argv[i]) == "--optimize")
-			optimize = true;
-		else if (string(suite.argv[i]) == "--show-messages")
-			showMessages = true;
-		else if (string(suite.argv[i]) == "--no-ipc")
-			disableIPC = true;
-		else if (string(suite.argv[i]) == "--no-smt")
-			disableSMT = true;
+    auto const& suite = boost::unit_test::framework::master_test_suite();
+    for (auto i = 0; i < suite.argc; i++)
+        if (string(suite.argv[i]) == "--ipcpath" && i + 1 < suite.argc)
+        {
+            ipcPath = suite.argv[i + 1];
+            i++;
+        }
+        else if (string(suite.argv[i]) == "--optimize")
+            optimize = true;
+        else if (string(suite.argv[i]) == "--show-messages")
+            showMessages = true;
+        else if (string(suite.argv[i]) == "--no-ipc")
+            disableIPC = true;
+        else if (string(suite.argv[i]) == "--no-smt")
+            disableSMT = true;
 
-	if (!disableIPC && ipcPath.empty())
-		if (auto path = getenv("ETH_TEST_IPC"))
-			ipcPath = path;
+    if (!disableIPC && ipcPath.empty())
+        if (auto path = getenv("ETH_TEST_IPC"))
+            ipcPath = path;
 }

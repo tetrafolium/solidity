@@ -38,150 +38,150 @@ using namespace dev::solidity;
 using namespace dev::solidity::smt;
 
 SMTLib2Interface::SMTLib2Interface(ReadCallback::Callback const& _queryCallback):
-	m_queryCallback(_queryCallback)
+    m_queryCallback(_queryCallback)
 {
-	reset();
+    reset();
 }
 
 void SMTLib2Interface::reset()
 {
-	m_accumulatedOutput.clear();
-	m_accumulatedOutput.emplace_back();
-	write("(set-option :produce-models true)");
-	write("(set-logic QF_UFLIA)");
+    m_accumulatedOutput.clear();
+    m_accumulatedOutput.emplace_back();
+    write("(set-option :produce-models true)");
+    write("(set-logic QF_UFLIA)");
 }
 
 void SMTLib2Interface::push()
 {
-	m_accumulatedOutput.emplace_back();
+    m_accumulatedOutput.emplace_back();
 }
 
 void SMTLib2Interface::pop()
 {
-	solAssert(!m_accumulatedOutput.empty(), "");
-	m_accumulatedOutput.pop_back();
+    solAssert(!m_accumulatedOutput.empty(), "");
+    m_accumulatedOutput.pop_back();
 }
 
 Expression SMTLib2Interface::newFunction(string _name, Sort _domain, Sort _codomain)
 {
-	write(
-		"(declare-fun |" +
-		_name +
-		"| (" +
-		(_domain == Sort::Int ? "Int" : "Bool") +
-		") " +
-		(_codomain == Sort::Int ? "Int" : "Bool") +
-		")"
-	);
-	return SolverInterface::newFunction(move(_name), _domain, _codomain);
+    write(
+        "(declare-fun |" +
+        _name +
+        "| (" +
+        (_domain == Sort::Int ? "Int" : "Bool") +
+        ") " +
+        (_codomain == Sort::Int ? "Int" : "Bool") +
+        ")"
+    );
+    return SolverInterface::newFunction(move(_name), _domain, _codomain);
 }
 
 Expression SMTLib2Interface::newInteger(string _name)
 {
-	write("(declare-const |" + _name + "| Int)");
-	return SolverInterface::newInteger(move(_name));
+    write("(declare-const |" + _name + "| Int)");
+    return SolverInterface::newInteger(move(_name));
 }
 
 Expression SMTLib2Interface::newBool(string _name)
 {
-	write("(declare-const |" + _name + "| Bool)");
-	return SolverInterface::newBool(std::move(_name));
+    write("(declare-const |" + _name + "| Bool)");
+    return SolverInterface::newBool(std::move(_name));
 }
 
 void SMTLib2Interface::addAssertion(Expression const& _expr)
 {
-	write("(assert " + toSExpr(_expr) + ")");
+    write("(assert " + toSExpr(_expr) + ")");
 }
 
 pair<CheckResult, vector<string>> SMTLib2Interface::check(vector<Expression> const& _expressionsToEvaluate)
 {
-	string response = querySolver(
-		boost::algorithm::join(m_accumulatedOutput, "\n") +
-		checkSatAndGetValuesCommand(_expressionsToEvaluate)
-	);
+    string response = querySolver(
+                          boost::algorithm::join(m_accumulatedOutput, "\n") +
+                          checkSatAndGetValuesCommand(_expressionsToEvaluate)
+                      );
 
-	CheckResult result;
-	// TODO proper parsing
-	if (boost::starts_with(response, "sat\n"))
-		result = CheckResult::SATISFIABLE;
-	else if (boost::starts_with(response, "unsat\n"))
-		result = CheckResult::UNSATISFIABLE;
-	else if (boost::starts_with(response, "unknown\n"))
-		result = CheckResult::UNKNOWN;
-	else
-		result = CheckResult::ERROR;
+    CheckResult result;
+    // TODO proper parsing
+    if (boost::starts_with(response, "sat\n"))
+        result = CheckResult::SATISFIABLE;
+    else if (boost::starts_with(response, "unsat\n"))
+        result = CheckResult::UNSATISFIABLE;
+    else if (boost::starts_with(response, "unknown\n"))
+        result = CheckResult::UNKNOWN;
+    else
+        result = CheckResult::ERROR;
 
-	vector<string> values;
-	if (result != CheckResult::UNSATISFIABLE && result != CheckResult::ERROR)
-		values = parseValues(find(response.cbegin(), response.cend(), '\n'), response.cend());
-	return make_pair(result, values);
+    vector<string> values;
+    if (result != CheckResult::UNSATISFIABLE && result != CheckResult::ERROR)
+        values = parseValues(find(response.cbegin(), response.cend(), '\n'), response.cend());
+    return make_pair(result, values);
 }
 
 string SMTLib2Interface::toSExpr(Expression const& _expr)
 {
-	if (_expr.arguments.empty())
-		return _expr.name;
-	std::string sexpr = "(" + _expr.name;
-	for (auto const& arg: _expr.arguments)
-		sexpr += " " + toSExpr(arg);
-	sexpr += ")";
-	return sexpr;
+    if (_expr.arguments.empty())
+        return _expr.name;
+    std::string sexpr = "(" + _expr.name;
+    for (auto const& arg: _expr.arguments)
+        sexpr += " " + toSExpr(arg);
+    sexpr += ")";
+    return sexpr;
 }
 
 void SMTLib2Interface::write(string _data)
 {
-	solAssert(!m_accumulatedOutput.empty(), "");
-	m_accumulatedOutput.back() += move(_data) + "\n";
+    solAssert(!m_accumulatedOutput.empty(), "");
+    m_accumulatedOutput.back() += move(_data) + "\n";
 }
 
 string SMTLib2Interface::checkSatAndGetValuesCommand(vector<Expression> const& _expressionsToEvaluate)
 {
-	string command;
-	if (_expressionsToEvaluate.empty())
-		command = "(check-sat)\n";
-	else
-	{
-		// TODO make sure these are unique
-		for (size_t i = 0; i < _expressionsToEvaluate.size(); i++)
-		{
-			auto const& e = _expressionsToEvaluate.at(i);
-			solAssert(e.sort == Sort::Int || e.sort == Sort::Bool, "Invalid sort for expression to evaluate.");
-			command += "(declare-const |EVALEXPR_" + to_string(i) + "| " + (e.sort == Sort::Int ? "Int" : "Bool") + "\n";
-			command += "(assert (= |EVALEXPR_" + to_string(i) + "| " + toSExpr(e) + "))\n";
-		}
-		command += "(check-sat)\n";
-		command += "(get-value (";
-		for (size_t i = 0; i < _expressionsToEvaluate.size(); i++)
-			command += "|EVALEXPR_" + to_string(i) + "| ";
-		command += "))\n";
-	}
+    string command;
+    if (_expressionsToEvaluate.empty())
+        command = "(check-sat)\n";
+    else
+    {
+        // TODO make sure these are unique
+        for (size_t i = 0; i < _expressionsToEvaluate.size(); i++)
+        {
+            auto const& e = _expressionsToEvaluate.at(i);
+            solAssert(e.sort == Sort::Int || e.sort == Sort::Bool, "Invalid sort for expression to evaluate.");
+            command += "(declare-const |EVALEXPR_" + to_string(i) + "| " + (e.sort == Sort::Int ? "Int" : "Bool") + "\n";
+            command += "(assert (= |EVALEXPR_" + to_string(i) + "| " + toSExpr(e) + "))\n";
+        }
+        command += "(check-sat)\n";
+        command += "(get-value (";
+        for (size_t i = 0; i < _expressionsToEvaluate.size(); i++)
+            command += "|EVALEXPR_" + to_string(i) + "| ";
+        command += "))\n";
+    }
 
-	return command;
+    return command;
 }
 
 vector<string> SMTLib2Interface::parseValues(string::const_iterator _start, string::const_iterator _end)
 {
-	vector<string> values;
-	while (_start < _end)
-	{
-		auto valStart = find(_start, _end, ' ');
-		if (valStart < _end)
-			++valStart;
-		auto valEnd = find(valStart, _end, ')');
-		values.emplace_back(valStart, valEnd);
-		_start = find(valEnd, _end, '(');
-	}
+    vector<string> values;
+    while (_start < _end)
+    {
+        auto valStart = find(_start, _end, ' ');
+        if (valStart < _end)
+            ++valStart;
+        auto valEnd = find(valStart, _end, ')');
+        values.emplace_back(valStart, valEnd);
+        _start = find(valEnd, _end, '(');
+    }
 
-	return values;
+    return values;
 }
 
 string SMTLib2Interface::querySolver(string const& _input)
 {
-	if (!m_queryCallback)
-		BOOST_THROW_EXCEPTION(SolverError() << errinfo_comment("No SMT solver available."));
+    if (!m_queryCallback)
+        BOOST_THROW_EXCEPTION(SolverError() << errinfo_comment("No SMT solver available."));
 
-	ReadCallback::Result queryResult = m_queryCallback(_input);
-	if (!queryResult.success)
-		BOOST_THROW_EXCEPTION(SolverError() << errinfo_comment(queryResult.responseOrErrorMessage));
-	return queryResult.responseOrErrorMessage;
+    ReadCallback::Result queryResult = m_queryCallback(_input);
+    if (!queryResult.success)
+        BOOST_THROW_EXCEPTION(SolverError() << errinfo_comment(queryResult.responseOrErrorMessage));
+    return queryResult.responseOrErrorMessage;
 }

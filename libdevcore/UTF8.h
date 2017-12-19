@@ -34,8 +34,8 @@ bool validateUTF8(std::string const& _input, size_t& _invalidPosition);
 
 inline bool validateUTF8(std::string const& _input)
 {
-	size_t invalidPos;
-	return validateUTF8(_input, invalidPos);
+    size_t invalidPos;
+    return validateUTF8(_input, invalidPos);
 }
 
 }

@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_SUITE(ViewPureChecker, AnalysisFramework)
 
 BOOST_AUTO_TEST_CASE(smoke_test)
 {
-	char const* text = R"(
+    char const* text = R"(
 		contract C {
 			uint x;
 			function g() pure public {}
@@ -46,12 +46,12 @@ BOOST_AUTO_TEST_CASE(smoke_test)
 			function i() payable public { x = 2; }
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(call_internal_functions_success)
 {
-	char const* text = R"(
+    char const* text = R"(
 		contract C {
 			function g() pure public { g(); }
 			function f() view public returns (uint) { f(); g(); }
@@ -59,103 +59,103 @@ BOOST_AUTO_TEST_CASE(call_internal_functions_success)
 			function i() payable public { i(); h(); g(); f(); }
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(suggest_pure)
 {
-	char const* text = R"(
+    char const* text = R"(
 		contract C {
 			function g() view public { }
 		}
 	)";
-	CHECK_WARNING(text, "can be restricted to pure");
+    CHECK_WARNING(text, "can be restricted to pure");
 }
 
 BOOST_AUTO_TEST_CASE(suggest_view)
 {
-	char const* text = R"(
+    char const* text = R"(
 		contract C {
 			uint x;
 			function g() public returns (uint) { return x; }
 		}
 	)";
-	CHECK_WARNING(text, "can be restricted to view");
+    CHECK_WARNING(text, "can be restricted to view");
 }
 
 BOOST_AUTO_TEST_CASE(call_internal_functions_fail)
 {
-	CHECK_ERROR(
-		"contract C{ function f() pure public { g(); } function g() view public {} }",
-		TypeError,
-		"Function declared as pure, but this expression (potentially) reads from the environment or state and thus requires \"view\""
-	);
+    CHECK_ERROR(
+        "contract C{ function f() pure public { g(); } function g() view public {} }",
+        TypeError,
+        "Function declared as pure, but this expression (potentially) reads from the environment or state and thus requires \"view\""
+    );
 }
 
 BOOST_AUTO_TEST_CASE(write_storage_fail)
 {
-	CHECK_WARNING(
-		"contract C{ uint x; function f() view public { x = 2; } }",
-		"Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable."
-	);
+    CHECK_WARNING(
+        "contract C{ uint x; function f() view public { x = 2; } }",
+        "Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable."
+    );
 }
 
 BOOST_AUTO_TEST_CASE(environment_access)
 {
-	vector<string> view{
-		"block.coinbase",
-		"block.timestamp",
-		"block.blockhash(7)",
-		"block.difficulty",
-		"block.number",
-		"block.gaslimit",
-		"msg.gas",
-		"msg.value",
-		"msg.sender",
-		"tx.origin",
-		"tx.gasprice",
-		"this",
-		"address(1).balance"
-	};
-	vector<string> pure{
-		"msg.data",
-		"msg.data[0]",
-		"msg.sig",
-		"block.blockhash", // Not evaluating the function
-		"msg",
-		"block",
-		"tx"
-	};
-	for (string const& x: view)
-	{
-		CHECK_ERROR(
-			"contract C { function f() pure public { var x = " + x + "; x; } }",
-			TypeError,
-			"Function declared as pure, but this expression (potentially) reads from the environment or state and thus requires \"view\""
-		);
-	}
-	for (string const& x: pure)
-	{
-		CHECK_WARNING(
-			"contract C { function f() view public { var x = " + x + "; x; } }",
-			"restricted to pure"
-		);
-	}
+    vector<string> view{
+        "block.coinbase",
+        "block.timestamp",
+        "block.blockhash(7)",
+        "block.difficulty",
+        "block.number",
+        "block.gaslimit",
+        "msg.gas",
+        "msg.value",
+        "msg.sender",
+        "tx.origin",
+        "tx.gasprice",
+        "this",
+        "address(1).balance"
+    };
+    vector<string> pure{
+        "msg.data",
+        "msg.data[0]",
+        "msg.sig",
+        "block.blockhash", // Not evaluating the function
+        "msg",
+        "block",
+        "tx"
+    };
+    for (string const& x: view)
+    {
+        CHECK_ERROR(
+            "contract C { function f() pure public { var x = " + x + "; x; } }",
+            TypeError,
+            "Function declared as pure, but this expression (potentially) reads from the environment or state and thus requires \"view\""
+        );
+    }
+    for (string const& x: pure)
+    {
+        CHECK_WARNING(
+            "contract C { function f() view public { var x = " + x + "; x; } }",
+            "restricted to pure"
+        );
+    }
 }
 
 BOOST_AUTO_TEST_CASE(view_error_for_050)
 {
-	CHECK_ERROR(
-		"pragma experimental \"v0.5.0\"; contract C { uint x; function f() view { x = 2; } }",
-		TypeError,
-		"Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable."
-	);
+    CHECK_ERROR(
+        "pragma experimental \"v0.5.0\"; contract C { uint x; function f() view { x = 2; } }",
+        TypeError,
+        "Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable."
+    );
 
 }
 
 BOOST_AUTO_TEST_CASE(modifiers)
 {
-	string text = R"(
+    string text = R"(
 		contract D {
 			uint x;
 			modifier purem(uint) { _; }
@@ -174,12 +174,12 @@ BOOST_AUTO_TEST_CASE(modifiers)
 			function n() nonpayablem(x = 2) public {}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(interface)
 {
-	string text = R"(
+    string text = R"(
 		interface D {
 			function f() view public;
 		}
@@ -187,12 +187,12 @@ BOOST_AUTO_TEST_CASE(interface)
 			function f() view public {}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(overriding)
 {
-	string text = R"(
+    string text = R"(
 		contract D {
 			uint x;
 			function f() public { x = 2; }
@@ -201,12 +201,12 @@ BOOST_AUTO_TEST_CASE(overriding)
 			function f() public {}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(returning_structs)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			struct S { uint x; }
 			S s;
@@ -222,12 +222,12 @@ BOOST_AUTO_TEST_CASE(returning_structs)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(mappings)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			mapping(uint => uint) a;
 			function f() view public {
@@ -241,12 +241,12 @@ BOOST_AUTO_TEST_CASE(mappings)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(local_storage_variables)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			struct S { uint a; }
 			S s;
@@ -267,12 +267,12 @@ BOOST_AUTO_TEST_CASE(local_storage_variables)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(builtin_functions)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			function f() public {
 				this.transfer(1);
@@ -292,12 +292,12 @@ BOOST_AUTO_TEST_CASE(builtin_functions)
 			function() payable public {}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(function_types)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			function f() pure public {
 				function () external nonpayFun;
@@ -321,23 +321,23 @@ BOOST_AUTO_TEST_CASE(function_types)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(creation)
 {
-	string text = R"(
+    string text = R"(
 		contract D {}
 		contract C {
 			function f() public { new D(); }
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(assembly)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			struct S { uint x; }
 			S s;
@@ -362,36 +362,36 @@ BOOST_AUTO_TEST_CASE(assembly)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_CASE(assembly_staticcall)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			function i() view public {
 				assembly { pop(staticcall(gas, 1, 2, 3, 4, 5)) }
 			}
 		}
 	)";
-	CHECK_WARNING(text, "only available after the Metropolis");
+    CHECK_WARNING(text, "only available after the Metropolis");
 }
 
 BOOST_AUTO_TEST_CASE(assembly_jump)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			function k() public {
 				assembly { jump(2) }
 			}
 		}
 	)";
-	CHECK_WARNING(text, "low-level EVM features");
+    CHECK_WARNING(text, "low-level EVM features");
 }
 
 BOOST_AUTO_TEST_CASE(constant)
 {
-	string text = R"(
+    string text = R"(
 		contract C {
 			uint constant x = 2;
 			function k() pure public returns (uint) {
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(constant)
 			}
 		}
 	)";
-	CHECK_SUCCESS_NO_WARNINGS(text);
+    CHECK_SUCCESS_NO_WARNINGS(text);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

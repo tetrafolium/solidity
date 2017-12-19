@@ -35,11 +35,11 @@ class KnownState;
 
 struct GasPath
 {
-	size_t index = 0;
-	std::shared_ptr<KnownState> state;
-	u256 largestMemoryAccess;
-	GasMeter::GasConsumption gas;
-	std::set<size_t> visitedJumpdests;
+    size_t index = 0;
+    std::shared_ptr<KnownState> state;
+    u256 largestMemoryAccess;
+    GasMeter::GasConsumption gas;
+    std::set<size_t> visitedJumpdests;
 };
 
 /**
@@ -50,16 +50,16 @@ struct GasPath
 class PathGasMeter
 {
 public:
-	explicit PathGasMeter(AssemblyItems const& _items);
+    explicit PathGasMeter(AssemblyItems const& _items);
 
-	GasMeter::GasConsumption estimateMax(size_t _startIndex, std::shared_ptr<KnownState> const& _state);
+    GasMeter::GasConsumption estimateMax(size_t _startIndex, std::shared_ptr<KnownState> const& _state);
 
 private:
-	GasMeter::GasConsumption handleQueueItem();
+    GasMeter::GasConsumption handleQueueItem();
 
-	std::vector<std::unique_ptr<GasPath>> m_queue;
-	std::map<u256, size_t> m_tagPositions;
-	AssemblyItems const& m_items;
+    std::vector<std::unique_ptr<GasPath>> m_queue;
+    std::map<u256, size_t> m_tagPositions;
+    AssemblyItems const& m_items;
 };
 
 }

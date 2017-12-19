@@ -30,15 +30,15 @@ namespace solidity
 class ReadCallback: boost::noncopyable
 {
 public:
-	/// File reading or generic query result.
-	struct Result
-	{
-		bool success;
-		std::string responseOrErrorMessage;
-	};
+    /// File reading or generic query result.
+    struct Result
+    {
+        bool success;
+        std::string responseOrErrorMessage;
+    };
 
-	/// File reading or generic query callback.
-	using Callback = std::function<Result(std::string const&)>;
+    /// File reading or generic query callback.
+    using Callback = std::function<Result(std::string const&)>;
 };
 
 }

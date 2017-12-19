@@ -45,19 +45,19 @@ class Type; // forward
 class GlobalContext: private boost::noncopyable
 {
 public:
-	GlobalContext();
-	void setCurrentContract(ContractDefinition const& _contract);
-	MagicVariableDeclaration const* currentThis() const;
-	MagicVariableDeclaration const* currentSuper() const;
+    GlobalContext();
+    void setCurrentContract(ContractDefinition const& _contract);
+    MagicVariableDeclaration const* currentThis() const;
+    MagicVariableDeclaration const* currentSuper() const;
 
-	/// @returns a vector of all implicit global declarations excluding "this".
-	std::vector<Declaration const*> declarations() const;
+    /// @returns a vector of all implicit global declarations excluding "this".
+    std::vector<Declaration const*> declarations() const;
 
 private:
-	std::vector<std::shared_ptr<MagicVariableDeclaration const>> m_magicVariables;
-	ContractDefinition const* m_currentContract = nullptr;
-	std::map<ContractDefinition const*, std::shared_ptr<MagicVariableDeclaration const>> mutable m_thisPointer;
-	std::map<ContractDefinition const*, std::shared_ptr<MagicVariableDeclaration const>> mutable m_superPointer;
+    std::vector<std::shared_ptr<MagicVariableDeclaration const>> m_magicVariables;
+    ContractDefinition const* m_currentContract = nullptr;
+    std::map<ContractDefinition const*, std::shared_ptr<MagicVariableDeclaration const>> mutable m_thisPointer;
+    std::map<ContractDefinition const*, std::shared_ptr<MagicVariableDeclaration const>> mutable m_superPointer;
 };
 
 }

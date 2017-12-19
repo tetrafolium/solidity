@@ -44,36 +44,36 @@ class InlineAssembly;
 class ViewPureChecker: private ASTConstVisitor
 {
 public:
-	ViewPureChecker(std::vector<std::shared_ptr<ASTNode>> const& _ast, ErrorReporter& _errorReporter):
-		m_ast(_ast), m_errorReporter(_errorReporter) {}
+    ViewPureChecker(std::vector<std::shared_ptr<ASTNode>> const& _ast, ErrorReporter& _errorReporter):
+        m_ast(_ast), m_errorReporter(_errorReporter) {}
 
-	bool check();
+    bool check();
 
 private:
 
-	virtual bool visit(FunctionDefinition const& _funDef) override;
-	virtual void endVisit(FunctionDefinition const& _funDef) override;
-	virtual bool visit(ModifierDefinition const& _modifierDef) override;
-	virtual void endVisit(ModifierDefinition const& _modifierDef) override;
-	virtual void endVisit(Identifier const& _identifier) override;
-	virtual void endVisit(MemberAccess const& _memberAccess) override;
-	virtual void endVisit(IndexAccess const& _indexAccess) override;
-	virtual void endVisit(ModifierInvocation const& _modifier) override;
-	virtual void endVisit(FunctionCall const& _functionCall) override;
-	virtual void endVisit(InlineAssembly const& _inlineAssembly) override;
+    virtual bool visit(FunctionDefinition const& _funDef) override;
+    virtual void endVisit(FunctionDefinition const& _funDef) override;
+    virtual bool visit(ModifierDefinition const& _modifierDef) override;
+    virtual void endVisit(ModifierDefinition const& _modifierDef) override;
+    virtual void endVisit(Identifier const& _identifier) override;
+    virtual void endVisit(MemberAccess const& _memberAccess) override;
+    virtual void endVisit(IndexAccess const& _indexAccess) override;
+    virtual void endVisit(ModifierInvocation const& _modifier) override;
+    virtual void endVisit(FunctionCall const& _functionCall) override;
+    virtual void endVisit(InlineAssembly const& _inlineAssembly) override;
 
-	/// Called when an element of mutability @a _mutability is encountered.
-	/// Creates appropriate warnings and errors and sets @a m_currentBestMutability.
-	void reportMutability(StateMutability _mutability, SourceLocation const& _location);
+    /// Called when an element of mutability @a _mutability is encountered.
+    /// Creates appropriate warnings and errors and sets @a m_currentBestMutability.
+    void reportMutability(StateMutability _mutability, SourceLocation const& _location);
 
-	std::vector<std::shared_ptr<ASTNode>> const& m_ast;
-	ErrorReporter& m_errorReporter;
+    std::vector<std::shared_ptr<ASTNode>> const& m_ast;
+    ErrorReporter& m_errorReporter;
 
-	bool m_errors = false;
-	bool m_enforceViewWithError = false;
-	StateMutability m_currentBestMutability = StateMutability::Payable;
-	FunctionDefinition const* m_currentFunction = nullptr;
-	std::map<ModifierDefinition const*, StateMutability> m_inferredMutability;
+    bool m_errors = false;
+    bool m_enforceViewWithError = false;
+    StateMutability m_currentBestMutability = StateMutability::Payable;
+    FunctionDefinition const* m_currentFunction = nullptr;
+    std::map<ModifierDefinition const*, StateMutability> m_inferredMutability;
 };
 
 }

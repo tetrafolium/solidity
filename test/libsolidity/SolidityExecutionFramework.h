@@ -42,41 +42,41 @@ class SolidityExecutionFramework: public dev::test::ExecutionFramework
 {
 
 public:
-	SolidityExecutionFramework();
+    SolidityExecutionFramework();
 
-	virtual bytes const& compileAndRunWithoutCheck(
-		std::string const& _sourceCode,
-		u256 const& _value = 0,
-		std::string const& _contractName = "",
-		bytes const& _arguments = bytes(),
-		std::map<std::string, dev::test::Address> const& _libraryAddresses = std::map<std::string, dev::test::Address>()
-	) override
-	{
-		// Silence compiler version warning
-		std::string sourceCode = "pragma solidity >=0.0;\n" + _sourceCode;
-		m_compiler.reset(false);
-		m_compiler.addSource("", sourceCode);
-		m_compiler.setLibraries(_libraryAddresses);
-		m_compiler.setOptimiserSettings(m_optimize, m_optimizeRuns);
-		if (!m_compiler.compile())
-		{
-			for (auto const& error: m_compiler.errors())
-				SourceReferenceFormatter::printExceptionInformation(
-					std::cerr,
-					*error,
-					(error->type() == Error::Type::Warning) ? "Warning" : "Error",
-					[&](std::string const& _sourceName) -> solidity::Scanner const& { return m_compiler.scanner(_sourceName); }
-				);
-			BOOST_ERROR("Compiling contract failed");
-		}
-		eth::LinkerObject obj = m_compiler.object(_contractName.empty() ? m_compiler.lastContractName() : _contractName);
-		BOOST_REQUIRE(obj.linkReferences.empty());
-		sendMessage(obj.bytecode + _arguments, true, _value);
-		return m_output;
-	}
+    virtual bytes const& compileAndRunWithoutCheck(
+        std::string const& _sourceCode,
+        u256 const& _value = 0,
+        std::string const& _contractName = "",
+        bytes const& _arguments = bytes(),
+        std::map<std::string, dev::test::Address> const& _libraryAddresses = std::map<std::string, dev::test::Address>()
+    ) override
+    {
+        // Silence compiler version warning
+        std::string sourceCode = "pragma solidity >=0.0;\n" + _sourceCode;
+        m_compiler.reset(false);
+        m_compiler.addSource("", sourceCode);
+        m_compiler.setLibraries(_libraryAddresses);
+        m_compiler.setOptimiserSettings(m_optimize, m_optimizeRuns);
+        if (!m_compiler.compile())
+        {
+            for (auto const& error: m_compiler.errors())
+                SourceReferenceFormatter::printExceptionInformation(
+                    std::cerr,
+                    *error,
+                    (error->type() == Error::Type::Warning) ? "Warning" : "Error",
+                [&](std::string const& _sourceName) -> solidity::Scanner const& { return m_compiler.scanner(_sourceName); }
+            );
+            BOOST_ERROR("Compiling contract failed");
+        }
+        eth::LinkerObject obj = m_compiler.object(_contractName.empty() ? m_compiler.lastContractName() : _contractName);
+        BOOST_REQUIRE(obj.linkReferences.empty());
+        sendMessage(obj.bytecode + _arguments, true, _value);
+        return m_output;
+    }
 
 protected:
-	dev::solidity::CompilerStack m_compiler;
+    dev::solidity::CompilerStack m_compiler;
 };
 
 }

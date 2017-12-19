@@ -40,8 +40,8 @@ struct Block;
 
 struct MachineAssemblyObject
 {
-	std::shared_ptr<eth::LinkerObject> bytecode;
-	std::string assembly;
+    std::shared_ptr<eth::LinkerObject> bytecode;
+    std::string assembly;
 };
 
 /*
@@ -51,45 +51,47 @@ struct MachineAssemblyObject
 class AssemblyStack
 {
 public:
-	enum class Language { JULIA, Assembly };
-	enum class Machine { EVM, EVM15, eWasm };
+    enum class Language { JULIA, Assembly };
+    enum class Machine { EVM, EVM15, eWasm };
 
-	explicit AssemblyStack(Language _language = Language::Assembly):
-		m_language(_language), m_errorReporter(m_errors)
-	{}
+    explicit AssemblyStack(Language _language = Language::Assembly):
+        m_language(_language), m_errorReporter(m_errors)
+    {}
 
-	/// @returns the scanner used during parsing
-	Scanner const& scanner() const;
+    /// @returns the scanner used during parsing
+    Scanner const& scanner() const;
 
-	/// Runs parsing and analysis steps, returns false if input cannot be assembled.
-	/// Multiple calls overwrite the previous state.
-	bool parseAndAnalyze(std::string const& _sourceName, std::string const& _source);
+    /// Runs parsing and analysis steps, returns false if input cannot be assembled.
+    /// Multiple calls overwrite the previous state.
+    bool parseAndAnalyze(std::string const& _sourceName, std::string const& _source);
 
-	/// Runs analysis step on the supplied block, returns false if input cannot be assembled.
-	/// Multiple calls overwrite the previous state.
-	bool analyze(assembly::Block const& _block, Scanner const* _scanner = nullptr);
+    /// Runs analysis step on the supplied block, returns false if input cannot be assembled.
+    /// Multiple calls overwrite the previous state.
+    bool analyze(assembly::Block const& _block, Scanner const* _scanner = nullptr);
 
-	/// Run the assembly step (should only be called after parseAndAnalyze).
-	MachineAssemblyObject assemble(Machine _machine) const;
+    /// Run the assembly step (should only be called after parseAndAnalyze).
+    MachineAssemblyObject assemble(Machine _machine) const;
 
-	/// @returns the errors generated during parsing, analysis (and potentially assembly).
-	ErrorList const& errors() const { return m_errors; }
+    /// @returns the errors generated during parsing, analysis (and potentially assembly).
+    ErrorList const& errors() const {
+        return m_errors;
+    }
 
-	/// Pretty-print the input after having parsed it.
-	std::string print() const;
+    /// Pretty-print the input after having parsed it.
+    std::string print() const;
 
 private:
-	bool analyzeParsed();
+    bool analyzeParsed();
 
-	Language m_language = Language::Assembly;
+    Language m_language = Language::Assembly;
 
-	std::shared_ptr<Scanner> m_scanner;
+    std::shared_ptr<Scanner> m_scanner;
 
-	bool m_analysisSuccessful = false;
-	std::shared_ptr<assembly::Block> m_parserResult;
-	std::shared_ptr<assembly::AsmAnalysisInfo> m_analysisInfo;
-	ErrorList m_errors;
-	ErrorReporter m_errorReporter;
+    bool m_analysisSuccessful = false;
+    std::shared_ptr<assembly::Block> m_parserResult;
+    std::shared_ptr<assembly::AsmAnalysisInfo> m_analysisInfo;
+    ErrorList m_errors;
+    ErrorReporter m_errorReporter;
 };
 
 }

@@ -42,28 +42,34 @@ namespace julia
 class ASTWalker: public boost::static_visitor<>
 {
 public:
-	virtual void operator()(Literal const&) {}
-	virtual void operator()(Instruction const&) { solAssert(false, ""); }
-	virtual void operator()(Identifier const&) {}
-	virtual void operator()(FunctionalInstruction const& _instr);
-	virtual void operator()(FunctionCall const& _funCall);
-	virtual void operator()(Label const&) { solAssert(false, ""); }
-	virtual void operator()(StackAssignment const&) { solAssert(false, ""); }
-	virtual void operator()(Assignment const& _assignment);
-	virtual void operator()(VariableDeclaration const& _varDecl);
-	virtual void operator()(If const& _if);
-	virtual void operator()(Switch const& _switch);
-	virtual void operator()(FunctionDefinition const&);
-	virtual void operator()(ForLoop const&);
-	virtual void operator()(Block const& _block);
+    virtual void operator()(Literal const&) {}
+    virtual void operator()(Instruction const&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(Identifier const&) {}
+    virtual void operator()(FunctionalInstruction const& _instr);
+    virtual void operator()(FunctionCall const& _funCall);
+    virtual void operator()(Label const&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(StackAssignment const&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(Assignment const& _assignment);
+    virtual void operator()(VariableDeclaration const& _varDecl);
+    virtual void operator()(If const& _if);
+    virtual void operator()(Switch const& _switch);
+    virtual void operator()(FunctionDefinition const&);
+    virtual void operator()(ForLoop const&);
+    virtual void operator()(Block const& _block);
 
 protected:
-	template <class T>
-	void walkVector(T const& _statements)
-	{
-		for (auto const& st: _statements)
-			boost::apply_visitor(*this, st);
-	}
+    template <class T>
+    void walkVector(T const& _statements)
+    {
+        for (auto const& st: _statements)
+            boost::apply_visitor(*this, st);
+    }
 };
 
 /**
@@ -72,32 +78,38 @@ protected:
 class ASTModifier: public boost::static_visitor<>
 {
 public:
-	virtual void operator()(Literal&) {}
-	virtual void operator()(Instruction&) { solAssert(false, ""); }
-	virtual void operator()(Identifier&) {}
-	virtual void operator()(FunctionalInstruction& _instr);
-	virtual void operator()(FunctionCall& _funCall);
-	virtual void operator()(Label&) { solAssert(false, ""); }
-	virtual void operator()(StackAssignment&) { solAssert(false, ""); }
-	virtual void operator()(Assignment& _assignment);
-	virtual void operator()(VariableDeclaration& _varDecl);
-	virtual void operator()(If& _if);
-	virtual void operator()(Switch& _switch);
-	virtual void operator()(FunctionDefinition&);
-	virtual void operator()(ForLoop&);
-	virtual void operator()(Block& _block);
+    virtual void operator()(Literal&) {}
+    virtual void operator()(Instruction&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(Identifier&) {}
+    virtual void operator()(FunctionalInstruction& _instr);
+    virtual void operator()(FunctionCall& _funCall);
+    virtual void operator()(Label&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(StackAssignment&) {
+        solAssert(false, "");
+    }
+    virtual void operator()(Assignment& _assignment);
+    virtual void operator()(VariableDeclaration& _varDecl);
+    virtual void operator()(If& _if);
+    virtual void operator()(Switch& _switch);
+    virtual void operator()(FunctionDefinition&);
+    virtual void operator()(ForLoop&);
+    virtual void operator()(Block& _block);
 
 protected:
-	template <class T>
-	void walkVector(T&& _statements)
-	{
-		for (auto& st: _statements)
-			visit(st);
-	}
-	virtual void visit(Statement& _st)
-	{
-		boost::apply_visitor(*this, _st);
-	}
+    template <class T>
+    void walkVector(T&& _statements)
+    {
+        for (auto& st: _statements)
+            visit(st);
+    }
+    virtual void visit(Statement& _st)
+    {
+        boost::apply_visitor(*this, _st);
+    }
 };
 
 }

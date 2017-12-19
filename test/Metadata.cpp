@@ -32,47 +32,47 @@ namespace test
 
 string bytecodeSansMetadata(string const& _bytecode)
 {
-	/// The metadata hash takes up 43 bytes (or 86 characters in hex)
-	/// /a165627a7a72305820([0-9a-f]{64})0029$/
+    /// The metadata hash takes up 43 bytes (or 86 characters in hex)
+    /// /a165627a7a72305820([0-9a-f]{64})0029$/
 
-	if (_bytecode.size() < 88)
-		return _bytecode;
+    if (_bytecode.size() < 88)
+        return _bytecode;
 
-	if (_bytecode.substr(_bytecode.size() - 4, 4) != "0029")
-		return _bytecode;
+    if (_bytecode.substr(_bytecode.size() - 4, 4) != "0029")
+        return _bytecode;
 
-	if (_bytecode.substr(_bytecode.size() - 86, 18) != "a165627a7a72305820")
-		return _bytecode;
+    if (_bytecode.substr(_bytecode.size() - 86, 18) != "a165627a7a72305820")
+        return _bytecode;
 
-	return _bytecode.substr(0, _bytecode.size() - 86);
+    return _bytecode.substr(0, _bytecode.size() - 86);
 }
 
 bool isValidMetadata(string const& _metadata)
 {
-	Json::Value metadata;
-	if (!Json::Reader().parse(_metadata, metadata, false))
-		return false;
+    Json::Value metadata;
+    if (!Json::Reader().parse(_metadata, metadata, false))
+        return false;
 
-	if (
-		!metadata.isObject() ||
-		!metadata.isMember("version") ||
-		!metadata.isMember("language") ||
-		!metadata.isMember("compiler") ||
-		!metadata.isMember("settings") ||
-		!metadata.isMember("sources") ||
-		!metadata.isMember("output")
-	)
-		return false;
+    if (
+        !metadata.isObject() ||
+        !metadata.isMember("version") ||
+        !metadata.isMember("language") ||
+        !metadata.isMember("compiler") ||
+        !metadata.isMember("settings") ||
+        !metadata.isMember("sources") ||
+        !metadata.isMember("output")
+    )
+        return false;
 
-	if (!metadata["version"].isNumeric() || metadata["version"] != 1)
-		return false;
+    if (!metadata["version"].isNumeric() || metadata["version"] != 1)
+        return false;
 
-	if (!metadata["language"].isString() || metadata["language"].asString() != "Solidity")
-		return false;
+    if (!metadata["language"].isString() || metadata["language"].asString() != "Solidity")
+        return false;
 
-	/// @TODO add more strict checks
+    /// @TODO add more strict checks
 
-	return true;
+    return true;
 }
 
 }

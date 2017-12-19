@@ -34,116 +34,116 @@ using namespace dev::solidity;
 
 void ASTWalker::operator()(FunctionalInstruction const& _instr)
 {
-	walkVector(_instr.arguments | boost::adaptors::reversed);
+    walkVector(_instr.arguments | boost::adaptors::reversed);
 }
 
 void ASTWalker::operator()(FunctionCall const& _funCall)
 {
-	walkVector(_funCall.arguments | boost::adaptors::reversed);
+    walkVector(_funCall.arguments | boost::adaptors::reversed);
 }
 
 void ASTWalker::operator()(Assignment const& _assignment)
 {
-	for (auto const& name: _assignment.variableNames)
-		(*this)(name);
-	boost::apply_visitor(*this, *_assignment.value);
+    for (auto const& name: _assignment.variableNames)
+        (*this)(name);
+    boost::apply_visitor(*this, *_assignment.value);
 }
 
 void ASTWalker::operator()(VariableDeclaration const& _varDecl)
 {
-	if (_varDecl.value)
-		boost::apply_visitor(*this, *_varDecl.value);
+    if (_varDecl.value)
+        boost::apply_visitor(*this, *_varDecl.value);
 }
 
 void ASTWalker::operator()(If const& _if)
 {
-	boost::apply_visitor(*this, *_if.condition);
-	(*this)(_if.body);
+    boost::apply_visitor(*this, *_if.condition);
+    (*this)(_if.body);
 }
 
 void ASTWalker::operator()(Switch const& _switch)
 {
-	boost::apply_visitor(*this, *_switch.expression);
-	for (auto const& _case: _switch.cases)
-	{
-		if (_case.value)
-			(*this)(*_case.value);
-		(*this)(_case.body);
-	}
+    boost::apply_visitor(*this, *_switch.expression);
+    for (auto const& _case: _switch.cases)
+    {
+        if (_case.value)
+            (*this)(*_case.value);
+        (*this)(_case.body);
+    }
 }
 
 void ASTWalker::operator()(FunctionDefinition const& _fun)
 {
-	(*this)(_fun.body);
+    (*this)(_fun.body);
 }
 
 void ASTWalker::operator()(ForLoop const& _for)
 {
-	(*this)(_for.pre);
-	boost::apply_visitor(*this, *_for.condition);
-	(*this)(_for.post);
-	(*this)(_for.body);
+    (*this)(_for.pre);
+    boost::apply_visitor(*this, *_for.condition);
+    (*this)(_for.post);
+    (*this)(_for.body);
 }
 
 void ASTWalker::operator()(Block const& _block)
 {
-	walkVector(_block.statements);
+    walkVector(_block.statements);
 }
 
 void ASTModifier::operator()(FunctionalInstruction& _instr)
 {
-	walkVector(_instr.arguments | boost::adaptors::reversed);
+    walkVector(_instr.arguments | boost::adaptors::reversed);
 }
 
 void ASTModifier::operator()(FunctionCall& _funCall)
 {
-	walkVector(_funCall.arguments | boost::adaptors::reversed);
+    walkVector(_funCall.arguments | boost::adaptors::reversed);
 }
 
 void ASTModifier::operator()(Assignment& _assignment)
 {
-	for (auto& name: _assignment.variableNames)
-		(*this)(name);
-	visit(*_assignment.value);
+    for (auto& name: _assignment.variableNames)
+        (*this)(name);
+    visit(*_assignment.value);
 }
 
 void ASTModifier::operator()(VariableDeclaration& _varDecl)
 {
-	if (_varDecl.value)
-		visit(*_varDecl.value);
+    if (_varDecl.value)
+        visit(*_varDecl.value);
 }
 
 void ASTModifier::operator()(If& _if)
 {
-	visit(*_if.condition);
-	(*this)(_if.body);
+    visit(*_if.condition);
+    (*this)(_if.body);
 }
 
 void ASTModifier::operator()(Switch& _switch)
 {
-	visit(*_switch.expression);
-	for (auto& _case: _switch.cases)
-	{
-		if (_case.value)
-			(*this)(*_case.value);
-		(*this)(_case.body);
-	}
+    visit(*_switch.expression);
+    for (auto& _case: _switch.cases)
+    {
+        if (_case.value)
+            (*this)(*_case.value);
+        (*this)(_case.body);
+    }
 }
 
 void ASTModifier::operator()(FunctionDefinition& _fun)
 {
-	(*this)(_fun.body);
+    (*this)(_fun.body);
 }
 
 void ASTModifier::operator()(ForLoop& _for)
 {
-	(*this)(_for.pre);
-	visit(*_for.condition);
-	(*this)(_for.post);
-	(*this)(_for.body);
+    (*this)(_for.pre);
+    visit(*_for.condition);
+    (*this)(_for.post);
+    (*this)(_for.body);
 }
 
 void ASTModifier::operator()(Block& _block)
 {
-	walkVector(_block.statements);
+    walkVector(_block.statements);
 }

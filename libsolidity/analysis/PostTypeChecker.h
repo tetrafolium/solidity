@@ -38,33 +38,33 @@ class ErrorReporter;
 class PostTypeChecker: private ASTConstVisitor
 {
 public:
-	/// @param _errorReporter provides the error logging functionality.
-	PostTypeChecker(ErrorReporter& _errorReporter): m_errorReporter(_errorReporter) {}
+    /// @param _errorReporter provides the error logging functionality.
+    PostTypeChecker(ErrorReporter& _errorReporter): m_errorReporter(_errorReporter) {}
 
-	bool check(ASTNode const& _astRoot);
+    bool check(ASTNode const& _astRoot);
 
 private:
-	/// Adds a new error to the list of errors.
-	void typeError(SourceLocation const& _location, std::string const& _description);
+    /// Adds a new error to the list of errors.
+    void typeError(SourceLocation const& _location, std::string const& _description);
 
-	virtual bool visit(ContractDefinition const& _contract) override;
-	virtual void endVisit(ContractDefinition const& _contract) override;
+    virtual bool visit(ContractDefinition const& _contract) override;
+    virtual void endVisit(ContractDefinition const& _contract) override;
 
-	virtual bool visit(VariableDeclaration const& _variable) override;
-	virtual void endVisit(VariableDeclaration const& _variable) override;
+    virtual bool visit(VariableDeclaration const& _variable) override;
+    virtual void endVisit(VariableDeclaration const& _variable) override;
 
-	virtual bool visit(Identifier const& _identifier) override;
+    virtual bool visit(Identifier const& _identifier) override;
 
-	VariableDeclaration const* findCycle(
-		VariableDeclaration const* _startingFrom,
-		std::set<VariableDeclaration const*> const& _seen = std::set<VariableDeclaration const*>{}
-	);
+    VariableDeclaration const* findCycle(
+        VariableDeclaration const* _startingFrom,
+    std::set<VariableDeclaration const*> const& _seen = std::set<VariableDeclaration const*> {}
+    );
 
-	ErrorReporter& m_errorReporter;
+    ErrorReporter& m_errorReporter;
 
-	VariableDeclaration const* m_currentConstVariable = nullptr;
-	std::vector<VariableDeclaration const*> m_constVariables; ///< Required for determinism.
-	std::map<VariableDeclaration const*, std::set<VariableDeclaration const*>> m_constVariableDependencies;
+    VariableDeclaration const* m_currentConstVariable = nullptr;
+    std::vector<VariableDeclaration const*> m_constVariables; ///< Required for determinism.
+    std::map<VariableDeclaration const*, std::set<VariableDeclaration const*>> m_constVariableDependencies;
 };
 
 }

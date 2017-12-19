@@ -38,48 +38,48 @@ namespace solidity
 class SyntaxChecker: private ASTConstVisitor
 {
 public:
-	/// @param _errorReporter provides the error logging functionality.
-	SyntaxChecker(ErrorReporter& _errorReporter): m_errorReporter(_errorReporter) {}
+    /// @param _errorReporter provides the error logging functionality.
+    SyntaxChecker(ErrorReporter& _errorReporter): m_errorReporter(_errorReporter) {}
 
-	bool checkSyntax(ASTNode const& _astRoot);
+    bool checkSyntax(ASTNode const& _astRoot);
 
 private:
 
-	virtual bool visit(SourceUnit const& _sourceUnit) override;
-	virtual void endVisit(SourceUnit const& _sourceUnit) override;
-	virtual bool visit(PragmaDirective const& _pragma) override;
+    virtual bool visit(SourceUnit const& _sourceUnit) override;
+    virtual void endVisit(SourceUnit const& _sourceUnit) override;
+    virtual bool visit(PragmaDirective const& _pragma) override;
 
-	virtual bool visit(ModifierDefinition const& _modifier) override;
-	virtual void endVisit(ModifierDefinition const& _modifier) override;
+    virtual bool visit(ModifierDefinition const& _modifier) override;
+    virtual void endVisit(ModifierDefinition const& _modifier) override;
 
-	virtual bool visit(WhileStatement const& _whileStatement) override;
-	virtual void endVisit(WhileStatement const& _whileStatement) override;
-	virtual bool visit(ForStatement const& _forStatement) override;
-	virtual void endVisit(ForStatement const& _forStatement) override;
+    virtual bool visit(WhileStatement const& _whileStatement) override;
+    virtual void endVisit(WhileStatement const& _whileStatement) override;
+    virtual bool visit(ForStatement const& _forStatement) override;
+    virtual void endVisit(ForStatement const& _forStatement) override;
 
-	virtual bool visit(Continue const& _continueStatement) override;
-	virtual bool visit(Break const& _breakStatement) override;
+    virtual bool visit(Continue const& _continueStatement) override;
+    virtual bool visit(Break const& _breakStatement) override;
 
-	virtual bool visit(Throw const& _throwStatement) override;
+    virtual bool visit(Throw const& _throwStatement) override;
 
-	virtual bool visit(UnaryOperation const& _operation) override;
+    virtual bool visit(UnaryOperation const& _operation) override;
 
-	virtual bool visit(PlaceholderStatement const& _placeholderStatement) override;
+    virtual bool visit(PlaceholderStatement const& _placeholderStatement) override;
 
-	virtual bool visit(FunctionDefinition const& _function) override;
-	virtual bool visit(FunctionTypeName const& _node) override;
+    virtual bool visit(FunctionDefinition const& _function) override;
+    virtual bool visit(FunctionTypeName const& _node) override;
 
-	ErrorReporter& m_errorReporter;
+    ErrorReporter& m_errorReporter;
 
-	/// Flag that indicates whether a function modifier actually contains '_'.
-	bool m_placeholderFound = false;
+    /// Flag that indicates whether a function modifier actually contains '_'.
+    bool m_placeholderFound = false;
 
-	/// Flag that indicates whether some version pragma was present.
-	bool m_versionPragmaFound = false;
+    /// Flag that indicates whether some version pragma was present.
+    bool m_versionPragmaFound = false;
 
-	int m_inLoopDepth = 0;
+    int m_inLoopDepth = 0;
 
-	SourceUnit const* m_sourceUnit = nullptr;
+    SourceUnit const* m_sourceUnit = nullptr;
 };
 
 }
